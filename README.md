@@ -14,10 +14,9 @@ Coming Soon
 ## API Gateway (Traefik)
 Traefik is an open-source, modern reverse proxy and load balancer designed to handle dynamic microservices environments. It integrates with various orchestration and container platforms like Docker, Kubernetes, Mesos, and Consul to automatically route and manage traffic for web applications.
 
-*TODO - Add Traefik Configuration for CLAIF API*
-
 - visit the dashboard at http://localhost:8081
 - make requests to the API at http://localhost:8080 (TODO)
+
 <img src="./screenshots/traefik-dashboard.png" style="max-width: 600px;" />
 
 Key Features of Traefik:
@@ -47,6 +46,7 @@ Key Features of Traefik:
 ## CLAIF API (FastAPI)
 ### Swagger Docs (Swagger UI)
 - visit http://localhost:8082/docs
+
 <img src="./screenshots/claif-api-swagger.png" style="max-width: 600px;" />
 ### Redoc Docs
 - visit http://localhost:8082/redoc
@@ -55,10 +55,17 @@ Key Features of Traefik:
 ## Adminer
 A lightweight browser-based database administration utility. This has been added only as a convenience to expedite onboarding.
 - visit http://localhost:8083
+
 <img src="./screenshots/adminer-1.png" style="max-width: 600px;" />
 <img src="./screenshots/adminer-2.png" style="max-width: 600px;" />
 
 ## Keycloak
+Keycloak is an identity and access management (IAM) solution. It provides authentication and authorization services for applications, enabling features like Single Sign-On (SSO), user federation, and identity brokering.
+- visit the admin console at http://localhost:8085
+
+<img src="./screenshots/keycloak-1.png" style="max-width: 300px;" />
+<img src="./screenshots/keycloak-2.png" style="max-width: 600px;" />
+
 Key Features of Keycloak:
 - Single Sign-On (SSO):
   - Keycloak allows users to log in once and gain access to multiple applications without needing to log in again for each app.
