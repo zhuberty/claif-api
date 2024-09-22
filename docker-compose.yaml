@@ -19,11 +19,12 @@ services:
     image: tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14-2024-03-11
     environment:
       - UVICORN_WORKERS=2
+      - APP_MODULE=main:app
     volumes:
-      - ./app:/app
+      - ./src/claif-api:/app
     labels:
       - "traefik.http.routers.app.rule=Host(`127.0.0.1`)"
-      - "traefik.http.services.app.loadbalancer.server.port=8081"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
     depends_on:
       - claif-api-db
     ports:
@@ -45,17 +46,6 @@ services:
     restart: always
     ports:
       - 8083:8080
-
-  swagger-ui:
-    container_name: swagger-ui
-    image: swaggerapi/swagger-ui:latest
-    restart: always
-    environment:
-      - SWAGGER_JSON=/app/swagger.yaml
-    volumes:
-      - ./src/swagger/swagger.yaml:/app/swagger.yaml
-    ports:
-      - 8084:8080
 
   keycloak-db:
     container_name: keycloak-db
@@ -83,4 +73,3 @@ services:
       - KEYCLOAK_DATABASE_PASSWORD=keycloak
     depends_on:
       - keycloak-db
-
