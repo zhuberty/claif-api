@@ -54,6 +54,7 @@ Key Features of Traefik:
 - visit http://localhost:8082/docs
 
 <img src="./screenshots/claif-api-swagger.png" style="max-width: 600px;" />
+
 ### Redoc Docs
 - visit http://localhost:8082/redoc
 <img src="./screenshots/claif-api-redoc.png" style="max-width: 600px;" />
