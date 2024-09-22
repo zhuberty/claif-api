@@ -4,8 +4,10 @@ This repository contains infrastructure/services in support of the CopyLeft AI A
 The services include:
 - API Gateway (Traefik Reverse Proxy)
 - CLAIF API (FastAPI with Swagger and Redoc Docs)
+- CLAIF API Database (Postgres)
 - Adminer (Database Administration Utility)
 - Keycloak (Identity and Access Management)
+- Keycloak Database (Postgres)
 
 # Installation
 ## Using Docker and Docker-Compose
