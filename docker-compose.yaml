@@ -1,25 +1,60 @@
+version: "3.8"
+
 services:
-  api-db:
+  api-gateway:
+    container_name: api-gateway
+    image: traefik:3.1.4
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - 8080:80
+      - 8081:8080  # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  claif-api:
+    container_name: claif-api
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14-2024-03-11
+    environment:
+      - UVICORN_WORKERS=2
+    volumes:
+      - ./app:/app
+    labels:
+      - "traefik.http.routers.app.rule=Host(`127.0.0.1`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8081"
+    depends_on:
+      - claif-api-db
+    ports:
+      - 8082:80
+
+  claif-api-db:
+    container_name: claif-api-db
     image: postgres:latest
     restart: always
     shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: claif-db-password
+    ports:
+      - 5432:5432
   
-  # database admin GUI
   adminer:
+    container_name: adminer
     image: adminer:latest
     restart: always
     ports:
-      - 8080:8080
+      - 8083:8080
 
   swagger-ui:
+    container_name: swagger-ui
     image: swaggerapi/swagger-ui:latest
     restart: always
     ports:
-      - 8081:8080
+      - 8084:80
 
   keycloak-db:
+    container_name: keycloak-db
     image: docker.io/bitnami/postgresql:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
@@ -27,17 +62,20 @@ services:
       - POSTGRESQL_DATABASE=bitnami_keycloak
     volumes:
       - 'keycloak_db_data:/bitnami/postgresql'
+    ports:
+      - 5433:5432
 
   keycloak:
+    container_name: keycloak
     image: docker.io/bitnami/keycloak:latest
     ports:
-      - "80:8080"
+      - 8085:8080
     environment:
       - KEYCLOAK_CREATE_ADMIN_USER=true
+      - KEYCLOAK_DATABASE_HOST=keycloak-db
+      - KEYCLOAK_DATABASE_PORT=5433
     depends_on:
-      - postgresql
-    volumes:
-      - './mynewtheme:/opt/bitnami/keycloak/themes/mynewtheme'
+      - keycloak-db
 
 volumes:
   keycloak_db_data:
