@@ -1,5 +1,11 @@
 # CopyLeft AI API
-This repository contains the back-end infrastructure for the CopyLeft AI Annotator located here: https://github.com/arthurwolf/annotator.
+This repository contains infrastructure/services in support of the CopyLeft AI Annotator app located here: https://github.com/arthurwolf/annotator.
+
+The services include:
+- API Gateway (Traefik Reverse Proxy)
+- CLAIF API (FastAPI with Swagger and Redoc Docs)
+- Adminer (Database Administration Utility)
+- Keycloak (Identity and Access Management)
 
 # Installation
 ## Using Docker and Docker-Compose
