@@ -18,26 +18,31 @@ services:
     container_name: claif-api
     build:
       context: ./src/claif-api
+    command: ["bash", "-c", "./wait-for-db-availability.sh claif-db:5432 && uvicorn main:app --host 0.0.0.0 --port 8000"]
+
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
+      - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db
     labels:
       - "traefik.http.routers.app.rule=Host(`127.0.0.1`)"
-      - "traefik.http.services.app.loadbalancer.server.port=80"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
     depends_on:
-      - claif-api-db
+      - claif-db
     ports:
-      - 8082:80
+      - 8082:8000
 
-  claif-api-db:
-    container_name: claif-api-db
+  claif-db:
+    container_name: claif-db
     image: docker.io/bitnami/postgresql:12.20.0
     environment:
-      - POSTGRESQL_USERNAME=claif-api
-      - POSTGRESQL_PASSWORD=claif-api
-      - POSTGRESQL_DATABASE=claif-api
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=postgres
+    volumes:
+      - ./src/claif-db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     ports:
-      - 5433:5432
+      - "5433:5432"
   
   adminer:
     container_name: adminer
@@ -58,7 +63,7 @@ services:
 
   keycloak:
     container_name: keycloak
-    image: docker.io/bitnami/bitnami/keycloak:25.0.6
+    image: docker.io/bitnami/keycloak:25.0.6
     ports:
       - 8085:8080
     environment:

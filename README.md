@@ -59,10 +59,6 @@ Key Features of Traefik:
 
 <img src="./screenshots/claif-api-swagger.png" style="max-width: 600px;" />
 
-### Redoc Docs
-- visit http://localhost:8082/redoc
-<img src="./screenshots/claif-api-redoc.png" style="max-width: 600px;" />
-
 ## Adminer
 A lightweight browser-based database administration utility. This has been added only as a convenience to expedite onboarding.
 - visit http://localhost:8083

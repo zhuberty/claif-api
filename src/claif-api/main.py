@@ -1,5 +1,3 @@
-# main.py
-
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
@@ -9,7 +7,7 @@ import os
 # Database URL (Using PostgreSQL)
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://myuser:mypassword@localhost:5432/testdb"
+    "postgresql://claif_db_user:claif_db_password@claif_db:5432/claif_db"
 )
 
 # Create a SQLAlchemy engine
@@ -50,11 +48,14 @@ class UserRead(BaseModel):
     class Config:
         orm_mode = True  # Enables ORM model to Pydantic model conversion
 
-# Create the database tables
-Base.metadata.create_all(bind=engine)
-
 # Initialize FastAPI app
 app = FastAPI()
+
+# Create the database tables, checking if they already exist
+@app.on_event("startup")
+def on_startup():
+    # Check if the tables exist before creating them
+    Base.metadata.create_all(bind=engine, checkfirst=True)
 
 # Endpoint to create a new user
 @app.post("/users/", response_model=UserRead)
