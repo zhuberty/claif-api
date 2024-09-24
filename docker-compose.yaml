@@ -31,11 +31,11 @@ services:
 
   claif-api-db:
     container_name: claif-api-db
-    image: postgres:latest
-    restart: always
-    shm_size: 128mb
+    image: docker.io/bitnami/postgresql:12.20.0
     environment:
-      POSTGRES_PASSWORD: claif-db-password
+      - POSTGRESQL_USERNAME=claif-api
+      - POSTGRESQL_PASSWORD=claif-api
+      - POSTGRESQL_DATABASE=claif-api
     ports:
       - 5433:5432
   
@@ -48,7 +48,7 @@ services:
 
   keycloak-db:
     container_name: keycloak-db
-    image: docker.io/bitnami/postgresql:latest
+    image: docker.io/bitnami/postgresql:12.20.0
     environment:
       - POSTGRESQL_USERNAME=keycloak
       - POSTGRESQL_PASSWORD=keycloak
@@ -58,7 +58,7 @@ services:
 
   keycloak:
     container_name: keycloak
-    image: docker.io/bitnami/keycloak:latest
+    image: docker.io/bitnami/bitnami/keycloak:25.0.6
     ports:
       - 8085:8080
     environment:
