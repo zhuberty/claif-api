@@ -16,12 +16,11 @@ services:
 
   claif-api:
     container_name: claif-api
-    image: tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14-2024-03-11
+    build:
+      context: ./src/claif-api
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
-    volumes:
-      - ./src/claif-api:/app
     labels:
       - "traefik.http.routers.app.rule=Host(`127.0.0.1`)"
       - "traefik.http.services.app.loadbalancer.server.port=80"

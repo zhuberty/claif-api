@@ -15,6 +15,8 @@ The services include:
 - tear them down with `docker-compose down`
 - stop them with `docker-compose stop`
 - start them with `docker-compose start`
+
+*NOTE - if you change a Dockerfile, youll want to run:* `docker-compose up -d --build` *to rebuild the images*.
 ## Using Kubernetes
 Coming Soon
 
