@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-TIMEOUT=120
+TIMEOUT=15
 QUIET=0
 HOST=""
 PORT=""
