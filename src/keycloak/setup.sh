@@ -47,11 +47,8 @@ echo "Keycloak is up. Proceeding with configuration."
     -s clientId="$KEYCLOAK_CLIENT_ID" \
     -s enabled=true \
     -s protocol="openid-connect" \
-    -s clientAuthenticatorType="client-secret" \
-    -s secret="$KEYCLOAK_CLIENT_SECRET" \
     -s 'redirectUris=["http://localhost/*"]' \
     -s 'webOrigins=["*"]' \
-    -s publicClient=false \
+    -s publicClient=true \
     -s directAccessGrantsEnabled=true \
-    -s serviceAccountsEnabled=true \
     --config "$CONFIG_FILE"

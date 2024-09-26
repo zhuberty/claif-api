@@ -94,3 +94,22 @@ Key Features of Keycloak:
   - Keycloak provides an easy-to-use admin console for managing users, roles, and permissions. It also offers a self-service account management console for users to update their profile, change passwords, and more.
 - Support for Custom Authentication Flows:
   - You can define custom authentication flows and integrate external identity providers to meet specific authentication needs.
+
+# Using the API
+There is a Swagger UI available at http://localhost:8080/docs that provides a user-friendly interface to browse the API.
+
+Authenticate with:
+- username: `testuser`
+- password: `testpassword`
+- client_id: `fastapi-client`
+- client_secret: `(leave this field empty)`
+
+<img src="./screenshots/claif-api-swagger-login.png" style="max-width: 400px;" />
+
+<img src="./screenshots/claif-api-swagger-login-success.png" style="max-width: 400px;" />
+
+Once authenticated, you can make requests to the API. For example, you can get a user by clicking on the `/users` endpoint and then clicking the "Try it out" button.
+<img src="./screenshots/claif-api-swagger-get-user.png" style="max-width: 600px;" />
+
+Rate limiting has been enabled on the API. You can test this by making multiple requests in quick succession. You will see a 429 response code when the rate limit is exceeded.
+<img src="./screenshots/claif-api-swagger-rate-limit.png" style="max-width: 300px;" />

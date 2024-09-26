@@ -6,3 +6,4 @@ pydantic==1.10.18
 python-keycloak==4.4.0
 python-jose[cryptography]==3.3.0
 fastapi-security[oauth2]==0.5.0
+slowapi==0.1.9

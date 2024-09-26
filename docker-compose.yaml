@@ -28,6 +28,7 @@ services:
       - KEYCLOAK_REALM=fastapi
       - KEYCLOAK_CLIENT_ID=fastapi-client
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
+      - OPENAPI_KEYCLOAK_SERVER_URL=http://localhost:8085
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.claif-api.rule=PathPrefix(`/`)"
@@ -72,7 +73,7 @@ services:
     command: >
       /bin/bash -c "/opt/bitnami/scripts/keycloak/run.sh & \
       sleep 30 && \
-      /opt/bitnami/keycloak/create-user.sh && \
+      /opt/bitnami/keycloak/setup.sh && \
       wait"
     ports:
     - "8085:8080"
@@ -89,11 +90,11 @@ services:
       - KEYCLOAK_USER_USERNAME=testuser
       - KEYCLOAK_USER_FIRST_NAME=Test
       - KEYCLOAK_USER_LAST_NAME=User
-      - KEYCLOAK_USER_PASSWORD=3DuLUYDJK3o!ibi^z4oF
+      - KEYCLOAK_USER_PASSWORD=testpassword
       - KEYCLOAK_USER_EMAIL=testuser@claif.org
       - KEYCLOAK_CLIENT_ID=fastapi-client
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     volumes:
-      - ./src/keycloak/create-user.sh:/opt/bitnami/keycloak/create-user.sh
+      - ./src/keycloak/setup.sh:/opt/bitnami/keycloak/setup.sh
     depends_on:
       - keycloak-db
