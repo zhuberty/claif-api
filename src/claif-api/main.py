@@ -70,6 +70,8 @@ def on_startup():
     # Fetch Keycloak public key
     global KEYCLOAK_PUBLIC_KEY
 
+    print("Realm: ", KEYCLOAK_REALM)
+
     keycloak_openid = KeycloakOpenID(
         server_url=KEYCLOAK_SERVER_URL + "/",
         client_id=KEYCLOAK_CLIENT_ID,
@@ -87,7 +89,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             token,
             KEYCLOAK_PUBLIC_KEY,
             algorithms=["RS256"],
-            audience=KEYCLOAK_CLIENT_ID,
+            audience="account",
             options={"verify_aud": True, "verify_exp": True},
         )
         user_id: str = payload.get("sub")
