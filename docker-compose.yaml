@@ -25,7 +25,7 @@ services:
       - APP_MODULE=main:app
       - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db
       - KEYCLOAK_SERVER_URL=http://keycloak:8080
-      - KEYCLOAK_REALM=fastapi-realm
+      - KEYCLOAK_REALM=fastapi
       - KEYCLOAK_CLIENT_ID=fastapi-client
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     labels:
@@ -69,21 +69,29 @@ services:
   keycloak:
     container_name: keycloak
     image: docker.io/bitnami/keycloak:25.0.6
+    command: >
+      /bin/bash -c "/opt/bitnami/scripts/keycloak/run.sh & \
+      sleep 30 && \
+      /opt/bitnami/keycloak/create-user.sh && \
+      wait"
     ports:
-      - 8085:8080
+    - "8085:8080"
     environment:
-    - KEYCLOAK_CREATE_ADMIN_USER=true
-    - KEYCLOAK_ADMIN=user
-    - KEYCLOAK_ADMIN_PASSWORD=bitnami
-    - KEYCLOAK_DATABASE_HOST=keycloak-db
-    - KEYCLOAK_DATABASE_PORT=5432
-    - KEYCLOAK_DATABASE_NAME=keycloak
-    - KEYCLOAK_DATABASE_USER=keycloak
-    - KEYCLOAK_DATABASE_PASSWORD=keycloak
-    - KEYCLOAK_EXTRA_ARGS=--import-realm
-    - KEYCLOAK_CLIENT_ID=fastapi-client
-    - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
+      - KEYCLOAK_CREATE_ADMIN_USER=true
+      - KEYCLOAK_ADMIN=user
+      - KEYCLOAK_ADMIN_PASSWORD=bitnami
+      - KEYCLOAK_DATABASE_HOST=keycloak-db
+      - KEYCLOAK_DATABASE_PORT=5432
+      - KEYCLOAK_DATABASE_NAME=keycloak
+      - KEYCLOAK_DATABASE_USER=keycloak
+      - KEYCLOAK_DATABASE_PASSWORD=keycloak
+      - KEYCLOAK_REALM=fastapi
+      - KEYCLOAK_USER_USERNAME=testuser
+      - KEYCLOAK_USER_PASSWORD=3DuLUYDJK3o!ibi^z4oF
+      - KEYCLOAK_USER_EMAIL=testuser@claif.org
+      - KEYCLOAK_CLIENT_ID=fastapi-client
+      - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     volumes:
-    - ./src/keycloak/fastapi-realm-export.json:/opt/bitnami/keycloak/data/import/fastapi-realm-export.json
+      - ./src/keycloak/create-user.sh:/opt/bitnami/keycloak/create-user.sh
     depends_on:
       - keycloak-db

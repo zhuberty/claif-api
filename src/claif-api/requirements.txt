@@ -2,4 +2,7 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 sqlalchemy==2.0.35
 psycopg2-binary==2.9.9
-pydantic==2.9.2
+pydantic==1.10.18
+python-keycloak==4.4.0
+python-jose[cryptography]==3.3.0
+fastapi-security[oauth2]==0.5.0
