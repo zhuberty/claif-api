@@ -27,6 +27,8 @@ echo "Keycloak is up. Proceeding with configuration."
 # Create the user with email verified and no required actions
 /opt/bitnami/keycloak/bin/kcadm.sh create users -r "$KEYCLOAK_REALM" \
     -s username="$KEYCLOAK_USER_USERNAME" \
+    -s firstName="$KEYCLOAK_USER_FIRST_NAME" \
+    -s lastName="$KEYCLOAK_USER_LAST_NAME" \
     -s enabled=true \
     -s email="$KEYCLOAK_USER_EMAIL" \
     -s emailVerified=true \

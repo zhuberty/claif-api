@@ -87,6 +87,8 @@ services:
       - KEYCLOAK_DATABASE_PASSWORD=keycloak
       - KEYCLOAK_REALM=fastapi
       - KEYCLOAK_USER_USERNAME=testuser
+      - KEYCLOAK_USER_FIRST_NAME=Test
+      - KEYCLOAK_USER_LAST_NAME=User
       - KEYCLOAK_USER_PASSWORD=3DuLUYDJK3o!ibi^z4oF
       - KEYCLOAK_USER_EMAIL=testuser@claif.org
       - KEYCLOAK_CLIENT_ID=fastapi-client
