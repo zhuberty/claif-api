@@ -64,6 +64,7 @@ A lightweight browser-based database administration utility. This has been added
 - visit http://localhost:8083
 
 <img src="./screenshots/adminer-1.png" style="max-width: 600px;" />
+
 <img src="./screenshots/adminer-2.png" style="max-width: 600px;" />
 
 ## Keycloak
@@ -71,6 +72,7 @@ Keycloak is an identity and access management (IAM) solution. It provides authen
 - visit the admin console at http://localhost:8085
 
 <img src="./screenshots/keycloak-1.png" style="max-width: 300px;" />
+
 <img src="./screenshots/keycloak-2.png" style="max-width: 600px;" />
 
 Key Features of Keycloak:
@@ -96,6 +98,7 @@ Key Features of Keycloak:
   - You can define custom authentication flows and integrate external identity providers to meet specific authentication needs.
 
 # Using the API
+## Using the API via Swagger UI
 There is a Swagger UI available at http://localhost:8080/docs that provides a user-friendly interface to browse the API.
 
 Authenticate with:
@@ -109,7 +112,71 @@ Authenticate with:
 <img src="./screenshots/claif-api-swagger-login-success.png" style="max-width: 400px;" />
 
 Once authenticated, you can make requests to the API. For example, you can get a user by clicking on the `/users` endpoint and then clicking the "Try it out" button.
+
 <img src="./screenshots/claif-api-swagger-get-user.png" style="max-width: 600px;" />
 
 Rate limiting has been enabled on the API. You can test this by making multiple requests in quick succession. You will see a 429 response code when the rate limit is exceeded.
+
 <img src="./screenshots/claif-api-swagger-rate-limit.png" style="max-width: 300px;" />
+
+## Using the API via cURL Requests
+
+Get a JWT token:
+```bash
+curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword'
+```
+
+Get and Inspect a JWT token
+```bash
+curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token | awk -F. '{print $2}' | base64 --decode | jq
+
+# Result:
+{
+  "exp": 1727390307,
+  "iat": 1727390007,
+  "jti": "86d3d62c-27f5-47f9-a60c-184e8bc98c4f",
+  "iss": "http://keycloak:8080/realms/fastapi",
+  "aud": "account",
+  "sub": "3ad322d1-b212-42bd-adc0-f7c47252ad2e",
+  "typ": "Bearer",
+  "azp": "fastapi-client",
+  "sid": "9065efa4-45ff-43a7-83e6-914611154493",
+  "acr": "1",
+  "allowed-origins": [
+    "*"
+  ],
+  "realm_access": {
+    "roles": [
+      "offline_access",
+      "default-roles-fastapi",
+      "uma_authorization"
+    ]
+  },
+  "resource_access": {
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  "scope": "openid email profile",
+  "email_verified": true,
+  "name": "Test User",
+  "preferred_username": "testuser",
+  "given_name": "Test",
+  "family_name": "User",
+  "email": "testuser@claif.org"
+}
+```
+
+Use the JWT token to make requests to the API (token expires in 24 hours):
+```bash
+export ACCESS_TOKEN=$(curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token)
+
+curl -X GET 'http://localhost:8080/users/1' -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# Example result:
+{"detail":"User not found"}
+```
