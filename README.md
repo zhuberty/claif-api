@@ -1,5 +1,7 @@
-# CopyLeft AI API
-This repository contains infrastructure/services in support of the CopyLeft AI Annotator app located here: https://github.com/arthurwolf/annotator.
+# CopyLeft AI Foundation API
+This repository contains infrastructure/services in support of the CopyLeft AI Foundation Annotator app located here: https://github.com/arthurwolf/annotator. The Annotator and these services are part of the CopyLeft AI Foundation (CLAIF) project, which aims to provide a platform for the development and deployment of free and open-source AI models.
+
+Learn more at https://claif.org
 
 The services include:
 - API Gateway (Traefik Reverse Proxy)
