@@ -22,6 +22,8 @@ echo "Keycloak is up. Proceeding with configuration."
 /opt/bitnami/keycloak/bin/kcadm.sh create realms \
     -s realm="$KEYCLOAK_REALM" \
     -s enabled=true \
+    -s 'accessTokenLifespan=1800' \
+    -s 'accessTokenLifespanForImplicitFlow=1800' \
     --config "$CONFIG_FILE" || true
 
 # Create the user with email verified and no required actions

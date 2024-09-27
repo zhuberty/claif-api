@@ -46,7 +46,7 @@ services:
       - POSTGRESQL_PASSWORD=postgres
       - POSTGRESQL_DATABASE=postgres
     volumes:
-      - ./src/claif-db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./src/claif-db/setup-dev-db.sh:/docker-entrypoint-initdb.d/setup-dev-db.sh
     ports:
       - "5433:5432"
   
@@ -73,7 +73,7 @@ services:
     command: >
       /bin/bash -c "/opt/bitnami/scripts/keycloak/run.sh & \
       sleep 30 && \
-      /opt/bitnami/keycloak/setup.sh && \
+      /opt/bitnami/keycloak/import-dev-settings.sh && \
       wait"
     ports:
     - "8085:8080"
@@ -95,6 +95,6 @@ services:
       - KEYCLOAK_CLIENT_ID=fastapi-client
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     volumes:
-      - ./src/keycloak/setup.sh:/opt/bitnami/keycloak/setup.sh
+      - ./src/keycloak/import-dev-settings.sh:/opt/bitnami/keycloak/import-dev-settings.sh
     depends_on:
       - keycloak-db

@@ -24,6 +24,8 @@ Coming Soon
 ## Testing the API Swagger UI
 There is a Swagger UI available at http://localhost:8080/docs that provides a user-friendly interface to browse the API.
 
+
+### Authentication with Keycloak
 Authenticate with:
 - username: `testuser`
 - password: `testpassword`
@@ -55,7 +57,7 @@ def read_user(request: Request, user_id: int, db: Session = Depends(get_db)):
 
 ## Using the API via cURL Requests
 
-Get an access token and make requests to the CLAIF API (token expires in 24 hours):
+Get an access token and make requests to the CLAIF API (token expires in 30 minutes):
 ```bash
 export ACCESS_TOKEN=$(curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token)
 
