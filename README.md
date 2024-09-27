@@ -127,7 +127,7 @@ curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-f
 Traefik is an open-source, modern reverse proxy and load balancer designed to handle dynamic microservices environments. It integrates with various orchestration and container platforms like Docker, Kubernetes, Mesos, and Consul to automatically route and manage traffic for web applications.
 
 - visit the dashboard at http://localhost:8081
-- make requests to the API at http://localhost:8080 (TODO)
+- make requests to the CLAIF API at http://localhost:8080
 
 <img src="./screenshots/traefik-dashboard.png" style="max-width: 600px;" />
 
