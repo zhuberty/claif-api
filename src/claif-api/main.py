@@ -13,9 +13,7 @@ from jose import JWTError, jwt
 from typing import Optional
 from keycloak import KeycloakOpenID
 from slowapi import Limiter
-from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
-from slowapi.errors import RateLimitExceeded
 
 # Initialize logger
 logger = logging.getLogger("uvicorn.error")
