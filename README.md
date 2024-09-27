@@ -11,10 +11,20 @@ The services include:
 
 # Installation
 ## Using Docker and Docker-Compose
+
+### Prerequisites
+- Docker (https://docs.docker.com/engine/install/)
+
+### docker and docker-compose commands
 - build the images and start the containers with `docker-compose up -d`
+  - if you've modified any of the Dockerfile (image) layers (e.g. modifying src/claif-api/main.py), you'll want to rebuild the images with `docker-compose up -d --build`
 - tear them down with `docker-compose down`
+  - `docker-compose down -v` will also remove the volumes
 - stop them with `docker-compose stop`
 - start them with `docker-compose start`
+- view the logs with `docker-compose logs -f`
+- view the logs for a specific service with `docker-compose logs -f <service_name>`
+- list the running containers with `docker ps`
 
 *NOTE - if you change a Dockerfile, you'll want to run:* `docker-compose up -d --build` *to rebuild the images*.
 ## Using Kubernetes
