@@ -66,7 +66,6 @@ def read_user(request: Request, user_id: int, db: Session = Depends(get_db)):
     # etc...
 ```
 
-
 ## Using the API via cURL Requests
 
 Get an access token and make requests to the CLAIF API (token expires in 30 minutes):
@@ -123,6 +122,29 @@ curl -X POST 'http://localhost:8080/token' -H 'Content-Type: application/x-www-f
   "email": "testuser@claif.org"
 }
 ```
+
+# Local Development
+## Pre-requisites
+- Python 3.8+
+- Poetry (https://python-poetry.org/docs/)
+
+## Running the API Locally
+To run the API locally, you can use the following steps:
+- Navigate to the `src/claif-api` directory
+- Install the dependencies with `poetry install`
+- Start the FastAPI server with `poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
+```bash
+poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+INFO:     Will watch for changes in these directories: ['/home/my-user/projects/claif-api/src/claif-api']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [27639] using WatchFiles
+INFO:     Started server process [27643]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+Ensure that the rest of the services are running (e.g. Postgres, Keycloak) to test the full functionality of the API.
+- docker-compose up -d --exclude claif-api traefik
 
 # General Information About the Services
 ## API Gateway (Traefik)
