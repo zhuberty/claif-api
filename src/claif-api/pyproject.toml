@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "your_project_name"
+name = "claif-api"
 version = "0.1.0"
 description = "CopyLeft AI Foundation API"
 authors = ["Zach Huberty <10377254+zhuberty@users.noreply.github.com>"]
 license = "GPL-3.0"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"  # your Python version
