@@ -38,6 +38,8 @@ services:
       - "traefik.http.routers.claif-api.rule=PathPrefix(`/`)"
       - "traefik.http.routers.claif-api.entrypoints=web"
       - "traefik.http.services.claif-api.loadbalancer.server.port=8000"
+    ports:
+      - 8001:8000
     depends_on:
       - claif-db
       - keycloak
