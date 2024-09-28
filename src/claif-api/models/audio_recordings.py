@@ -19,7 +19,7 @@ class AudioRecording(Base):
 class AudioTranscription(Base):
     __tablename__ = "audio_transcriptions"
     id = Column(Integer, primary_key=True, index=True)
-    audio_recording_id = Column(Integer, ForeignKey("audio_recordings.id"))
-    revision_number = Column(Integer)
+    audio_recording_id = Column(Integer, ForeignKey("audio_recordings.id"), index=True)
+    revision_number = Column(Integer, index=True)
     transcription_text = Column(String)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, index=True)
