@@ -19,17 +19,17 @@ from slowapi.middleware import SlowAPIMiddleware
 logger = logging.getLogger("uvicorn.error")
 
 # Keycloak settings
-KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", "http://keycloak:8080")
+KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", "http://localhost:8085")
 KEYCLOAK_REALM = os.environ.get("KEYCLOAK_REALM", "fastapi")
 KEYCLOAK_CLIENT_ID = os.environ.get("KEYCLOAK_CLIENT_ID", "fastapi-client")
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", "g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy")
 KEYCLOAK_PUBLIC_KEY = None  # Will fetch from Keycloak
-OPENAPI_KEYCLOAK_SERVER_URL = os.environ.get("OPENAPI_KEYCLOAK_SERVER_URL", "http://keycloak:8080")
+OPENAPI_KEYCLOAK_SERVER_URL = os.environ.get("OPENAPI_KEYCLOAK_SERVER_URL", "http://localhost:8085")
 
 # Database URL (Using PostgreSQL)
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://claif_db_user:claif_db_password@claif_db:5432/claif_db"
+    "postgresql://claif_db_user:claif_db_password@localhost:5433/claif_db"
 )
 
 # Create a SQLAlchemy engine
@@ -85,8 +85,8 @@ def custom_openapi():
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="Your API Title",
-        version="1.0.0",
+        title="CLAIF API",
+        version="0.1.0",
         description="API documentation with Keycloak OAuth2",
         routes=app.routes,
     )
