@@ -137,26 +137,9 @@ oauth2_scheme = OAuth2(
     )
 )
 
-# Endpoint to create a new user
-@app.post("/users/", response_model=UserRead)
-@limiter.limit("10/minute")  # Limit to 10 requests per minute per user
-def create_user(request: Request, user: UserCreate, db: Session = Depends(get_db)):
-    # Rate-limiting is handled by slowapi based on the extracted user ID
-    # Check if the email already exists
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    # Create a new user instance
-    new_user = User(name=user.name, email=user.email)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)  # Refresh instance with new data from the database
-    return new_user
-
 @app.get("/users/{user_id}", response_model=UserRead)
 @limiter.limit("20/minute")  # Limit to 20 requests per minute per user
 def read_user(request: Request, user_id: int, db: Session = Depends(get_db)):
-    # Rate-limiting is handled by slowapi based on the extracted user ID
     # Retrieve user by ID
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
@@ -181,14 +164,12 @@ def token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 def extract_user_id_from_token(request: Request):
     auth_header = request.headers.get("Authorization")
-    logger.info(f"Authorization header: {auth_header}")
     
     if not auth_header or not auth_header.startswith("Bearer "):
         logger.error("Token missing or invalid")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing or invalid")
     
     token = auth_header.split(" ")[1]
-    logger.info(f"Token: {token}")
     
     try:
         payload = jwt.decode(
@@ -199,7 +180,7 @@ def extract_user_id_from_token(request: Request):
             options={"verify_aud": True, "verify_exp": True},
         )
         user_id = payload.get("sub")
-        logger.info(f"Extracted user ID: {user_id}")
+        logger.info(f"Extracted Keycloak User ID: {user_id}")
         return user_id
     except JWTError as e:
         logger.error("Invalid token")
