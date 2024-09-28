@@ -12,7 +12,7 @@ class TerminalRecording(Base):
     revision_number = Column(Integer)
     title = Column(String)
     description = Column(String)
-    created_by_user_id = Column(String)
+    created_by = Column(ForeignKey("users.id"))
     created_at = Column(DateTime)
     recording_content = Column(String)
     recording_size_bytes = Column(Integer)
