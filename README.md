@@ -147,6 +147,89 @@ Ensure that the rest of the services are running (e.g. Postgres, Keycloak) to te
 - docker-compose up -d --exclude claif-api traefik
 
 # General Information About the Services
+## CLAIF API
+The CLAIF API is built using FastAPI, a modern web framework for building APIs with Python. FastAPI is designed to be fast, easy to use, and highly performant, making it an excellent choice for building APIs that require high throughput and low latency.
+
+### Overview of FastAPI:
+- FastAPI is built on top of Starlette, a high-performance ASGI framework, and Pydantic, a data validation library. It is designed to be fast and efficient, making it suitable for high-performance applications.
+- FastAPI provides automatic data validation and serialization using Pydantic models. It automatically converts request data to Python objects and validates the data against the defined schema.
+- FastAPI supports asynchronous programming using Python's async/await syntax. It allows you to write asynchronous code that can handle multiple requests concurrently, improving performance and scalability.
+- FastAPI generates interactive API documentation using Swagger UI and ReDoc. It automatically generates API documentation based on the defined endpoints, request/response models, and docstrings, making it easy to understand and test the API.
+
+### Pydantic Models:
+Pydantic models are used to define the request and response data structures in FastAPI. They provide automatic data validation, serialization, and documentation generation for API endpoints. Pydantic models are defined as Python classes that inherit from the `BaseModel` class and define the fields and their types.
+
+#### Example Pydantic model:
+```python
+from pydantic import BaseModel
+
+class UserDetailsRequest(BaseModel):
+    user_id: int
+
+class UserDetailsResponse(BaseModel):
+    user_id: int
+    username: str
+    email: str
+```
+
+### SQLAlchemy ORM:
+FastAPI integrates with SQLAlchemy, a popular Object-Relational Mapping (ORM) library for Python, to interact with databases. SQLAlchemy provides a high-level API for working with databases, allowing you to define models, query data, and perform CRUD operations using Python objects.
+
+#### Example SQLAlchemy model:
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+```
+
+#### A note on schema migrations:
+Migration scripts can be generated using Alembic, a database migration tool for SQLAlchemy. Alembic allows you to manage database schema changes, create new migrations, and apply migrations to update the database schema.
+
+### Pydantic and SQLAlchemy Integration:
+FastAPI provides integration between Pydantic models and SQLAlchemy models, allowing you to define Pydantic models that mirror the database schema. This integration simplifies data validation, serialization, and database operations by automatically converting between Pydantic models and SQLAlchemy models.
+
+#### Example Pydantic-SQLAlchemy integration:
+```python
+from pydantic_sqlalchemy import sqlalchemy_to_pydantic
+from sqlalchemy.orm import Session
+
+from models import User
+from schemas import UserCreate, UserRead
+
+UserCreate = sqlalchemy_to_pydantic(User, exclude=["id"])
+UserRead = sqlalchemy_to_pydantic(User)
+```
+
+#### How FastAPI makes use of this integration:
+- When creating a new user, the API expects a `UserCreate` Pydantic model in the request body. This model is validated against the schema and converted to a SQLAlchemy `User` model for insertion into the database.
+- When retrieving a user, the API returns a `UserRead` Pydantic model that mirrors the database schema. The SQLAlchemy `User` model is converted to a `UserRead` model before being returned to the client.
+
+#### Example FastAPI endpoints using Pydantic-SQLAlchemy integration:
+```python
+@app.post("/users/", response_model=UserRead)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = User(username=user.username, email=user.email)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@app.get("/users/{user_id}", response_model=UserRead)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+```
+
 ## API Gateway (Traefik)
 Traefik is an open-source, modern reverse proxy and load balancer designed to handle dynamic microservices environments. It integrates with various orchestration and container platforms like Docker, Kubernetes, Mesos, and Consul to automatically route and manage traffic for web applications.
 
