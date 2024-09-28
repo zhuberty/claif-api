@@ -1,23 +1,21 @@
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from models.base_models import ORMBase, Creatable, Modifiable, Deletable
 
 
 # SQLAlchemy Models
-class User(Base):
+class User(ORMBase, Creatable, Modifiable, Deletable):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True, index=True)
+    keycloak_user_id = Column(String, index=True, unique=True)
+    username = Column(String, unique=True, index=True)
 
 
 # Pydantic Models
 class UserRead(BaseModel):
     id: int
-    name: str
-    email: str
+    keycloak_user_id: str
+    username: str
 
     class Config:
         orm_mode = True  # Enables ORM model to Pydantic model conversion

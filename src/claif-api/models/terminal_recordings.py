@@ -1,18 +1,15 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base
-from models.base_models import RecordingBase, AnnotationBase, AnnotatableBase
-
-Base = declarative_base()
+from models.base_models import Recording, Annotation, Annotatable
 
 
 # SQLAlchemy models
-class TerminalRecording(RecordingBase, AnnotatableBase):
+class TerminalRecording(Recording, Annotatable):
     __tablename__ = "terminal_recordings"
     recording_text = Column(String)
-    annotations_count = Column(Integer, index=True)
 
 
-class TerminalRecordingAnnotation(AnnotationBase):
+class TerminalRecordingAnnotation(Annotation):
     __tablename__ = "terminal_recording_annotations"
     terminal_recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     parent_annotation_id = Column(Integer, ForeignKey("terminal_recording_annotations.id"), index=True)

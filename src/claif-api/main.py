@@ -15,9 +15,11 @@ from keycloak import KeycloakOpenID
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 
+from models.base_models import ORMBase
 from models.users import User, UserRead
 from models.audio_recordings import AudioFile, AudioTranscription, AudioTranscriptionAnnotation
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
+from models.deletion_requests import DeletionRequest
 
 # Initialize logger
 logger = logging.getLogger("uvicorn.error")
@@ -37,13 +39,10 @@ DATABASE_URL = os.environ.get(
 )
 
 # Create a SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base class for our ORM models
-Base = declarative_base()
 
 
 # Dependency to get DB session
@@ -103,7 +102,8 @@ app.openapi = custom_openapi
 # Create the database tables, checking if they already exist
 @app.on_event("startup")
 def on_startup():
-    Base.metadata.create_all(bind=engine, checkfirst=True)
+    # Create all tables that inherit from ORMBase (all models)
+    ORMBase.metadata.create_all(bind=engine, checkfirst=True)
     # Fetch Keycloak public key
     global KEYCLOAK_PUBLIC_KEY
 
