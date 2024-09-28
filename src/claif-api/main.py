@@ -1,7 +1,7 @@
 import os
 import logging
 from fastapi import FastAPI, Depends, HTTPException, status, Request
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from pydantic import BaseModel
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
@@ -14,6 +14,10 @@ from typing import Optional
 from keycloak import KeycloakOpenID
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
+
+from models.users import User, UserRead
+from models.audio_recordings import AudioRecording
+from models.terminal_recordings import TerminalRecording
 
 # Initialize logger
 logger = logging.getLogger("uvicorn.error")
@@ -41,6 +45,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base class for our ORM models
 Base = declarative_base()
 
+
 # Dependency to get DB session
 def get_db():
     db = SessionLocal()
@@ -48,26 +53,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-# SQLAlchemy ORM model
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True, index=True)
-
-# Pydantic models for request and response bodies
-class UserCreate(BaseModel):
-    name: str
-    email: str
-
-class UserRead(BaseModel):
-    id: int
-    name: str
-    email: str
-
-    class Config:
-        orm_mode = True  # Enables ORM model to Pydantic model conversion
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -78,6 +63,7 @@ limiter = Limiter(key_func=lambda request: extract_user_id_from_token(request))
 # Add SlowAPI middleware for rate limiting
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
+
 
 # Custom OpenAPI schema to include the OAuth2 Password Flow in Swagger UI
 def custom_openapi():
@@ -112,6 +98,7 @@ def custom_openapi():
 
 # Override the FastAPI's default OpenAPI generator
 app.openapi = custom_openapi
+
 
 # Create the database tables, checking if they already exist
 @app.on_event("startup")
