@@ -16,8 +16,8 @@ from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 
 from models.users import User, UserRead
-from models.audio_recordings import AudioRecording
-from models.terminal_recordings import TerminalRecording
+from models.audio_recordings import AudioFile, AudioTranscription, AudioTranscriptionAnnotation
+from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 
 # Initialize logger
 logger = logging.getLogger("uvicorn.error")
