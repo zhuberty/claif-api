@@ -21,9 +21,9 @@ RUN poetry install --no-root --no-interaction --no-ansi
 COPY . .
 
 # Make the database wait script executable
-RUN chmod +x /app/wait-for-db-availability.sh
+RUN chmod +x /app/wait_for_db_availability.sh
 
 EXPOSE 8000
 
 # Command to wait for the DB and start Uvicorn
-CMD ["bash", "-c", "./wait-for-db-availability.sh claif-db:5432 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["bash", "-c", "./wait_for_db_availability.sh claif-db:5432 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000"]

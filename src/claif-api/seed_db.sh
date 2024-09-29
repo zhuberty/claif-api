@@ -3,14 +3,14 @@
 # Check if the database host is provided as an argument
 if [ -z "$1" ]; then
   echo "Error: No database host provided."
-  echo "Usage: ./seed_database.sh <database_host>"
+  echo "Usage: ./seed_db.sh <database_host>"
   exit 1
 fi
 
 DB_HOST=$1
 
 # Wait for the database to be available
-./wait-for-db-availability.sh $DB_HOST
+./wait_for_db_availability.sh $DB_HOST
 
 # Run the truncate and reset script
 echo "Running truncate and reset script..."

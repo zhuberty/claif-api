@@ -23,7 +23,7 @@ services:
     container_name: claif-api
     build:
       context: ./src/claif-api
-    command: ["bash", "-c", "./seed_database.sh claif-db:5432"]
+    command: ["bash", "-c", "./seed_db.sh claif-db:5432"]
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
