@@ -21,3 +21,21 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def run_with_db_session(callback):
+    """
+    General-purpose function to run a task that requires a DB session.
+    
+    :param callback: Function that performs the DB logic. Should accept a DB session as an argument.
+    """
+    db = SessionLocal()
+    try:
+        print("Running database operation...")
+        callback(db)
+        print("Operation completed.")
+    except Exception as e:
+        db.rollback()
+        print(f"Error: {e}")
+    finally:
+        db.close()
