@@ -17,7 +17,8 @@ python-keycloak = "4.4.0"
 python-jose = {version = "3.3.0", extras = ["cryptography"]}
 fastapi-security = {version = "0.5.0", extras = ["oauth2"]}
 slowapi = "0.1.9"
-python-multipart = "^0.0.5"  # Add this line
+python-multipart = "^0.0.5"
+alembic = "1.13.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
