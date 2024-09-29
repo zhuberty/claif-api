@@ -1,6 +1,8 @@
 import os
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from utils.logging import logging
+
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
@@ -8,7 +10,7 @@ DATABASE_URL = os.environ.get(
 )
 
 # Create a SQLAlchemy engine
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 
 # Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -31,11 +33,11 @@ def run_with_db_session(callback):
     """
     db = SessionLocal()
     try:
-        print("Running database operation...")
+        logging.info("Running database operation...")
         callback(db)
-        print("Operation completed.")
+        logging.info("Operation completed.")
     except Exception as e:
         db.rollback()
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")
     finally:
         db.close()

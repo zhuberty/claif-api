@@ -6,7 +6,7 @@ QUIET=0
 HOST=""
 PORT=""
 
-echoerr() { if [ "$QUIET" -ne 1 ]; then echo "$@" 1>&2; fi }
+log() { if [ "$QUIET" -ne 1 ]; then echo -e "wait_for_db.sh:$1:\t$2" 1>&2; fi }
 
 usage() {
     echo "Usage: $0 host:port [-t timeout] [-- command args]"
@@ -44,29 +44,29 @@ do
         break
         ;;
         *)
-        echoerr "Unknown argument: $1"
+        log ERROR "Unknown argument: $1"
         usage
         ;;
     esac
 done
 
 if [[ "$HOST" == "" || "$PORT" == "" ]]; then
-    echoerr "Error: you need to provide a host and port to test."
+    log ERROR "You need to provide a host and port to test."
     usage
 fi
 
-echoerr "Waiting for $HOST:$PORT..."
+log INFO "Waiting for $HOST:$PORT..."
 
 set +e
 wait_for
 RESULT=$?
 set -e
 
-echoerr "Debug: wait_for exited with status $RESULT"
+log DEBUG "wait_for exited with status $RESULT"
 
 if [[ $RESULT -ne 0 ]]; then
-    echoerr "Timeout occurred after waiting $TIMEOUT seconds for $HOST:$PORT"
+    log ERROR "Timeout occurred after waiting $TIMEOUT seconds for $HOST:$PORT"
     exit 1
 fi
 
-echoerr "$HOST:$PORT is available"
+log INFO "$HOST:$PORT is available"

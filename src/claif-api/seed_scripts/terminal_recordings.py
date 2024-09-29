@@ -2,19 +2,21 @@ import json
 from datetime import datetime, timezone
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 from utils.database import run_with_db_session
+from utils.logging import logging
 
 def parse_asciinema_recording(file_path):
+    logging.debug(f"Parsing Asciinema recording from file: {file_path}")
     with open(file_path, 'r') as file:
         # Read the first line for metadata
         first_line = file.readline().strip()
-        print(f"First line of file: {first_line}")  # Debugging: print the first line
 
     try:
         # Parse the first line as JSON (this is the content header)
         data = json.loads(first_line)
-        print("Successfully parsed JSON.")  # Debugging: log success
+        
+        logging.debug(f"Successfully decoded asciinema JSON from the first line of {file_path}.")
     except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from the first line: {e}")
+        logging.error(f"Error decoding JSON from the first line of {file_path}: {e}")
         return None, None, None
     
     # Extract content header metadata
@@ -41,7 +43,7 @@ def parse_asciinema_recording(file_path):
                     event = json.loads(line)
                     content_body.append(event)
                 except json.JSONDecodeError:
-                    print(f"Failed to decode line: {line}")
+                    logging.error(f"Failed to decode line of {file_path}: {line}")
                     continue
     
     # Since there are no annotations in the provided data, we'll return an empty list for annotations
@@ -55,7 +57,7 @@ def seed_terminal_recordings(db):
     content_metadata, content_body, annotations = parse_asciinema_recording(file_path)
     
     if not content_metadata or not content_body:
-        print("Failed to parse the Asciinema recording.")
+        logging.error(f"Failed to parse the Asciinema recording from file: {file_path}")
         return
 
     # Create a TerminalRecording object

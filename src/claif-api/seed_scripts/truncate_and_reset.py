@@ -1,6 +1,6 @@
 from sqlalchemy import text
-from psycopg2.errors import UndefinedTable
 from utils.database import run_with_db_session
+from utils.logging import logging
 
 def truncate_and_reset(db):
     # List of tables to truncate (in the correct order of dependencies)
@@ -16,13 +16,13 @@ def truncate_and_reset(db):
     
     # Truncate each table and reset primary key sequences
     for table in tables:
-        print(f"Truncating table {table} and resetting its primary key sequence.")
+        logging.info(f"Truncating table {table} and resetting its primary key sequence.")
         
         # Truncate the table and restart identity (reset primary key sequence)
         db.execute(text(f"TRUNCATE TABLE {table} RESTART IDENTITY CASCADE;"))
     
     db.commit()
-    print("All tables truncated and primary key sequences reset.")
+    logging.info("All tables truncated and primary key sequences reset.")
 
 if __name__ == "__main__":
     run_with_db_session(truncate_and_reset)

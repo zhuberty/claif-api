@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.openapi.models import OAuthFlowPassword
 from slowapi import Limiter
-from utils.logging import logger
+from utils.logging import logging
 from utils.env import KEYCLOAK_REALM, KEYCLOAK_SERVER_URL
 
 
@@ -12,7 +12,7 @@ def extract_user_id_from_token(request: Request, public_key: str):
     auth_header = request.headers.get("Authorization")
     
     if not auth_header or not auth_header.startswith("Bearer "):
-        logger.error("Token missing or invalid")
+        logging.error("Token missing or invalid")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing or invalid")
     
     token = auth_header.split(" ")[1]
@@ -26,10 +26,10 @@ def extract_user_id_from_token(request: Request, public_key: str):
             options={"verify_aud": True, "verify_exp": True},
         )
         user_id = payload.get("sub")
-        logger.info(f"Extracted Keycloak User ID: {user_id}")
+        logging.info(f"Extracted Keycloak User ID: {user_id}")
         return user_id
     except JWTError as e:
-        logger.error("Invalid token")
+        logging.error("Invalid token")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
