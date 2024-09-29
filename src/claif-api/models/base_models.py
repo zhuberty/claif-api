@@ -24,7 +24,7 @@ class Creatable(Base):
 
     __abstract__ = True
     created_at = Column(DateTime, index=True)
-    created_by = Column(Integer, ForeignKey("users.id"), index=True)
+    created_by = Column(Integer, ForeignKey("users.id", use_alter=True), index=True)
 
 
 class Modifiable(Base):
@@ -32,7 +32,7 @@ class Modifiable(Base):
 
     __abstract__ = True
     modified_at = Column(DateTime, index=True)
-    modified_by = Column(Integer, ForeignKey("users.id"), index=True)
+    modified_by = Column(Integer, ForeignKey("users.id", use_alter=True), index=True)
 
 
 class Annotatable(Base):
@@ -52,7 +52,7 @@ class Recording(ORMBase, Creatable, Modifiable, Deletable):
     title = Column(String)
     description = Column(String)
     size_bytes = Column(Integer)
-    duration_seconds = Column(Float)
+    duration_milliseconds = Column(Float)
 
 
 class Annotation(ORMBase, Deletable):
@@ -60,6 +60,6 @@ class Annotation(ORMBase, Deletable):
 
     __abstract__ = True
     annotation_text = Column(String)
-    start_time_seconds = Column(Float)
-    end_time_seconds = Column(Float)
+    start_time_milliseconds = Column(Float)
+    end_time_milliseconds = Column(Float)
     children_count = Column(Integer)

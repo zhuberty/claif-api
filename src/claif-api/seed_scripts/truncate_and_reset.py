@@ -1,5 +1,6 @@
-from utils.database import run_with_db_session
 from sqlalchemy import text
+from psycopg2.errors import UndefinedTable
+from utils.database import run_with_db_session
 
 def truncate_and_reset(db):
     # List of tables to truncate (in the correct order of dependencies)

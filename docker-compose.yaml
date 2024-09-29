@@ -23,7 +23,10 @@ services:
     container_name: claif-api
     build:
       context: ./src/claif-api
-    command: ["bash", "-c", "./seed_db.sh claif-db:5432"]
+    command: >
+      bash -c "./wait_for_db_availability.sh claif-db:5432
+      && ./wait_for_keycloak.sh keycloak
+      && ./seed_db.sh claif-db"
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
@@ -39,7 +42,7 @@ services:
       - "traefik.http.routers.claif-api.entrypoints=web"
       - "traefik.http.services.claif-api.loadbalancer.server.port=8000"
     ports:
-      - 8001:8000
+      - 8001:8000  # Or change to a different external port if needed
     depends_on:
       - claif-db
       - keycloak
