@@ -69,7 +69,6 @@ def seed_terminal_recordings(db):
         created_by=1,  # Assuming user 1 already exists
         modified_at=datetime.now(timezone.utc),
         modified_by=1,
-        recording_text=json.dumps(content_body),
         content_metadata=json.dumps(content_metadata),
         content_body=json.dumps(content_body),
         annotations_count=len(annotations)

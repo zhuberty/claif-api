@@ -12,8 +12,6 @@ class AudioFile(Recording):
 class AudioTranscription(Recording, Annotatable):
     __tablename__ = "audio_transcriptions"
     audio_file_id = Column(Integer, ForeignKey("audio_files.id"), index=True)
-    transcription_text = Column(String)
-    annotations_count = Column(Integer, index=True)
 
 
 class AudioTranscriptionAnnotation(Annotation):

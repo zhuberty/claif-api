@@ -6,7 +6,6 @@ from models.base_models import Recording, Annotation, Annotatable
 # SQLAlchemy models
 class TerminalRecording(Recording, Annotatable):
     __tablename__ = "terminal_recordings"
-    recording_text = Column(String)
 
 
 class TerminalRecordingAnnotation(Annotation):
