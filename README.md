@@ -148,7 +148,15 @@ Ensure that the rest of the services are running (e.g. Postgres, Keycloak) to te
 ## Database Operations
 See the section on `Adminer` below for a browser-based database administration utility.
 
-The database is truncated and re-seeded with test data on each restart of the `claif-api` service. See the claif-api service in `docker-compose.yml` to see how this is handled. This is done to ensure that the database is in a consistent state for testing.
+The database is truncated and re-seeded with test data on each restart of the `claif-api` service when running with `docker-compose`. See the claif-api service in `docker-compose.yml` to see how this is handled. This is done to ensure that the database is in a consistent state for testing.
+
+### Making Schema Changes
+Currently, it is necessary to delete the database and start fresh. This can be done by running `docker-compose down claif-db -v` to remove the volume. Then run `docker-compose up -d --build` to rebuild the images and start the services. In the near future, we will implement [alembic migrations](https://alembic.sqlalchemy.org/en/latest/index.html) to handle schema changes.
+
+### Truncating/resetting and seeding the database without docker-compose:
+One can run `./src/claif-api/seed_db.sh` to manually start the FastAPI app, truncate/reset the tables, and seed the database.
+
+But it may be faster to do this by just restarting the `claif-api` service (as mentioned above) with `docker-compose restart claif-api` or `docker-compose up -d --build` if you've made changes since it will automatically truncate and re-seed the database.
 
 # General Information About the Services
 ## CLAIF API
