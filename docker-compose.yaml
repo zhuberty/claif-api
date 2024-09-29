@@ -23,7 +23,7 @@ services:
     container_name: claif-api
     build:
       context: ./src/claif-api
-    command: ["bash", "-c", "./wait-for-db-availability.sh claif-db:5432 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000"]
+    command: ["bash", "-c", "./seed_database.sh claif-db:5432"]
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
@@ -43,7 +43,6 @@ services:
     depends_on:
       - claif-db
       - keycloak
-
 
   claif-db:
     container_name: claif-db

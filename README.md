@@ -144,7 +144,11 @@ INFO:     Application startup complete.
 ```
 
 Ensure that the rest of the services are running (e.g. Postgres, Keycloak) to test the full functionality of the API.
-- docker-compose up -d --exclude claif-api traefik
+
+## Database Operations
+See the section on `Adminer` below for a browser-based database administration utility.
+
+The database is truncated and re-seeded with test data on each restart of the `claif-api` service. See the claif-api service in `docker-compose.yml` to see how this is handled. This is done to ensure that the database is in a consistent state for testing.
 
 # General Information About the Services
 ## CLAIF API
