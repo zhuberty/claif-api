@@ -12,10 +12,15 @@ until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/docs | grep -
 done
 echo "FastAPI is running and tables should be created."
 
-# Run the truncate and reset script
+# Run the truncate and reset all tables for the api database
+# as a convenience for onboarding, development, and testing.
 echo "Running truncate and reset script..."
 PYTHONPATH=./ poetry run python seed_scripts/truncate_and_reset.py
 
-# Seed the database with users
+# Now we'll populate the database with seed (dummy) data for
+# development and testing purposes.
 echo "Seeding users..."
 PYTHONPATH=./ poetry run python seed_scripts/users.py
+
+echo "Seeding terminal recordings and annotations..."
+PYTHONPATH=./ poetry run python seed_scripts/terminal_recordings.py
