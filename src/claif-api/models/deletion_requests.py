@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Enum
-from models.base_models import Base
+from models.base_models import ORMBase, Creatable, Modifiable
 
 # Define the PostgreSQL ENUM with a name
 object_type_enum = Enum(
@@ -13,9 +13,8 @@ object_type_enum = Enum(
 )
 
 # SQLAlchemy models
-class DeletionRequest(Base):
+class DeletionRequest(ORMBase, Creatable, Modifiable):
     __tablename__ = "deletion_requests"
-    id = Column(Integer, primary_key=True, index=True)
     object_id = Column(Integer, index=True)
     object_type = Column(object_type_enum)  # Use the named ENUM
     deletion_reason = Column(String)
