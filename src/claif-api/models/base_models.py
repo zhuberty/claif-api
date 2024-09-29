@@ -16,7 +16,7 @@ class Deletable(Base):
     """ Base class for all deletable object types. """
     
     __abstract__ = True
-    deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)
+    deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id", use_alter=True), index=True, default=None)
 
 
 class Creatable(Base):
