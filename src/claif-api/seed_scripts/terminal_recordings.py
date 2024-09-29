@@ -2,54 +2,9 @@ import json
 from datetime import datetime, timezone
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 from utils.database import run_with_db_session
+from utils.models.asciinema_recordings import parse_asciinema_recording
 from utils.logging import logging
 
-def parse_asciinema_recording(file_path):
-    logging.debug(f"Parsing Asciinema recording from file: {file_path}")
-    with open(file_path, 'r') as file:
-        # Read the first line for metadata
-        first_line = file.readline().strip()
-
-    try:
-        # Parse the first line as JSON (this is the content header)
-        data = json.loads(first_line)
-        
-        logging.debug(f"Successfully decoded asciinema JSON from the first line of {file_path}.")
-    except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON from the first line of {file_path}: {e}")
-        return None, None, None
-    
-    # Extract content header metadata
-    content_metadata = {
-        "version": data.get("version"),
-        "width": data.get("width"),
-        "height": data.get("height"),
-        "timestamp": data.get("timestamp"),
-        "idle_time_limit": data.get("idle_time_limit"),
-        "env": data.get("env")
-    }
-
-    # Now read the rest of the file for terminal events (this is the content body)
-    content_body = []
-    with open(file_path, 'r') as file:
-        # Skip the first line
-        next(file)
-        for line in file:
-            # Remove any surrounding whitespace and check if the line is non-empty
-            line = line.strip()
-            if line:
-                try:
-                    # Parse each event line as JSON and add it to the content body
-                    event = json.loads(line)
-                    content_body.append(event)
-                except json.JSONDecodeError:
-                    logging.error(f"Failed to decode line of {file_path}: {line}")
-                    continue
-    
-    # Since there are no annotations in the provided data, we'll return an empty list for annotations
-    annotations = []
-    
-    return content_metadata, content_body, annotations
 
 def seed_terminal_recordings(db):
     # Parse the recording file

@@ -33,11 +33,11 @@ def run_with_db_session(callback):
     """
     db = SessionLocal()
     try:
-        logging.info("Running database operation...")
+        logging.debug("Running database operation...")
         callback(db)
-        logging.info("Operation completed.")
+        logging.debug("Database operation completed.")
     except Exception as e:
         db.rollback()
-        logging.error(f"Error: {e}")
+        logging.error(f"Database operation rrror: {e}")
     finally:
         db.close()
