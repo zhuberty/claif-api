@@ -6,7 +6,17 @@ from utils.models.asciinema_recordings import parse_asciinema_recording
 from utils.logging import logging
 
 
-def seed_terminal_recordings(db, file_path, title, description, revision_number=1, created_by=1, source_revision_id=1, previous_revision_id=1):
+def seed_terminal_recordings(
+    db, 
+    file_path, 
+    title, 
+    description, 
+    revision_number=1, 
+    created_by=1, 
+    source_revision_id=1, 
+    previous_revision_id=1, 
+    locked_for_review=False
+):
     # Parse the recording file
     content_metadata, content_body, annotations = parse_asciinema_recording(file_path)
     
@@ -28,6 +38,7 @@ def seed_terminal_recordings(db, file_path, title, description, revision_number=
         annotations_count=len(annotations),
         source_revision_id=source_revision_id,
         previous_revision_id=previous_revision_id,
+        locked_for_review=locked_for_review,
     )
     
     db.add(terminal_recording)
@@ -70,6 +81,7 @@ if __name__ == "__main__":
         recording_1_description,
     )
 
+    # Seed second revision
     run_with_db_session(
         seed_terminal_recordings, 
         f"{recordings_dir}/recording_1_revision_2.txt",
@@ -78,5 +90,6 @@ if __name__ == "__main__":
         revision_number=2,
         created_by=1,
         source_revision_id=1,
-        previous_revision_id=1
+        previous_revision_id=1,
+        locked_for_review=True,
     )
