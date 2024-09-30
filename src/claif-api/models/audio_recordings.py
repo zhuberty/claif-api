@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base
-from models.base_models import Recording, Annotation, Annotatable
+from models.base_models import Recording, Annotation, Annotatable, Deletable
 
 
 # SQLAlchemy models
-class AudioFile(Recording):
+class AudioFile(Recording, Deletable):
     __tablename__ = "audio_files"
     file_url = Column(String)
 
