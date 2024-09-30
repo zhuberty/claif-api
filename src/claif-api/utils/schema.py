@@ -6,19 +6,19 @@ from sqlalchemy import inspect
 
 
 def print_model_schema(model):
+    """ Print the schema of a SQLAlchemy model in markdown format. """
     mapper = inspect(model)
-    print(f"Model: {mapper.class_.__name__}")
-    
-    print("Columns:")
+    print(f"### {mapper.class_.__name__}")
+    print("```")
     for column in mapper.columns:
-        print(f"- {column.name} ({column.type})")
+        print(f"{str(column.name).ljust(30)}{column.type}")
 
     if mapper.relationships:
         print("Relationships:")
         for relationship in mapper.relationships:
             print(f"- {relationship.key} (related to {relationship.mapper.class_.__name__})")
+    print("```\n")
 
-# Example usage
 models = [
     TerminalRecording,
     TerminalRecordingAnnotation,
