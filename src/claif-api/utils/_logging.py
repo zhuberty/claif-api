@@ -11,6 +11,9 @@ logging.basicConfig(
     format='python:%(levelname)s:\t%(message)s',
 )
 
+# make logger accessible to other modules
+logger = logging.getLogger(__name__)
+
 # # Configure the uvicorn logger  
 # logging = logging.getLogger("uvicorn.error")
 # logging.setLevel(uvicorn_log_level)
