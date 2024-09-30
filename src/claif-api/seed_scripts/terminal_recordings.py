@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 from utils.database import run_with_db_session
 from utils.models.asciinema_recordings import parse_asciinema_recording
-from utils.logging import logging
+from utils._logging import logging
 
 
 def seed_terminal_recordings(

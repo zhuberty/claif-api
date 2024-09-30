@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from utils.database import run_with_db_session
-from utils.logging import logging
+from utils._logging import logging
 
 def truncate_and_reset(db):
     # List of tables to truncate (in the correct order of dependencies)

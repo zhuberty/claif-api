@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.openapi.models import OAuthFlowPassword
 from slowapi import Limiter
-from utils.logging import logging
+from utils._logging import logging
 from utils.env import KEYCLOAK_REALM, KEYCLOAK_SERVER_URL
 
 

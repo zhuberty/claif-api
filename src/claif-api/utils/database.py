@@ -1,7 +1,7 @@
 import os
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from utils.logging import logging
+from utils._logging import logging
 
 
 DATABASE_URL = os.environ.get(

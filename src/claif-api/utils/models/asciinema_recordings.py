@@ -1,5 +1,5 @@
 import json
-from utils.logging import logging
+from utils._logging import logging
 
 
 def parse_asciinema_recording(file_path):

@@ -9,7 +9,7 @@ from models.deletion_requests import DeletionRequest
 from routers import users, auth
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
-from utils.logging import logging
+from utils._logging import logging
 from utils.env import KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT_ID, KEYCLOAK_REALM
 
 
