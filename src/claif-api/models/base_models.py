@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -42,6 +42,7 @@ class Annotatable(Base):
     content_metadata = Column(String)
     content_body = Column(String)
     annotations_count = Column(Integer, index=True)
+    locked_for_review = Column(Boolean, index=True, default=False)
 
 
 class Recording(ORMBase, Creatable, Modifiable, Deletable):
@@ -55,7 +56,7 @@ class Recording(ORMBase, Creatable, Modifiable, Deletable):
     duration_milliseconds = Column(Float)
 
 
-class Annotation(ORMBase, Deletable):
+class Annotation(ORMBase):
     """ Base class for all annotation types. """
 
     __abstract__ = True

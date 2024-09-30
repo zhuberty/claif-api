@@ -1,6 +1,7 @@
 import json
 from utils.logging import logging
 
+
 def parse_asciinema_recording(file_path):
     logging.debug(f"Parsing Asciinema recording from file: {file_path}")
     
@@ -10,17 +11,18 @@ def parse_asciinema_recording(file_path):
         return None, None, None
     
     # Parse the header JSON
-    content_metadata = parse_header_json(first_line, file_path)
+    content_metadata = parse_header_json(first_line)
     if content_metadata is None:
         return None, None, None
     
     # Parse the body of the recording
     content_body = parse_content_body(file_path)
     
-    # Since there are no annotations in the provided data, we'll return an empty list for annotations
-    annotations = []
+    # Extract annotations (including nested annotations if any)
+    annotations = extract_annotations(content_metadata)
     
     return content_metadata, content_body, annotations
+
 
 def read_first_line(file_path):
     """Reads and returns the first line of the file."""
@@ -33,9 +35,10 @@ def read_first_line(file_path):
         logging.error(f"Error reading file {file_path}: {e}")
         return None
 
-def parse_header_json(first_line, file_path):
+
+def parse_header_json(first_line):
     """Parses the first line as JSON and extracts metadata."""
-    logging.debug(f"Parsing header JSON from the first line of {file_path}")
+    logging.debug(f"Parsing header JSON from the first line.")
     try:
         data = json.loads(first_line)
         content_metadata = {
@@ -44,12 +47,14 @@ def parse_header_json(first_line, file_path):
             "height": data.get("height"),
             "timestamp": data.get("timestamp"),
             "idle_time_limit": data.get("idle_time_limit"),
-            "env": data.get("env")
+            "env": data.get("env"),
+            "librecode_annotations": data.get("librecode_annotations")
         }
         return content_metadata
     except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON from the first line of {file_path}: {e}")
+        logging.error(f"Error decoding JSON from the first line: {e}")
         return None
+
 
 def parse_content_body(file_path):
     """Reads and parses the body of the recording (terminal events)."""
@@ -71,21 +76,42 @@ def parse_content_body(file_path):
     return content_body
 
 
-def extract_annotations(header_json):
-    # {"version":2,"width":120,"height":30,"timestamp":1727468683,"idle_time_limit":2,"env":{"SHELL":"/bin/bash","TERM":"xterm-256color"},"librecode_annotations":{"note":"librecode annotations","version":1,"layers":[{"annotations":[{"group":"1089445984-2918024939-889183283-2104567988","beginning":30600,"end":39200,"text":"User is writing a Python function header."},{"group":"2659511747-2705856985-636869548-2241453423","beginning":0,"end":1000,"text":"blank terminal"},{"group":"4088595733-3037695177-396385201-1502328558","beginning":40200,"end":49200,"text":"User is writing a Python function body."},{"group":"589252183-3178315870-3360112910-966824157","beginning":53600,"end":53800,"text":"exit bash prompt"}]},{"annotations":[{"group":"1612000329-4220584520-1731625148-3222517124","beginning":30600,"end":49200,"text":"User is writing a Python function."}]},{"annotations":[{"group":"106054957-1981513984-3551564-3400823607","beginning":1200,"end":24000,"text":"bash prompt"},{"group":"4193107425-2224200481-3616209211-485215623","beginning":51800,"end":53600,"text":"bash prompt"},{"group":"681464911-1596533976-4202961837-3510279323","beginning":24200,"end":51600,"text":"vi text editor"},{"group":"834657899-1053451049-3991566020-3057541873","beginning":29200,"end":50800,"text":"vi insert mode"}]}]}}
+def extract_annotations(content_metadata: dict):
+    """Extracts annotations and handles nested child annotations."""
     annotations = []
-    if "librecode_annotations" in header_json:
-        librecode_annotations = header_json["librecode_annotations"]
+    if content_metadata.get("librecode_annotations"):
+        librecode_annotations = content_metadata["librecode_annotations"]
+        
         if "layers" in librecode_annotations:
             for layer in librecode_annotations["layers"]:
                 if "annotations" in layer:
                     for annotation in layer["annotations"]:
-                        annotations.append(annotation)
+                        # Extract individual annotation and any nested children
+                        extracted_annotation = extract_annotation_data(annotation)
+                        annotations.append(extracted_annotation)
                 else:
-                    logging.debug("No librecode annotations found in layer.")
+                    logging.debug("No annotations found in layer.")
         else:
-            logging.debug("No librecode layers found in header.")
+            logging.debug("No layers found in librecode annotations.")
     else:
         logging.debug("No librecode annotations found in header.")
 
     return annotations
+
+
+def extract_annotation_data(annotation):
+    """Extracts annotation data recursively, including nested child annotations."""
+    annotation_data = {
+        "text": annotation.get("text"),
+        "beginning": annotation.get("start_time"),
+        "end": annotation.get("end_time"),
+        "children": []
+    }
+    
+    # Recursively extract child annotations if present
+    if "children" in annotation:
+        for child_annotation in annotation["children"]:
+            child_data = extract_annotation_data(child_annotation)
+            annotation_data["children"].append(child_data)
+
+    return annotation_data
