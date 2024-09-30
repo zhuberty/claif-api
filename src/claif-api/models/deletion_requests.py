@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import ENUM as Enum
-from models.base_models import ORMBase, Creatable, Modifiable
+from models.base_models import ORMBase, Creatable
 
 
 # SQLAlchemy models
-class DeletionRequest(ORMBase, Creatable, Modifiable):
+class DeletionRequest(ORMBase, Creatable):
     __tablename__ = "deletion_requests"
     object_id = Column(Integer, index=True)
     object_type = Column(String)  # Use the named ENUM

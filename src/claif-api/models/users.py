@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base
-from models.base_models import ORMBase, Creatable, Modifiable, Deletable
+from models.base_models import ORMBase, Creatable, Deletable
 
 
 # SQLAlchemy Models
-class User(ORMBase, Creatable, Modifiable, Deletable):
+class User(ORMBase, Creatable, Deletable):
     __tablename__ = "users"
     keycloak_user_id = Column(String, index=True, unique=True)
     username = Column(String, unique=True, index=True)

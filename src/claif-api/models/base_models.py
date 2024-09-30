@@ -27,14 +27,6 @@ class Creatable(Base):
     created_by = Column(Integer, ForeignKey("users.id", use_alter=True), index=True)
 
 
-class Modifiable(Base):
-    """ Base class for all modifiable object types. """
-
-    __abstract__ = True
-    modified_at = Column(DateTime, index=True)
-    modified_by = Column(Integer, ForeignKey("users.id", use_alter=True), index=True)
-
-
 class Annotatable(Base):
     """ Base class for all annotatable recording types. """
 
@@ -45,7 +37,7 @@ class Annotatable(Base):
     locked_for_review = Column(Boolean, index=True, default=False)
 
 
-class Recording(ORMBase, Creatable, Modifiable, Deletable):
+class Recording(ORMBase, Creatable, Deletable):
     """ Base class for all recording types. """
 
     __abstract__ = True

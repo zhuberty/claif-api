@@ -9,24 +9,18 @@ def seed_users(db):
             username="admin",
             created_at=datetime.now(timezone.utc),
             created_by=None,
-            modified_at=datetime.now(timezone.utc),
-            modified_by=None
         ),
         User(
             keycloak_user_id="kc-67890",
             username="user1",
             created_at=datetime.now(timezone.utc),
             created_by=None,
-            modified_at=datetime.now(timezone.utc),
-            modified_by=None
         ),
         User(
             keycloak_user_id="kc-24680",
             username="user2",
             created_at=datetime.now(timezone.utc),
             created_by=None,
-            modified_at=datetime.now(timezone.utc),
-            modified_by=None
         )
     ]
     
