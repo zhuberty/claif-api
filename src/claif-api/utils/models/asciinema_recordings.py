@@ -103,8 +103,8 @@ def extract_annotation_data(annotation):
     """Extracts annotation data recursively, including nested child annotations."""
     annotation_data = {
         "text": annotation.get("text"),
-        "beginning": annotation.get("start_time"),
-        "end": annotation.get("end_time"),
+        "beginning": annotation.get("beginning"),
+        "end": annotation.get("end"),
         "children": []
     }
     
