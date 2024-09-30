@@ -163,32 +163,32 @@ The database schema for the CLAIF API is defined using SQLAlchemy ORM. The schem
 
 ### TerminalRecording
 ```
-source_revision_id            INTEGER
-previous_revision_id          INTEGER
-revision_number               INTEGER
-title                         VARCHAR
-description                   VARCHAR
-size_bytes                    INTEGER
-duration_milliseconds         FLOAT
-id                            INTEGER
-created_at                    DATETIME
-created_by                    INTEGER
-deletion_request_id           INTEGER
-content_metadata              VARCHAR
-content_body                  VARCHAR
-annotations_count             INTEGER
-locked_for_review             BOOLEAN
+source_revision_id                  INTEGER
+previous_revision_id                INTEGER
+revision_number                     INTEGER
+title                               VARCHAR
+description                         VARCHAR
+size_bytes                          INTEGER
+duration_milliseconds               FLOAT
+id                                  INTEGER
+created_at                          DATETIME
+created_by                          INTEGER
+deletion_request_id                 INTEGER
+content_metadata                    VARCHAR
+content_body                        VARCHAR
+annotations_count                   INTEGER
+locked_for_review                   BOOLEAN
 ```
 
 ### TerminalRecordingAnnotation
 ```
-id                            INTEGER
-recording_id                  INTEGER
-parent_annotation_id          INTEGER
-annotation_text               VARCHAR
-start_time_milliseconds       FLOAT
-end_time_milliseconds         FLOAT
-children_count                INTEGER
+id                                  INTEGER
+recording_id                        INTEGER
+parent_annotation_id                INTEGER
+annotation_text                     VARCHAR
+start_time_milliseconds             FLOAT
+end_time_milliseconds               FLOAT
+children_count                      INTEGER
 Relationships:
 - children (related to TerminalRecordingAnnotation)
 - parents (related to TerminalRecordingAnnotation)
@@ -196,68 +196,85 @@ Relationships:
 
 ### AudioTranscription
 ```
-audio_file_id                 INTEGER
-revision_number               INTEGER
-title                         VARCHAR
-description                   VARCHAR
-size_bytes                    INTEGER
-duration_milliseconds         FLOAT
-id                            INTEGER
-created_at                    DATETIME
-created_by                    INTEGER
-deletion_request_id           INTEGER
-content_metadata              VARCHAR
-content_body                  VARCHAR
-annotations_count             INTEGER
-locked_for_review             BOOLEAN
+audio_file_id                       INTEGER
+revision_number                     INTEGER
+title                               VARCHAR
+description                         VARCHAR
+size_bytes                          INTEGER
+duration_milliseconds               FLOAT
+id                                  INTEGER
+created_at                          DATETIME
+created_by                          INTEGER
+deletion_request_id                 INTEGER
+content_metadata                    VARCHAR
+content_body                        VARCHAR
+annotations_count                   INTEGER
+locked_for_review                   BOOLEAN
 ```
 
 ### AudioTranscriptionAnnotation
 ```
-audio_transcription_id        INTEGER
-parent_annotation_id          INTEGER
-annotation_text               VARCHAR
-start_time_milliseconds       FLOAT
-end_time_milliseconds         FLOAT
-children_count                INTEGER
-id                            INTEGER
+audio_transcription_id              INTEGER
+parent_annotation_id                INTEGER
+annotation_text                     VARCHAR
+start_time_milliseconds             FLOAT
+end_time_milliseconds               FLOAT
+children_count                      INTEGER
+id                                  INTEGER
+```
+
+### AnnotationReview
+```
+annotation_id                       INTEGER
+reviewed_by                         INTEGER
+submitted_at                        DATETIME
+q_does_anno_match_content           BOOLEAN
+q_can_anno_be_halved                BOOLEAN
+q_how_well_anno_matches_content     INTEGER
+q_can_you_improve_anno              BOOLEAN
+q_can_you_provide_markdown          BOOLEAN
+q_can_provide_tintin_segment        BOOLEAN
+id                                  INTEGER
+created_at                          DATETIME
+created_by                          INTEGER
+deletion_request_id                 INTEGER
 ```
 
 ### AudioFile
 ```
-file_url                      VARCHAR
-revision_number               INTEGER
-title                         VARCHAR
-description                   VARCHAR
-size_bytes                    INTEGER
-duration_milliseconds         FLOAT
-id                            INTEGER
-created_at                    DATETIME
-created_by                    INTEGER
-deletion_request_id           INTEGER
+file_url                            VARCHAR
+revision_number                     INTEGER
+title                               VARCHAR
+description                         VARCHAR
+size_bytes                          INTEGER
+duration_milliseconds               FLOAT
+id                                  INTEGER
+created_at                          DATETIME
+created_by                          INTEGER
+deletion_request_id                 INTEGER
 ```
 
 ### DeletionRequest
 ```
-object_id                     INTEGER
-object_type                   VARCHAR
-deletion_reason               VARCHAR
-created_at                    DATETIME
-created_by                    INTEGER
-is_deleted                    BOOLEAN
-deleted_at                    DATETIME
-deleted_by                    INTEGER
-id                            INTEGER
+object_id                           INTEGER
+object_type                         VARCHAR
+deletion_reason                     VARCHAR
+created_at                          DATETIME
+created_by                          INTEGER
+is_deleted                          BOOLEAN
+deleted_at                          DATETIME
+deleted_by                          INTEGER
+id                                  INTEGER
 ```
 
 ### User
 ```
-keycloak_user_id              VARCHAR
-username                      VARCHAR
-id                            INTEGER
-created_at                    DATETIME
-created_by                    INTEGER
-deletion_request_id           INTEGER
+keycloak_user_id                    VARCHAR
+username                            VARCHAR
+id                                  INTEGER
+created_at                          DATETIME
+created_by                          INTEGER
+deletion_request_id                 INTEGER
 ```
 
 # General Information About the Services
