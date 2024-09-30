@@ -1,7 +1,8 @@
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, String
+from sqlalchemy.orm import declarative_base, relationship
 from models.base_models import ORMBase, Creatable, Deletable
+from models.annotation_reviews import AnnotationReview
 
 
 # SQLAlchemy Models
@@ -9,6 +10,7 @@ class User(ORMBase, Creatable, Deletable):
     __tablename__ = "users"
     keycloak_user_id = Column(String, index=True, unique=True)
     username = Column(String, unique=True, index=True)
+    annotation_reviews = relationship("AnnotationReview", back_populates="reviewer", lazy='dynamic')
 
 
 # Pydantic Models
