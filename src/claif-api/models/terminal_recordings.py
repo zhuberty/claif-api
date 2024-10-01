@@ -12,21 +12,18 @@ class TerminalRecording(Recording, Annotatable):
     source_revision = relationship(
         "TerminalRecording",
         foreign_keys=[source_revision_id],
-        backref="revised_recordings",
         remote_side="TerminalRecording.id"
     )
     previous_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     previous_revision = relationship(
         "TerminalRecording",
         foreign_keys=[previous_revision_id],
-        backref="next_revisions",
         remote_side="TerminalRecording.id"
     )
     next_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     next_revision = relationship(
         "TerminalRecording",
         foreign_keys=[next_revision_id],
-        backref="previous_revisions",
         remote_side="TerminalRecording.id"
     )
     annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic")
