@@ -27,6 +27,27 @@ class AudioTranscription(Recording, Annotatable):
     audio_file = relationship("AudioFile", foreign_keys=[audio_file_id], back_populates="audio_transcriptions")
     annotations = relationship("AudioTranscriptionAnnotation", back_populates="audio_transcription", lazy="dynamic")
     annotation_reviews = relationship("AudioAnnotationReview", back_populates="audio_transcription", lazy="dynamic")
+    source_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
+    source_revision = relationship(
+        "AudioTranscription",
+        foreign_keys=[source_revision_id],
+        backref="revised_recordings",
+        remote_side="AudioTranscription.id"
+    )
+    previous_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
+    previous_revision = relationship(
+        "AudioTranscription",
+        foreign_keys=[previous_revision_id],
+        backref="next_revisions",
+        remote_side="AudioTranscription.id"
+    )
+    next_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
+    next_revision = relationship(
+        "AudioTranscription",
+        foreign_keys=[next_revision_id],
+        backref="previous_revisions",
+        remote_side="AudioTranscription.id"
+    )
 
 
 class AudioTranscriptionAnnotation(Annotation):
