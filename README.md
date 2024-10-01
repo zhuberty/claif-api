@@ -163,24 +163,24 @@ The database schema for the CLAIF API is defined using SQLAlchemy ORM. The schem
 
 ### TerminalRecording
 ```
+annotations_count                   INTEGER
+content_body                        VARCHAR
+content_metadata                    VARCHAR
+created_at                          DATETIME
 creator_id                          INTEGER
-source_revision_id                  INTEGER
-previous_revision_id                INTEGER
-next_revision_id                    INTEGER
 deletion_request_id                 INTEGER
-revision_number                     INTEGER
-title                               VARCHAR
 description                         VARCHAR
-size_bytes                          INTEGER
 duration_milliseconds               FLOAT
 id                                  INTEGER
-created_at                          DATETIME
 is_deleted                          BOOLEAN
-content_metadata                    VARCHAR
-content_body                        VARCHAR
-annotations_count                   INTEGER
-published                           BOOLEAN
 locked_for_review                   BOOLEAN
+next_revision_id                    INTEGER
+previous_revision_id                INTEGER
+published                           BOOLEAN
+revision_number                     INTEGER
+size_bytes                          INTEGER
+source_revision_id                  INTEGER
+title                               VARCHAR
 Relationships:
 - creator (related to User)
 - source_revision (related to TerminalRecording)
@@ -195,14 +195,14 @@ Relationships:
 
 ### TerminalRecordingAnnotation
 ```
-creator_id                          INTEGER
-recording_id                        INTEGER
-parent_annotation_id                INTEGER
 annotation_text                     VARCHAR
-start_time_milliseconds             FLOAT
-end_time_milliseconds               FLOAT
 children_count                      INTEGER
+creator_id                          INTEGER
+end_time_milliseconds               FLOAT
 id                                  INTEGER
+parent_annotation_id                INTEGER
+recording_id                        INTEGER
+start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - recording (related to TerminalRecording)
@@ -213,22 +213,22 @@ Relationships:
 
 ### AudioTranscription
 ```
-creator_id                          INTEGER
+annotations_count                   INTEGER
 audio_file_id                       INTEGER
-revision_number                     INTEGER
-title                               VARCHAR
+content_body                        VARCHAR
+content_metadata                    VARCHAR
+created_at                          DATETIME
+creator_id                          INTEGER
+deletion_request_id                 INTEGER
 description                         VARCHAR
-size_bytes                          INTEGER
 duration_milliseconds               FLOAT
 id                                  INTEGER
-created_at                          DATETIME
-deletion_request_id                 INTEGER
 is_deleted                          BOOLEAN
-content_metadata                    VARCHAR
-content_body                        VARCHAR
-annotations_count                   INTEGER
-published                           BOOLEAN
 locked_for_review                   BOOLEAN
+published                           BOOLEAN
+revision_number                     INTEGER
+size_bytes                          INTEGER
+title                               VARCHAR
 Relationships:
 - creator (related to User)
 - audio_file (related to AudioFile)
@@ -238,13 +238,13 @@ Relationships:
 
 ### AudioTranscriptionAnnotation
 ```
-creator_id                          INTEGER
-audio_transcription_id              INTEGER
 annotation_text                     VARCHAR
-start_time_milliseconds             FLOAT
-end_time_milliseconds               FLOAT
+audio_transcription_id              INTEGER
 children_count                      INTEGER
+creator_id                          INTEGER
+end_time_milliseconds               FLOAT
 id                                  INTEGER
+start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - audio_transcription (related to AudioTranscription)
@@ -255,19 +255,19 @@ Relationships:
 
 ### TerminalAnnotationReview
 ```
-creator_id                          INTEGER
 annotation_id                       INTEGER
-terminal_recording_id               INTEGER
-q_can_provide_tintin_segment        BOOLEAN
-q_does_anno_match_content           BOOLEAN
+created_at                          DATETIME
+creator_id                          INTEGER
+deletion_request_id                 INTEGER
+id                                  INTEGER
+is_deleted                          BOOLEAN
 q_can_anno_be_halved                BOOLEAN
-q_how_well_anno_matches_content     INTEGER
+q_can_provide_tintin_segment        BOOLEAN
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
-id                                  INTEGER
-created_at                          DATETIME
-deletion_request_id                 INTEGER
-is_deleted                          BOOLEAN
+q_does_anno_match_content           BOOLEAN
+q_how_well_anno_matches_content     INTEGER
+terminal_recording_id               INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to TerminalRecordingAnnotation)
@@ -276,18 +276,18 @@ Relationships:
 
 ### AudioAnnotationReview
 ```
-creator_id                          INTEGER
 annotation_id                       INTEGER
 audio_transcription_id              INTEGER
-q_does_anno_match_content           BOOLEAN
+created_at                          DATETIME
+creator_id                          INTEGER
+deletion_request_id                 INTEGER
+id                                  INTEGER
+is_deleted                          BOOLEAN
 q_can_anno_be_halved                BOOLEAN
-q_how_well_anno_matches_content     INTEGER
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
-id                                  INTEGER
-created_at                          DATETIME
-deletion_request_id                 INTEGER
-is_deleted                          BOOLEAN
+q_does_anno_match_content           BOOLEAN
+q_how_well_anno_matches_content     INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to AudioTranscriptionAnnotation)
@@ -296,17 +296,17 @@ Relationships:
 
 ### AudioFile
 ```
-file_url                            VARCHAR
-creator_id                          INTEGER
-revision_number                     INTEGER
-title                               VARCHAR
-description                         VARCHAR
-size_bytes                          INTEGER
-duration_milliseconds               FLOAT
-id                                  INTEGER
 created_at                          DATETIME
+creator_id                          INTEGER
 deletion_request_id                 INTEGER
+description                         VARCHAR
+duration_milliseconds               FLOAT
+file_url                            VARCHAR
+id                                  INTEGER
 is_deleted                          BOOLEAN
+revision_number                     INTEGER
+size_bytes                          INTEGER
+title                               VARCHAR
 Relationships:
 - creator (related to User)
 - audio_transcriptions (related to AudioTranscription)
@@ -314,28 +314,28 @@ Relationships:
 
 ### DeletionRequest
 ```
-creator_id                          INTEGER
+closed_at                           DATETIME
 closer_id                           INTEGER
-object_id                           INTEGER
-object_type                         VARCHAR
+created_at                          DATETIME
+creator_id                          INTEGER
 deletion_reason                     VARCHAR
 deletion_status                     VARCHAR
-closed_at                           DATETIME
 id                                  INTEGER
-created_at                          DATETIME
+object_id                           INTEGER
+object_type                         VARCHAR
 Relationships:
 - creator (related to User)
 ```
 
 ### User
 ```
+created_at                          DATETIME
 creator_id                          INTEGER
+deletion_request_id                 INTEGER
+id                                  INTEGER
+is_deleted                          BOOLEAN
 keycloak_user_id                    VARCHAR
 username                            VARCHAR
-id                                  INTEGER
-deletion_request_id                 INTEGER
-is_deleted                          BOOLEAN
-created_at                          DATETIME
 Relationships:
 - creator (related to User)
 - audio_files (related to AudioFile)
