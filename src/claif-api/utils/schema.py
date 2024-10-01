@@ -1,6 +1,6 @@
 from models.terminal_recordings import TerminalRecordingAnnotation, TerminalRecording
 from models.audio_recordings import AudioTranscription, AudioTranscriptionAnnotation, AudioFile
-from models.annotation_reviews import AnnotationReview
+from models.annotation_reviews import TerminalAnnotationReview, AudioAnnotationReview
 from models.deletion_requests import DeletionRequest
 from models.users import User
 from sqlalchemy import inspect
@@ -25,7 +25,8 @@ models = [
     TerminalRecordingAnnotation,
     AudioTranscription,
     AudioTranscriptionAnnotation,
-    AnnotationReview,
+    TerminalAnnotationReview,
+    AudioAnnotationReview,
     AudioFile,
     DeletionRequest,
     User

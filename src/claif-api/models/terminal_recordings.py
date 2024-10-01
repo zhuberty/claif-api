@@ -6,12 +6,37 @@ from models.base_models import ORMBase, Annotation, Recording, Annotatable
 # SQLAlchemy models
 class TerminalRecording(Recording, Annotatable):
     __tablename__ = "terminal_recordings"
+    creator_id = Column(Integer, ForeignKey("users.id"), index=True)
+    creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_recordings")
     source_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
+    source_revision = relationship(
+        "TerminalRecording",
+        foreign_keys=[source_revision_id],
+        backref="revised_recordings",
+        remote_side="TerminalRecording.id"
+    )
     previous_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
+    previous_revision = relationship(
+        "TerminalRecording",
+        foreign_keys=[previous_revision_id],
+        backref="next_revisions",
+        remote_side="TerminalRecording.id"
+    )
+    next_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
+    next_revision = relationship(
+        "TerminalRecording",
+        foreign_keys=[next_revision_id],
+        backref="previous_revisions",
+        remote_side="TerminalRecording.id"
+    )
+    annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic")
+    annotation_reviews = relationship("TerminalAnnotationReview", back_populates="terminal_recording", lazy="dynamic")
+    deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)
 
 
-annotation_child_association = Table(
-    'annotation_child_association',
+# Association table for parent-child relationships in annotations
+terminal_annotation_child_association = Table(
+    'terminal_annotation_child_association',
     ORMBase.metadata,
     Column('parent_annotation_id', Integer, ForeignKey('terminal_recording_annotations.id')),
     Column('child_annotation_id', Integer, ForeignKey('terminal_recording_annotations.id'))
@@ -21,13 +46,16 @@ annotation_child_association = Table(
 class TerminalRecordingAnnotation(Annotation):
     __tablename__ = "terminal_recording_annotations"
     
-    id = Column(Integer, primary_key=True, index=True)
+    creator_id = Column(Integer, ForeignKey("users.id"), index=True)
+    creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_annotations")
     recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
+    recording = relationship("TerminalRecording", foreign_keys=[recording_id], back_populates="annotations")
     parent_annotation_id = Column(Integer, ForeignKey("terminal_recording_annotations.id"), index=True)
-    children = relationship(
+    child_annotations = relationship(
         "TerminalRecordingAnnotation",
-        secondary=annotation_child_association,
-        primaryjoin="TerminalRecordingAnnotation.id==annotation_child_association.c.parent_annotation_id",
-        secondaryjoin="TerminalRecordingAnnotation.id==annotation_child_association.c.child_annotation_id",
-        backref="parents"
+        secondary=terminal_annotation_child_association,
+        primaryjoin="TerminalRecordingAnnotation.id == terminal_annotation_child_association.c.parent_annotation_id",
+        secondaryjoin="TerminalRecordingAnnotation.id == terminal_annotation_child_association.c.child_annotation_id",
+        backref="parent_annotations"
     )
+    annotation_reviews = relationship("TerminalAnnotationReview", back_populates="annotation", lazy="dynamic")

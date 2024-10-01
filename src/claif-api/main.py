@@ -1,13 +1,8 @@
 import time
 from keycloak import KeycloakOpenID, KeycloakGetError
-from models.base_models import ORMBase
-from models.users import User, UserRead
-from models.audio_recordings import AudioFile, AudioTranscription, AudioTranscriptionAnnotation
-from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
-from models.annotation_reviews import AnnotationReview
-from models.deletion_requests import DeletionRequest
 
 from routers import users, auth
+from models.base_models import ORMBase
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
 from utils._logging import logging

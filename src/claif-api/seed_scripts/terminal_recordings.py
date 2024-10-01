@@ -12,7 +12,7 @@ def seed_terminal_recordings(
     title, 
     description, 
     revision_number=1, 
-    created_by=1, 
+    creator_id=1, 
     source_revision_id=1, 
     previous_revision_id=1, 
     locked_for_review=False
@@ -32,7 +32,7 @@ def seed_terminal_recordings(
         duration_milliseconds=(content_body[-1][0] * 1000 if content_body else 0),  # Last timestamp (in milliseconds)
         revision_number=revision_number,
         created_at=datetime.now(timezone.utc),
-        created_by=created_by,
+        creator_id=creator_id,
         content_metadata=json.dumps(content_metadata),
         content_body=json.dumps(content_body),
         annotations_count=len(annotations),
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         recording_1_title,
         recording_1_description,
         revision_number=2,
-        created_by=1,
+        creator_id=1,
         source_revision_id=1,
         previous_revision_id=1,
         locked_for_review=True,

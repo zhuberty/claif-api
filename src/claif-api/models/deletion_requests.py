@@ -1,16 +1,16 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
-from sqlalchemy.dialects.postgresql import ENUM as Enum
+from sqlalchemy.orm import relationship
 from models.base_models import ORMBase, Creatable
 
 
-# SQLAlchemy models
 class DeletionRequest(ORMBase, Creatable):
     __tablename__ = "deletion_requests"
+    
+    creator_id = Column(Integer, ForeignKey("users.id"), index=True)
+    creator = relationship("User", foreign_keys=[creator_id], back_populates="deletion_requests")
+    closer_id = Column(Integer, ForeignKey("users.id"), index=True)
     object_id = Column(Integer, index=True)
-    object_type = Column(String)  # Use the named ENUM
+    object_type = Column(String)
     deletion_reason = Column(String)
-    created_at = Column(DateTime, index=True)
-    created_by = Column(Integer, ForeignKey("users.id"), index=True)
-    is_deleted = Column(Boolean, index=True)
-    deleted_at = Column(DateTime, index=True)
-    deleted_by = Column(Integer, ForeignKey("users.id"), index=True)
+    deletion_status = Column(String, index=True)
+    closed_at = Column(DateTime, index=True)

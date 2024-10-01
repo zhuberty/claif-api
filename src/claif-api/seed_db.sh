@@ -23,6 +23,9 @@ log() {
 
     log INFO "Seeding terminal recordings and annotations..."
     PYTHONPATH=./ poetry run python seed_scripts/terminal_recordings.py
+
+    log INFO "Running integration tests..."
+    PYTHONPATH=./ poetry run pytest ./tests
 } &
 
 # Start the FastAPI application in the foreground

@@ -163,8 +163,11 @@ The database schema for the CLAIF API is defined using SQLAlchemy ORM. The schem
 
 ### TerminalRecording
 ```
+creator_id                          INTEGER
 source_revision_id                  INTEGER
 previous_revision_id                INTEGER
+next_revision_id                    INTEGER
+deletion_request_id                 INTEGER
 revision_number                     INTEGER
 title                               VARCHAR
 description                         VARCHAR
@@ -172,30 +175,45 @@ size_bytes                          INTEGER
 duration_milliseconds               FLOAT
 id                                  INTEGER
 created_at                          DATETIME
-created_by                          INTEGER
-deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
 content_metadata                    VARCHAR
 content_body                        VARCHAR
 annotations_count                   INTEGER
+published                           BOOLEAN
 locked_for_review                   BOOLEAN
+Relationships:
+- creator (related to User)
+- source_revision (related to TerminalRecording)
+- previous_revision (related to TerminalRecording)
+- next_revision (related to TerminalRecording)
+- annotations (related to TerminalRecordingAnnotation)
+- annotation_reviews (related to TerminalAnnotationReview)
+- revised_recordings (related to TerminalRecording)
+- next_revisions (related to TerminalRecording)
+- previous_revisions (related to TerminalRecording)
 ```
 
 ### TerminalRecordingAnnotation
 ```
-id                                  INTEGER
+creator_id                          INTEGER
 recording_id                        INTEGER
 parent_annotation_id                INTEGER
 annotation_text                     VARCHAR
 start_time_milliseconds             FLOAT
 end_time_milliseconds               FLOAT
 children_count                      INTEGER
+id                                  INTEGER
 Relationships:
-- children (related to TerminalRecordingAnnotation)
-- parents (related to TerminalRecordingAnnotation)
+- creator (related to User)
+- recording (related to TerminalRecording)
+- child_annotations (related to TerminalRecordingAnnotation)
+- annotation_reviews (related to TerminalAnnotationReview)
+- parent_annotations (related to TerminalRecordingAnnotation)
 ```
 
 ### AudioTranscription
 ```
+creator_id                          INTEGER
 audio_file_id                       INTEGER
 revision_number                     INTEGER
 title                               VARCHAR
@@ -204,45 +222,82 @@ size_bytes                          INTEGER
 duration_milliseconds               FLOAT
 id                                  INTEGER
 created_at                          DATETIME
-created_by                          INTEGER
 deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
 content_metadata                    VARCHAR
 content_body                        VARCHAR
 annotations_count                   INTEGER
+published                           BOOLEAN
 locked_for_review                   BOOLEAN
+Relationships:
+- creator (related to User)
+- audio_file (related to AudioFile)
+- annotations (related to AudioTranscriptionAnnotation)
+- annotation_reviews (related to AudioAnnotationReview)
 ```
 
 ### AudioTranscriptionAnnotation
 ```
+creator_id                          INTEGER
 audio_transcription_id              INTEGER
-parent_annotation_id                INTEGER
 annotation_text                     VARCHAR
 start_time_milliseconds             FLOAT
 end_time_milliseconds               FLOAT
 children_count                      INTEGER
 id                                  INTEGER
+Relationships:
+- creator (related to User)
+- audio_transcription (related to AudioTranscription)
+- annotation_reviews (related to AudioAnnotationReview)
+- child_annotations (related to AudioTranscriptionAnnotation)
+- parent_annotations (related to AudioTranscriptionAnnotation)
 ```
 
-### AnnotationReview
+### TerminalAnnotationReview
 ```
+creator_id                          INTEGER
 annotation_id                       INTEGER
-reviewed_by                         INTEGER
-submitted_at                        DATETIME
+terminal_recording_id               INTEGER
+q_can_provide_tintin_segment        BOOLEAN
 q_does_anno_match_content           BOOLEAN
 q_can_anno_be_halved                BOOLEAN
 q_how_well_anno_matches_content     INTEGER
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
-q_can_provide_tintin_segment        BOOLEAN
 id                                  INTEGER
 created_at                          DATETIME
-created_by                          INTEGER
 deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
+Relationships:
+- creator (related to User)
+- annotation (related to TerminalRecordingAnnotation)
+- terminal_recording (related to TerminalRecording)
+```
+
+### AudioAnnotationReview
+```
+creator_id                          INTEGER
+annotation_id                       INTEGER
+audio_transcription_id              INTEGER
+q_does_anno_match_content           BOOLEAN
+q_can_anno_be_halved                BOOLEAN
+q_how_well_anno_matches_content     INTEGER
+q_can_you_improve_anno              BOOLEAN
+q_can_you_provide_markdown          BOOLEAN
+id                                  INTEGER
+created_at                          DATETIME
+deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
+Relationships:
+- creator (related to User)
+- annotation (related to AudioTranscriptionAnnotation)
+- audio_transcription (related to AudioTranscription)
 ```
 
 ### AudioFile
 ```
 file_url                            VARCHAR
+creator_id                          INTEGER
 revision_number                     INTEGER
 title                               VARCHAR
 description                         VARCHAR
@@ -250,31 +305,47 @@ size_bytes                          INTEGER
 duration_milliseconds               FLOAT
 id                                  INTEGER
 created_at                          DATETIME
-created_by                          INTEGER
 deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
+Relationships:
+- creator (related to User)
+- audio_transcriptions (related to AudioTranscription)
 ```
 
 ### DeletionRequest
 ```
+creator_id                          INTEGER
+closer_id                           INTEGER
 object_id                           INTEGER
 object_type                         VARCHAR
 deletion_reason                     VARCHAR
-created_at                          DATETIME
-created_by                          INTEGER
-is_deleted                          BOOLEAN
-deleted_at                          DATETIME
-deleted_by                          INTEGER
+deletion_status                     VARCHAR
+closed_at                           DATETIME
 id                                  INTEGER
+created_at                          DATETIME
+Relationships:
+- creator (related to User)
 ```
 
 ### User
 ```
+creator_id                          INTEGER
 keycloak_user_id                    VARCHAR
 username                            VARCHAR
 id                                  INTEGER
-created_at                          DATETIME
-created_by                          INTEGER
 deletion_request_id                 INTEGER
+is_deleted                          BOOLEAN
+created_at                          DATETIME
+Relationships:
+- creator (related to User)
+- audio_files (related to AudioFile)
+- audio_transcriptions (related to AudioTranscription)
+- audio_annotations (related to AudioTranscriptionAnnotation)
+- audio_annotation_reviews (related to AudioAnnotationReview)
+- terminal_recordings (related to TerminalRecording)
+- terminal_annotations (related to TerminalRecordingAnnotation)
+- terminal_annotation_reviews (related to TerminalAnnotationReview)
+- deletion_requests (related to DeletionRequest)
 ```
 
 # General Information About the Services

@@ -3,6 +3,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from utils._logging import logging
 
+# These imports are used for SQLAlchemy ORM to resolve string references to models
+from models.users import User, UserRead
+from models.audio_recordings import AudioFile, AudioTranscription, AudioTranscriptionAnnotation
+from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
+from models.annotation_reviews import TerminalAnnotationReview, AudioAnnotationReview
+from models.deletion_requests import DeletionRequest
+
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
