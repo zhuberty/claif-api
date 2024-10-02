@@ -32,7 +32,6 @@ def get_db():
         db.close()
 
 
-
 def run_with_db_session(callback, *args, **kwargs):
     """
     General-purpose function to run a task that requires a DB session.

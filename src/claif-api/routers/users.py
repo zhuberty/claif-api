@@ -3,7 +3,7 @@ from slowapi import Limiter
 from sqlalchemy.orm import Session
 from models.users import User, UserRead
 from utils.database import get_db
-from utils.auth import limiter
+from utils.auth import limiter, extract_user_id_or_raise
 
 
 router = APIRouter()

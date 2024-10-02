@@ -26,7 +26,7 @@ def base_url():
 @pytest.fixture(scope="session")
 def access_token(base_url):
     """Obtain the access token to be used in all test cases."""
-    url = f"{base_url}/token"
+    url = f"{base_url}/auth/token"
     data = {
         "username": TEST_USER_USERNAME,
         "password": TEST_USER_PASSWORD

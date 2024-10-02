@@ -39,12 +39,6 @@ class AudioTranscription(Recording, Annotatable):
         foreign_keys=[previous_revision_id],
         remote_side="AudioTranscription.id"
     )
-    next_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
-    next_revision = relationship(
-        "AudioTranscription",
-        foreign_keys=[next_revision_id],
-        remote_side="AudioTranscription.id"
-    )
 
 
 class AudioTranscriptionAnnotation(Annotation):

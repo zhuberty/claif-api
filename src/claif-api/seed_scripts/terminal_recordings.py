@@ -2,8 +2,9 @@ import json
 from datetime import datetime, timezone
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 from utils.database import run_with_db_session
-from utils.models.asciinema_recordings import parse_asciinema_recording
+from utils.models.terminal_recordings import parse_asciinema_recording
 from utils._logging import logging
+from utils.files import read_file
 
 
 def seed_terminal_recordings(
@@ -13,12 +14,13 @@ def seed_terminal_recordings(
     description, 
     revision_number=1, 
     creator_id=1, 
-    source_revision_id=1, 
-    previous_revision_id=1, 
+    source_revision_id=None, 
+    previous_revision_id=None, 
     locked_for_review=False
 ):
     # Parse the recording file
-    content_metadata, content_body, annotations = parse_asciinema_recording(file_path)
+    recording_content = read_file(file_path)
+    content_metadata, content_body, annotations = parse_asciinema_recording(recording_content)
     
     if not content_metadata or not content_body:
         logging.error(f"Failed to parse the Asciinema recording from file: {file_path}")

@@ -20,12 +20,6 @@ class TerminalRecording(Recording, Annotatable):
         foreign_keys=[previous_revision_id],
         remote_side="TerminalRecording.id"
     )
-    next_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
-    next_revision = relationship(
-        "TerminalRecording",
-        foreign_keys=[next_revision_id],
-        remote_side="TerminalRecording.id"
-    )
     annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic")
     annotation_reviews = relationship("TerminalAnnotationReview", back_populates="terminal_recording", lazy="dynamic")
     deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)

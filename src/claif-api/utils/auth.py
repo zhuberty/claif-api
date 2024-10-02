@@ -3,12 +3,15 @@ from fastapi.security import OAuth2
 from jose import JWTError, jwt
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.openapi.models import OAuthFlowPassword
+from sqlalchemy.orm import Session
 from slowapi import Limiter
 from utils._logging import logging
+from utils.database import get_db
 from utils.env import KEYCLOAK_REALM, KEYCLOAK_SERVER_URL
+from models.users import User
 
 
-def extract_user_id_from_token(request: Request, public_key: str):
+def extract_keycloak_id_from_token(request: Request, public_key: str):
     auth_header = request.headers.get("Authorization")
     
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -36,26 +39,29 @@ def extract_user_id_from_token(request: Request, public_key: str):
         ) from e
 
 
-# OAuth2 scheme setup
-oauth2_scheme = OAuth2(
-    flows=OAuthFlowsModel(
-        password=OAuthFlowPassword(
-            tokenUrl=f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token",
-            scopes={"openid": "OpenID Connect scope"},
-        )
-    )
-)
-
-# Limiter with key function
+# Limiter with key function that ensures only authenticated users can access
 limiter = Limiter(
-    key_func=lambda request: extract_user_id_or_anonymous(request)
+    key_func=lambda request: extract_user_id_or_raise(request)
 )
 
-# Function to extract user ID or return a fallback if token is invalid
-def extract_user_id_or_anonymous(request: Request):
+
+# Function to extract user ID or raise an exception if unauthenticated
+def extract_user_id_or_raise(request: Request):
     public_key = request.app.state.keycloak_public_key
     try:
-        return extract_user_id_from_token(request, public_key)
-    except HTTPException:
-        # If token is invalid or missing, fallback to 'anonymous' for limiting
-        return "anonymous"
+        return extract_keycloak_id_from_token(request, public_key)
+    except HTTPException as e:
+        # Log the error and raise an exception, blocking unauthenticated users
+        logging.error("Unauthorized access attempt")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Anonymous actions are not allowed."
+        ) from e
+
+
+def get_user_from_keycloak_id(db, keycloak_id):
+    db: Session = get_db()
+    user = db.query(User).filter(User.keycloak_id == keycloak_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

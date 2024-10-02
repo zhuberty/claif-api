@@ -13,7 +13,7 @@ class User(ORMBase, Deletable, Creatable):
         foreign_keys=[creator_id],
         remote_side="User.id"
     )
-    keycloak_user_id = Column(String, index=True, unique=True)
+    keycloak_id = Column(String, index=True, unique=True)
     username = Column(String, unique=True, index=True)
     audio_files = relationship("AudioFile", back_populates="creator", lazy="dynamic")
     audio_transcriptions = relationship("AudioTranscription", back_populates="creator", lazy="dynamic")
@@ -28,7 +28,7 @@ class User(ORMBase, Deletable, Creatable):
 # Pydantic Models
 class UserRead(BaseModel):
     id: int
-    keycloak_user_id: str
+    keycloak_id: str
     username: str
 
     class Config:

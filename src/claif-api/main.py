@@ -1,7 +1,7 @@
 import time
 from keycloak import KeycloakOpenID, KeycloakGetError
 
-from routers import users, auth
+from routers import users, auth, terminal_recordings
 from models.base_models import ORMBase
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
@@ -14,7 +14,9 @@ app = init_fastapi_app()
 
 # Register routers
 app.include_router(users.router, prefix="/users", tags=["users"])
-app.include_router(auth.router, tags=["auth"])
+app.include_router(terminal_recordings.router, prefix="/recordings/terminal", tags=["terminal_recordings"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+
 
 # Function to check Keycloak realm availability and fetch the public key
 def fetch_keycloak_public_key():

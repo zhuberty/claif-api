@@ -7,19 +7,19 @@ from models.users import User
 def seed_users(db):
     users = [
         User(
-            keycloak_user_id="kc-12345",
+            keycloak_id="kc-12345",
             username="admin",
             created_at=datetime.now(timezone.utc),
             creator_id=None,
         ),
         User(
-            keycloak_user_id="kc-67890",
+            keycloak_id="kc-67890",
             username="user1",
             created_at=datetime.now(timezone.utc),
             creator_id=None,
         ),
         User(
-            keycloak_user_id="kc-24680",
+            keycloak_id="kc-24680",
             username="user2",
             created_at=datetime.now(timezone.utc),
             creator_id=None,
