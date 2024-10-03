@@ -30,7 +30,7 @@ def seed_terminal_recordings(
     terminal_recording = TerminalRecording(
         title=title,
         description=description,
-        size_bytes=len(json.dumps(content_body)),
+        size_bytes=len(json.dumps(content_metadata)) + len(json.dumps(content_body)),
         duration_milliseconds=(content_body[-1][0] * 1000 if content_body else 0),  # Last timestamp (in milliseconds)
         revision_number=revision_number,
         created_at=datetime.now(timezone.utc),
@@ -93,5 +93,4 @@ if __name__ == "__main__":
         creator_id=1,
         source_revision_id=1,
         previous_revision_id=1,
-        locked_for_review=True,
     )

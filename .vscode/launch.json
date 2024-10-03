@@ -20,9 +20,9 @@
             "module": "pytest",
             "cwd": "${workspaceFolder}/src/claif-api",
             "args": [
-                "-s",
-                "-v",
-                "tests"
+                "-s",  // Do not capture stdout. Instead, let it print to the stdout
+                "-v",  // Verbose output
+                "tests"  // Run tests in the tests directory
             ],
             "envFile": "${workspaceFolder}/.env"
         },

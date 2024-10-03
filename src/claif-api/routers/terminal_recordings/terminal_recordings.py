@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
 from models.users import User, UserRead
@@ -33,7 +34,6 @@ class TerminalRecordingRead(BaseModel):
     published: bool
     creator: UserRead
     created_at: datetime
-    updated_at: datetime
 
     class Config:
         orm_mode = True
@@ -70,16 +70,28 @@ class TerminalRecordingCreate(BaseModel):
 @router.post("/create")
 @limiter.limit("5/minute")
 async def create_recording(
-    payload: TerminalRecordingCreate,  # Renaming 'request' to 'payload'
-    request: Request,  # Adding the correct Starlette Request for slowapi
+    payload: TerminalRecordingCreate,
+    request: Request,
     db: Session = Depends(get_db),
     keycloak_id: UserRead = Depends(extract_user_id_or_raise)
 ):
     try:
+        # Check if a recording with the same source_id and revision_number already exists
+        existing_recording = db.query(TerminalRecording).filter_by(
+            source_revision_id=payload.source_revision_id,
+            revision_number=payload.revision_number
+        ).first()
+
+        if existing_recording:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"Recording with source ID {payload.source_revision_id} already exists with revision number {payload.revision_number}"}
+            )
+
         # Decode the Base64 encoded recording content
         decoded_content = payload.decode_recording_content()
 
-        # Pass the decoded content to the function that creates the terminal recording
+        # Create the new terminal recording
         terminal_recording = get_and_create_terminal_recording(
             db=db,
             title=payload.title,
@@ -95,6 +107,7 @@ async def create_recording(
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 
 @router.get("/{recording_id}", response_model=TerminalRecordingRead)

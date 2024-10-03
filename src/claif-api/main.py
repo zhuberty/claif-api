@@ -1,7 +1,8 @@
 import time
 from keycloak import KeycloakOpenID, KeycloakGetError
 
-from routers import users, auth, terminal_recordings
+from routers import users, auth
+from routers.terminal_recordings import terminal_recordings
 from models.base_models import ORMBase
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
