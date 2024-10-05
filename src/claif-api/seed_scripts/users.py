@@ -13,7 +13,7 @@ def seed_users(db):
             creator_id=None,
         ),
         User(
-            keycloak_id="kc-67890",
+            keycloak_id="9487270e-9a44-45cc-abfb-c59b1e9f303a",
             username="user1",
             created_at=datetime.now(timezone.utc),
             creator_id=None,

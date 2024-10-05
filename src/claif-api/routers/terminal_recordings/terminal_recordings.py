@@ -6,9 +6,9 @@ from json import JSONDecodeError
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, conint
 from models.terminal_recordings import TerminalRecording
-from models.users import UserRead
+from models.users import User, UserRead
 from utils.database import get_db
-from utils.auth import extract_user_id_or_raise, limiter
+from utils.auth import extract_user_id_or_raise, get_current_user, limiter
 from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -88,7 +88,7 @@ async def create_recording(
     payload: TerminalRecordingCreate,
     request: Request,
     db: Session = Depends(get_db),
-    keycloak_id: UserRead = Depends(extract_user_id_or_raise)
+    current_user: User = Depends(get_current_user),
 ):
     try:
         # Prepare the revision number and IDs for the new recording
@@ -97,7 +97,7 @@ async def create_recording(
        # Create the new terminal recording without source_revision_id
         terminal_recording = get_and_create_terminal_recording(
             db=db,
-            creator_id=2,  # TODO: create method to get user from keycloak_id
+            creator_id=current_user.id,
             title=payload.title,
             description=payload.description,
             recording_content=payload.recording_content,
@@ -129,7 +129,7 @@ async def update_recording(
     payload: TerminalRecordingUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    keycloak_id: UserRead = Depends(extract_user_id_or_raise),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         # Get the annotations from the encoded asciinema file-header string
@@ -152,6 +152,7 @@ async def update_recording(
 
         # create a new recording with the updated title, description, and revision numbers
         updated_terminal_recording = TerminalRecording(
+            creator_id=current_user.id,
             title=payload.title,
             description=payload.description,
             source_revision_id=source_revision_id,
