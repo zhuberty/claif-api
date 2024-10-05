@@ -70,9 +70,9 @@ def read_user(request: Request, user_id: int, db: Session = Depends(get_db)):
 
 Get an access token and make requests to the CLAIF API (token expires in 30 minutes):
 ```bash
-export ACCESS_TOKEN=$(curl -X POST 'http://localhost:8080/auth/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token)
+export ACCESS_TOKEN=$(curl -X POST 'http://localhost:8080/v1/auth/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token)
 
-curl -X GET 'http://localhost:8080/users/1' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl -X GET 'http://localhost:8080/v1/users/1' -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # Example result:
 {"detail":"User not found"}
@@ -80,7 +80,7 @@ curl -X GET 'http://localhost:8080/users/1' -H "Authorization: Bearer $ACCESS_TO
 
 Inspecting the JWT token
 ```bash
-curl -X POST 'http://localhost:8080/auth/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token | awk -F. '{print $2}' | base64 --decode | jq
+curl -X POST 'http://localhost:8080/v1/auth/token' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=testuser' -d 'password=testpassword' | jq -r .access_token | awk -F. '{print $2}' | base64 --decode | jq
 
 # Result:
 {

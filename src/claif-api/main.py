@@ -14,9 +14,9 @@ from utils.env import KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT_ID, KEYCLOAK_REALM
 app = init_fastapi_app()
 
 # Register routers
-app.include_router(users.router, prefix="/users", tags=["users"])
-app.include_router(terminal_recordings.router, prefix="/recordings/terminal", tags=["terminal_recordings"])
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(users.router, prefix="/v1/users", tags=["users"])
+app.include_router(terminal_recordings.router, prefix="/v1/recordings/terminal", tags=["terminal_recordings"])
+app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
 
 
 # Function to check Keycloak realm availability and fetch the public key
