@@ -109,7 +109,7 @@ def get_and_create_terminal_recording(
     db: Session,
     title: str,
     description: str,
-    recording_content: str,  # Accepts recording content as a string now
+    recording_content: str = None,  # Accepts recording content as a string now
     revision_number: int = 1,
     creator_id: int = 1,
     source_revision_id: int = None,
