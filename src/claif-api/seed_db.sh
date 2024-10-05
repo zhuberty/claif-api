@@ -21,9 +21,6 @@ log() {
     log INFO "Seeding users..."
     PYTHONPATH=./ poetry run python seed_scripts/users.py
 
-    log INFO "Seeding terminal recordings and annotations..."
-    PYTHONPATH=./ poetry run python seed_scripts/terminal_recordings.py
-
     log INFO "Running integration tests..."
     PYTHONPATH=./ poetry run pytest -s -v ./tests
 } &
