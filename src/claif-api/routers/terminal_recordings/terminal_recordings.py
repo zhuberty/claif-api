@@ -1,6 +1,8 @@
+import json
 import base64, logging
 from datetime import datetime, timezone
 
+from json import JSONDecodeError
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, conint
@@ -8,7 +10,8 @@ from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnot
 from models.users import User, UserRead
 from utils.database import get_db
 from utils.auth import extract_user_id_or_raise, limiter
-from utils.models.terminal_recordings import get_and_create_terminal_recording
+from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation
+from utils.encoding import decode_string, encode_string
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, Annotated
@@ -40,29 +43,21 @@ class TerminalRecordingRead(BaseModel):
         orm_mode = True
         arbitrary_types_allowed = True
 
-    def encode_content_body(self) -> str:
-        """Helper method to encode the recording content body."""
-        return base64.b64encode(self.content_body.encode('utf-8')).decode('utf-8')
-
 
 class TerminalRecordingCreate(BaseModel):
     """Pydantic model for creating a terminal recording."""
     title: str
     description: Optional[str]
-    recording_content: Optional[str]  # Base64 encoded string for the Asciinema recording content
+    encoded_recording_content: Optional[str]
 
     class Config:
         schema_extra = {
             "example": {
                 "title": "Example Recording Title",
                 "description": "Description of the terminal recording",
-                "recording_content": "Base64_encoded_string_of_recording_content_here",
+                "encoded_recording_content": "Base64_encoded_string_of_recording_content_here",
             }
         }
-
-    def decode_recording_content(self) -> str:
-        """Helper method to decode the Base64 recording content."""
-        return base64.b64decode(self.recording_content).decode('utf-8')
 
 
 class TerminalRecordingUpdate(BaseModel):
@@ -70,6 +65,7 @@ class TerminalRecordingUpdate(BaseModel):
     recording_id: Annotated[int, conint(gt=0)]
     title: Optional[str]
     description: Optional[str]
+    encoded_annotations: Optional[str]
 
     class Config:
         schema_extra = {
@@ -77,6 +73,7 @@ class TerminalRecordingUpdate(BaseModel):
                 "recording_id": 1,
                 "title": "Updated Recording Title",
                 "description": "Updated description of the terminal recording",
+                "encoded_annotations": "Base64_encoded_string_of_annotations_here",
             }
         }
 
@@ -98,13 +95,11 @@ async def create_recording(
     try:
         # Prepare the revision number and IDs for the new recording
         current_revision_number = 1
-        previous_revision_id = None
-        source_revision_id = None
 
         # Decode the Base64 encoded recording content
-        decoded_content = payload.decode_recording_content()
+        decoded_content = decode_string(payload.encoded_recording_content)
 
-       # Step 1: Create the new terminal recording without source_revision_id
+       # Create the new terminal recording without source_revision_id
         terminal_recording = get_and_create_terminal_recording(
             db=db,
             creator_id=2,  # TODO: create method to get user from keycloak_id
@@ -112,7 +107,7 @@ async def create_recording(
             description=payload.description,
             recording_content=decoded_content,
             source_revision_id=None,  # Will be updated after the commit
-            previous_revision_id=previous_revision_id,
+            previous_revision_id=None,
             revision_number=current_revision_number,
         )
 
@@ -142,6 +137,11 @@ async def update_recording(
     keycloak_id: UserRead = Depends(extract_user_id_or_raise),
 ):
     try:
+        # Get the annotations from the encoded asciinema file-header string
+        annotations = []
+        if payload.encoded_annotations is not None:
+            annotations = json.loads(decode_string(payload.encoded_annotations))
+
         # Retrieve the current recording
         current_recording = db.query(TerminalRecording).filter_by(id=payload.recording_id).first()
         if current_recording is None:
@@ -152,6 +152,7 @@ async def update_recording(
         previous_revision_id = current_recording.id
         current_revision_number = current_recording.revision_number + 1
 
+
         # create a new recording with the updated title, description, and revision numbers
         updated_terminal_recording = TerminalRecording(
             title=payload.title,
@@ -159,14 +160,25 @@ async def update_recording(
             source_revision_id=source_revision_id,
             previous_revision_id=previous_revision_id,
             revision_number=current_revision_number,
+            annotations_count=len(annotations),
         )
+
         db.add(updated_terminal_recording)
         db.commit()
         db.refresh(updated_terminal_recording)
+        
+        # Create annotations for the updated recording
+        try:
+            for annotation in annotations:
+                create_annotation(db, annotation, updated_terminal_recording.id)
+        except Exception as e:
+            db.delete(updated_terminal_recording)  # this cascade deletes annotations, too
+            db.commit()
+            raise HTTPException(status_code=400, detail=str(e))
 
         return {"message": "Recording updated", "recording_id": updated_terminal_recording.id}
 
-    except ValueError as e:
+    except (ValueError, JSONDecodeError) as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 

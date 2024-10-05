@@ -1,9 +1,11 @@
+import json
 import requests
 import pytest
 from sqlalchemy.orm.session import Session
 from utils.config import get_auth_headers
-from utils.files import read_and_encode_file
+from utils.files import read_and_encode_file, read_first_line_of_file, encode_string
 from utils.database import get_db
+from utils.models.terminal_recordings import extract_annotations
 from models.terminal_recordings import TerminalRecording
 from tests.conftest import logger
 
@@ -16,14 +18,13 @@ def test_create_terminal_recording(base_url, access_token):
     file_path = "asciinema_recording_samples/recording_1_revision_1.txt"
     
     # Read and encode the recording content
-    encoded_content = read_and_encode_file(file_path)
+    encoded_recording_content = read_and_encode_file(file_path)
 
     # Construct the payload for creating a new TerminalRecording
     payload = {
-        "recording_id": None,  # New recording, so no recording_id
         "title": "Writing a small hello-world Python function",
         "description": "The user writes a small Python function that prints 'Hello, Annotations!'",
-        "recording_content": encoded_content,  # Base64-encoded content of the recording
+        "encoded_recording_content": encoded_recording_content,
     }
 
     # Get authorization headers
@@ -57,19 +58,11 @@ def test_update_terminal_recording(base_url, access_token):
     # File path to the updated sample recording file
     file_path = "asciinema_recording_samples/recording_1_revision_2.txt"
     
-    # Read and encode the updated recording content
-    encoded_content = read_and_encode_file(file_path)
+    # get the annotations from the updated recording file and encode
+    first_line = read_first_line_of_file(file_path)
+    annotations = extract_annotations(json.loads(first_line))
+    encoded_annotations = encode_string(json.dumps(annotations))
 
-    # First, create the recording, which we'll then update
-    create_payload = {
-        "recording_id": None,
-        "title": "Initial Recording Title",
-        "description": "Initial description.",
-        "recording_content": encoded_content,  # Base64-encoded content of the initial recording
-    }
-
-    headers = get_auth_headers(access_token)
-    
     # get recording with largest id
     previous_recording = None
     db: Session = next(get_db())
@@ -78,10 +71,12 @@ def test_update_terminal_recording(base_url, access_token):
     assert previous_recording is not None, "No previous recording found"
 
     # Now update the recording
+    headers = get_auth_headers(access_token)
     update_payload = {
         "recording_id": previous_recording.id,  # Pass in the created recording's ID
         "title": "Updated Recording Title",
         "description": "Updated description with more details.",
+        "encoded_annotations" : encoded_annotations,
     }
 
     update_url = f"{base_url}/recordings/terminal/update"
@@ -129,3 +124,5 @@ def test_get_terminal_recording(base_url, access_token):
     assert next_recording_revision.title == "Updated Recording Title"
     assert next_recording_revision.description == "Updated description with more details."
     assert next_recording_revision.content_body is None
+    assert next_recording_revision.annotations_count == 9
+    assert next_recording_revision.content_metadata.startswith("{")

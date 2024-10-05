@@ -105,70 +105,104 @@ def extract_annotation_data(annotation):
     return annotation_data
 
 
-def get_and_create_terminal_recording(
-    db: Session,
-    title: str,
-    description: str,
-    recording_content: str = None,  # Accepts recording content as a string now
-    revision_number: int = 1,
-    creator_id: int = 1,
-    source_revision_id: int = None,
-    previous_revision_id: int = None,
-    locked_for_review: bool = False,
-):
-    """Parses the recording content and creates a new TerminalRecording object."""
+from typing import List, Dict, Any
+from sqlalchemy.orm import Session
+from datetime import datetime, timezone
+import json
+import logging
 
-    # Parse the recording content (no file path, using content directly)
+def parse_and_validate_content(recording_content: str) -> Dict[str, Any]:
+    """Parse recording content and validate the metadata and body."""
     content_metadata, content_body, annotations = parse_asciinema_recording(recording_content)
-
+    
     if not content_metadata or not content_body:
         logging.error("Failed to parse the Asciinema recording from content.")
         raise ValueError("Failed to parse the Asciinema recording.")
+    
+    return {
+        "metadata": content_metadata,
+        "body": content_body,
+        "annotations": annotations
+    }
 
-    # Create the TerminalRecording object
-    terminal_recording = TerminalRecording(
+
+def create_terminal_recording_object(
+    title: str, description: str, content: Dict[str, Any], revision_number: int, creator_id: int, 
+    source_revision_id: int, previous_revision_id: int, locked_for_review: bool
+) -> TerminalRecording:
+    """Create a TerminalRecording object from parsed content."""
+    size_bytes = len(json.dumps(content["metadata"])) + len(json.dumps(content["body"]))
+    duration_milliseconds = content["body"][-1][0] * 1000 if content["body"] else 0
+
+    return TerminalRecording(
         title=title,
         description=description,
-        size_bytes=len(json.dumps(content_metadata)) + len(json.dumps(content_body)),
-        duration_milliseconds=(content_body[-1][0] * 1000 if content_body else 0),  # Last timestamp (in milliseconds)
+        size_bytes=size_bytes,
+        duration_milliseconds=duration_milliseconds,
         revision_number=revision_number,
         created_at=datetime.now(timezone.utc),
         creator_id=creator_id,
-        content_metadata=json.dumps(content_metadata),
-        content_body=json.dumps(content_body),
-        annotations_count=len(annotations),
+        content_metadata=json.dumps(content["metadata"]),
+        content_body=json.dumps(content["body"]),
+        annotations_count=len(content["annotations"]),
         source_revision_id=source_revision_id,
         previous_revision_id=previous_revision_id,
         locked_for_review=locked_for_review,
     )
 
+
+def save_terminal_recording(db: Session, terminal_recording: TerminalRecording):
+    """Save and refresh a TerminalRecording object in the database."""
     db.add(terminal_recording)
     db.commit()
-    db.refresh(terminal_recording)  # Refresh to get the generated ID
+    db.refresh(terminal_recording)
 
-    def create_annotation(annotation_data, parent_annotation_id=None):
-        """Recursively creates annotations and child annotations."""
 
-        terminal_annotation = TerminalRecordingAnnotation(
-            recording_id=terminal_recording.id,
-            parent_annotation_id=parent_annotation_id,
-            annotation_text=annotation_data.get("text"),
-            start_time_milliseconds=annotation_data.get("beginning"),
-            end_time_milliseconds=annotation_data.get("end"),
-            children_count=len(annotation_data.get("children", []))
-        )
-        db.add(terminal_annotation)
-        db.commit()
-        db.refresh(terminal_annotation)
-
-        # Recursively create child annotations, if any
-        for child in annotation_data.get("children", []):
-            create_annotation(child, terminal_annotation.id)
-
-    # Create annotations (including nested child annotations)
-    for annotation in annotations:
-        create_annotation(annotation)
-
+def create_annotation(db: Session, annotation_data: Dict[str, Any], recording_id: int, parent_annotation_id: int = None):
+    """Create an annotation and recursively add child annotations."""
+    annotation = TerminalRecordingAnnotation(
+        recording_id=recording_id,
+        parent_annotation_id=parent_annotation_id,
+        annotation_text=annotation_data.get("text"),
+        start_time_milliseconds=annotation_data.get("beginning"),
+        end_time_milliseconds=annotation_data.get("end"),
+        children_count=len(annotation_data.get("children", []))
+    )
+    
+    db.add(annotation)
     db.commit()
+    db.refresh(annotation)
+
+    for child in annotation_data.get("children", []):
+        create_annotation(db, child, recording_id, annotation.id)
+
+
+def save_annotations(db: Session, annotations: List[Dict[str, Any]], recording_id: int):
+    """Save all annotations for a given recording."""
+    for annotation in annotations:
+        create_annotation(db, annotation, recording_id)
+    db.commit()
+
+
+def get_and_create_terminal_recording(
+    db: Session, title: str, description: str, recording_content: str, 
+    revision_number: int = 1, creator_id: int = 1, 
+    source_revision_id: int = None, previous_revision_id: int = None, locked_for_review: bool = False
+) -> TerminalRecording:
+    """Parses the recording content and creates a new TerminalRecording."""
+    
+    # Parse and validate the recording content
+    content = parse_and_validate_content(recording_content)
+
+    # Create the TerminalRecording object
+    terminal_recording = create_terminal_recording_object(
+        title, description, content, revision_number, creator_id, source_revision_id, previous_revision_id, locked_for_review
+    )
+    
+    # Save the terminal recording
+    save_terminal_recording(db, terminal_recording)
+
+    # Create and save annotations
+    save_annotations(db, content["annotations"], terminal_recording.id)
 
     return terminal_recording
