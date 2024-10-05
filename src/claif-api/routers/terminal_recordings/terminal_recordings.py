@@ -1,17 +1,15 @@
 import json
-import base64, logging
-from datetime import datetime, timezone
+import logging
+from datetime import datetime
 
 from json import JSONDecodeError
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, conint
-from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
-from models.users import User, UserRead
+from models.terminal_recordings import TerminalRecording
+from models.users import UserRead
 from utils.database import get_db
 from utils.auth import extract_user_id_or_raise, limiter
-from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation
-from utils.encoding import decode_string, encode_string
+from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, Annotated
@@ -48,14 +46,14 @@ class TerminalRecordingCreate(BaseModel):
     """Pydantic model for creating a terminal recording."""
     title: str
     description: Optional[str]
-    encoded_recording_content: Optional[str]
+    recording_content: Optional[str]
 
     class Config:
         schema_extra = {
             "example": {
                 "title": "Example Recording Title",
                 "description": "Description of the terminal recording",
-                "encoded_recording_content": "Base64_encoded_string_of_recording_content_here",
+                "recording_content": "Contents_of_the_asciinema_recording_here",
             }
         }
 
@@ -65,7 +63,7 @@ class TerminalRecordingUpdate(BaseModel):
     recording_id: Annotated[int, conint(gt=0)]
     title: Optional[str]
     description: Optional[str]
-    encoded_annotations: Optional[str]
+    content_metadata: Optional[str]
 
     class Config:
         schema_extra = {
@@ -73,7 +71,7 @@ class TerminalRecordingUpdate(BaseModel):
                 "recording_id": 1,
                 "title": "Updated Recording Title",
                 "description": "Updated description of the terminal recording",
-                "encoded_annotations": "Base64_encoded_string_of_annotations_here",
+                "content_metadata": "Header_content_of_the_asciinema_recording_here",
             }
         }
 
@@ -96,16 +94,13 @@ async def create_recording(
         # Prepare the revision number and IDs for the new recording
         current_revision_number = 1
 
-        # Decode the Base64 encoded recording content
-        decoded_content = decode_string(payload.encoded_recording_content)
-
        # Create the new terminal recording without source_revision_id
         terminal_recording = get_and_create_terminal_recording(
             db=db,
             creator_id=2,  # TODO: create method to get user from keycloak_id
             title=payload.title,
             description=payload.description,
-            recording_content=decoded_content,
+            recording_content=payload.recording_content,
             source_revision_id=None,  # Will be updated after the commit
             previous_revision_id=None,
             revision_number=current_revision_number,
@@ -138,9 +133,11 @@ async def update_recording(
 ):
     try:
         # Get the annotations from the encoded asciinema file-header string
+        content_metadata = None
         annotations = []
-        if payload.encoded_annotations is not None:
-            annotations = json.loads(decode_string(payload.encoded_annotations))
+        if payload.content_metadata is not None:
+            content_metadata = json.loads(payload.content_metadata)
+            annotations = extract_annotations(content_metadata)
 
         # Retrieve the current recording
         current_recording = db.query(TerminalRecording).filter_by(id=payload.recording_id).first()
@@ -161,12 +158,13 @@ async def update_recording(
             previous_revision_id=previous_revision_id,
             revision_number=current_revision_number,
             annotations_count=len(annotations),
+            content_metadata=payload.content_metadata,
         )
 
         db.add(updated_terminal_recording)
         db.commit()
         db.refresh(updated_terminal_recording)
-        
+
         # Create annotations for the updated recording
         try:
             for annotation in annotations:

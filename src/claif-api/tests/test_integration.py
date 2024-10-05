@@ -3,9 +3,8 @@ import requests
 import pytest
 from sqlalchemy.orm.session import Session
 from utils.config import get_auth_headers
-from utils.files import read_and_encode_file, read_first_line_of_file, encode_string
+from utils.files import read_first_line_of_file, read_file
 from utils.database import get_db
-from utils.models.terminal_recordings import extract_annotations
 from models.terminal_recordings import TerminalRecording
 from tests.conftest import logger
 
@@ -18,13 +17,13 @@ def test_create_terminal_recording(base_url, access_token):
     file_path = "asciinema_recording_samples/recording_1_revision_1.txt"
     
     # Read and encode the recording content
-    encoded_recording_content = read_and_encode_file(file_path)
+    recording_content = read_file(file_path)
 
     # Construct the payload for creating a new TerminalRecording
     payload = {
         "title": "Writing a small hello-world Python function",
         "description": "The user writes a small Python function that prints 'Hello, Annotations!'",
-        "encoded_recording_content": encoded_recording_content,
+        "recording_content": recording_content,
     }
 
     # Get authorization headers
@@ -59,9 +58,7 @@ def test_update_terminal_recording(base_url, access_token):
     file_path = "asciinema_recording_samples/recording_1_revision_2.txt"
     
     # get the annotations from the updated recording file and encode
-    first_line = read_first_line_of_file(file_path)
-    annotations = extract_annotations(json.loads(first_line))
-    encoded_annotations = encode_string(json.dumps(annotations))
+    content_metadata = read_first_line_of_file(file_path)
 
     # get recording with largest id
     previous_recording = None
@@ -76,7 +73,7 @@ def test_update_terminal_recording(base_url, access_token):
         "recording_id": previous_recording.id,  # Pass in the created recording's ID
         "title": "Updated Recording Title",
         "description": "Updated description with more details.",
-        "encoded_annotations" : encoded_annotations,
+        "content_metadata" : content_metadata,
     }
 
     update_url = f"{base_url}/recordings/terminal/update"
