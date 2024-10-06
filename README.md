@@ -206,6 +206,7 @@ Relationships:
 - parent_annotations (related to TerminalRecordingAnnotation)
 ```
 
+
 ### AudioTranscription
 ```
 annotations_count                   INTEGER
@@ -235,22 +236,24 @@ Relationships:
 - previous_revision (related to AudioTranscription)
 ```
 
+
 ### AudioTranscriptionAnnotation
 ```
 annotation_text                     VARCHAR
-audio_transcription_id              INTEGER
 children_count                      INTEGER
 creator_id                          INTEGER
 end_time_milliseconds               FLOAT
 id                                  INTEGER
+recording_id                        INTEGER
 start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
-- audio_transcription (related to AudioTranscription)
+- recording (related to AudioTranscription)
 - annotation_reviews (related to AudioAnnotationReview)
 - child_annotations (related to AudioTranscriptionAnnotation)
 - parent_annotations (related to AudioTranscriptionAnnotation)
 ```
+
 
 ### TerminalAnnotationReview
 ```
@@ -265,17 +268,17 @@ q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
 q_does_anno_match_content           BOOLEAN
 q_how_well_anno_matches_content     INTEGER
-terminal_recording_id               INTEGER
+recording_id                        INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to TerminalRecordingAnnotation)
-- terminal_recording (related to TerminalRecording)
+- recording (related to TerminalRecording)
 ```
+
 
 ### AudioAnnotationReview
 ```
 annotation_id                       INTEGER
-audio_transcription_id              INTEGER
 created_at                          DATETIME
 creator_id                          INTEGER
 deletion_request_id                 INTEGER
@@ -286,11 +289,13 @@ q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
 q_does_anno_match_content           BOOLEAN
 q_how_well_anno_matches_content     INTEGER
+recording_id                        INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to AudioTranscriptionAnnotation)
-- audio_transcription (related to AudioTranscription)
+- recording (related to AudioTranscription)
 ```
+
 
 ### AudioFile
 ```
@@ -310,6 +315,7 @@ Relationships:
 - audio_transcriptions (related to AudioTranscription)
 ```
 
+
 ### DeletionRequest
 ```
 closed_at                           DATETIME
@@ -324,6 +330,7 @@ object_type                         VARCHAR
 Relationships:
 - creator (related to User)
 ```
+
 
 ### User
 ```
