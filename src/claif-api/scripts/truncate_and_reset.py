@@ -6,7 +6,6 @@ from utils._logging import logging
 def truncate_and_reset(db):
     # List of tables to truncate (in the correct order of dependencies)
     tables = [
-        "deletion_requests", 
         "users", 
         "audio_files", 
         "audio_transcriptions", 

@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from models.base_models import ORMBase, Deletable, Creatable
+from models.base_models import ORMBase, Creatable
 
 
 # SQLAlchemy Models
-class User(ORMBase, Deletable, Creatable):
+class User(ORMBase, Creatable):
     __tablename__ = "users"
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship(
@@ -22,7 +22,6 @@ class User(ORMBase, Deletable, Creatable):
     terminal_recordings = relationship("TerminalRecording", back_populates="creator", lazy="dynamic")
     terminal_annotations = relationship("TerminalRecordingAnnotation", back_populates="creator", lazy="dynamic")
     terminal_annotation_reviews = relationship("TerminalAnnotationReview", back_populates="creator", lazy="dynamic")
-    deletion_requests = relationship("DeletionRequest", foreign_keys="[DeletionRequest.creator_id]", back_populates="creator", lazy="dynamic")
 
 
 # Pydantic Models

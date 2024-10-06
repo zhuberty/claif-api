@@ -72,7 +72,6 @@ def test_create_terminal_recording(base_url, access_token):
     assert saved_recording["description"] == payload["description"]
     assert saved_recording["duration_milliseconds"] > 0
     assert saved_recording["annotations_count"] == 0  # Assuming no annotations on create
-    assert saved_recording["is_deleted"] is False
 
 
 @pytest.mark.order(4)
@@ -116,17 +115,16 @@ def test_update_terminal_recording(base_url, access_token):
     # get the annotations from the updated recording file and encode
     content_metadata = read_first_line_of_file(file_path)
 
-    # get recording with largest id
-    previous_recording = None
+    # get the most recently created recording (which is also the one that was updated)
     db: Session = next(get_db())
-    previous_recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
+    updated_recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
 
-    assert previous_recording is not None, "No previous recording found"
+    assert updated_recording is not None, "No recording found"
 
     # Now update the recording
     headers = get_auth_headers(access_token)
     update_payload = {
-        "recording_id": previous_recording.id,  # Pass in the created recording's ID
+        "recording_id": updated_recording.id,  # Pass in the created recording's ID
         "title": "Updated Recording Title",
         "description": "Updated description with more details.",
         "content_metadata" : content_metadata,
@@ -150,7 +148,7 @@ def test_get_updated_terminal_recording(base_url, access_token):
 
     # get the recording id of the last recording where revision_number is 1
     db: Session = next(get_db())
-    recording = db.query(TerminalRecording).filter_by(revision_number=2).order_by(TerminalRecording.id.desc()).first()
+    recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
 
     assert recording is not None, "No recording found"
 
@@ -179,7 +177,7 @@ def test_create_terminal_annotation_review(base_url, access_token):
     # get the recording id of the last recording where revision_number is 2
     db: Session = next(get_db())
 
-    recording = db.query(TerminalRecording).filter_by(revision_number=2).order_by(TerminalRecording.id.desc()).first()
+    recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
     assert recording is not None, "No recording found"
 
     annotation: TerminalRecordingAnnotation = recording.annotations.first()

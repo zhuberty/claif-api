@@ -168,42 +168,32 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 description                         VARCHAR
 duration_milliseconds               FLOAT
 id                                  INTEGER
-is_deleted                          BOOLEAN
-locked_for_review                   BOOLEAN
-previous_revision_id                INTEGER
-published                           BOOLEAN
 revision_number                     INTEGER
 size_bytes                          INTEGER
-source_revision_id                  INTEGER
 title                               VARCHAR
 Relationships:
 - creator (related to User)
-- source_revision (related to TerminalRecording)
-- previous_revision (related to TerminalRecording)
 - annotations (related to TerminalRecordingAnnotation)
 - annotation_reviews (related to TerminalAnnotationReview)
 ```
 
+
 ### TerminalRecordingAnnotation
 ```
 annotation_text                     VARCHAR
-children_count                      INTEGER
 creator_id                          INTEGER
 end_time_milliseconds               FLOAT
 id                                  INTEGER
-parent_annotation_id                INTEGER
 recording_id                        INTEGER
+revision_number                     INTEGER
 start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - recording (related to TerminalRecording)
-- child_annotations (related to TerminalRecordingAnnotation)
 - annotation_reviews (related to TerminalAnnotationReview)
-- parent_annotations (related to TerminalRecordingAnnotation)
 ```
 
 
@@ -215,43 +205,33 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 description                         VARCHAR
 duration_milliseconds               FLOAT
 id                                  INTEGER
-is_deleted                          BOOLEAN
-locked_for_review                   BOOLEAN
-previous_revision_id                INTEGER
-published                           BOOLEAN
 revision_number                     INTEGER
 size_bytes                          INTEGER
-source_revision_id                  INTEGER
 title                               VARCHAR
 Relationships:
 - creator (related to User)
 - audio_file (related to AudioFile)
 - annotations (related to AudioTranscriptionAnnotation)
 - annotation_reviews (related to AudioAnnotationReview)
-- source_revision (related to AudioTranscription)
-- previous_revision (related to AudioTranscription)
 ```
 
 
 ### AudioTranscriptionAnnotation
 ```
 annotation_text                     VARCHAR
-children_count                      INTEGER
 creator_id                          INTEGER
 end_time_milliseconds               FLOAT
 id                                  INTEGER
 recording_id                        INTEGER
+revision_number                     INTEGER
 start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - recording (related to AudioTranscription)
 - annotation_reviews (related to AudioAnnotationReview)
-- child_annotations (related to AudioTranscriptionAnnotation)
-- parent_annotations (related to AudioTranscriptionAnnotation)
 ```
 
 
@@ -260,9 +240,7 @@ Relationships:
 annotation_id                       INTEGER
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 id                                  INTEGER
-is_deleted                          BOOLEAN
 q_can_anno_be_halved                BOOLEAN
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
@@ -281,9 +259,7 @@ Relationships:
 annotation_id                       INTEGER
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 id                                  INTEGER
-is_deleted                          BOOLEAN
 q_can_anno_be_halved                BOOLEAN
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
@@ -301,12 +277,10 @@ Relationships:
 ```
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 description                         VARCHAR
 duration_milliseconds               FLOAT
 file_url                            VARCHAR
 id                                  INTEGER
-is_deleted                          BOOLEAN
 revision_number                     INTEGER
 size_bytes                          INTEGER
 title                               VARCHAR
@@ -316,29 +290,11 @@ Relationships:
 ```
 
 
-### DeletionRequest
-```
-closed_at                           DATETIME
-closer_id                           INTEGER
-created_at                          DATETIME
-creator_id                          INTEGER
-deletion_reason                     VARCHAR
-deletion_status                     VARCHAR
-id                                  INTEGER
-object_id                           INTEGER
-object_type                         VARCHAR
-Relationships:
-- creator (related to User)
-```
-
-
 ### User
 ```
 created_at                          DATETIME
 creator_id                          INTEGER
-deletion_request_id                 INTEGER
 id                                  INTEGER
-is_deleted                          BOOLEAN
 keycloak_id                         VARCHAR
 username                            VARCHAR
 Relationships:
@@ -350,7 +306,6 @@ Relationships:
 - terminal_recordings (related to TerminalRecording)
 - terminal_annotations (related to TerminalRecordingAnnotation)
 - terminal_annotation_reviews (related to TerminalAnnotationReview)
-- deletion_requests (related to DeletionRequest)
 ```
 
 # General Information About the Services

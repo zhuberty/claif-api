@@ -7,9 +7,6 @@ from models.users import User, UserRead
 from models.recordings import TerminalRecording, AudioFile, AudioTranscription
 from models.annotations import TerminalRecordingAnnotation, AudioTranscriptionAnnotation
 from models.annotation_reviews import TerminalAnnotationReview, AudioAnnotationReview
-from models.deletion_requests import DeletionRequest
-
-
 
 
 DATABASE_URL = os.environ.get(

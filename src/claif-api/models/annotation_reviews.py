@@ -3,12 +3,12 @@ from typing import Annotated, Optional
 from pydantic import BaseModel, conint
 from sqlalchemy import CheckConstraint, Column, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from models.base_models import ORMBase, Creatable, Deletable
+from models.base_models import ORMBase, Creatable
 from models.users import UserRead
 
 
 # SQLAlchemy models
-class AnnotationReview(ORMBase, Creatable, Deletable):
+class AnnotationReview(ORMBase, Creatable):
     """ Base class for all annotation review types. """
 
     __abstract__ = True

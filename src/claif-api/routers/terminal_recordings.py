@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, conint
 from models.recordings import TerminalRecording
 from models.users import User, UserRead
-from models.utils.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations, parse_asciinema_recording
+from models.utils.terminal_recordings import create_annotation, extract_annotations, parse_asciinema_recording
 from utils.database import get_db
-from utils.auth import extract_user_id_or_raise, get_current_user, limiter
+from utils.auth import get_current_user, limiter
 from utils.exception_handlers import value_error_handler
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -25,15 +25,10 @@ class TerminalRecordingRead(BaseModel):
     content_metadata: str
     content_body: str
     annotations_count: int
-    source_revision_id: Optional[int]
-    previous_revision_id: Optional[int]
-    locked_for_review: bool
     revision_number: int
-    published: bool
     creator: UserRead
     creator_id: int
     created_at: datetime
-    is_deleted: bool
 
     class Config:
         orm_mode = True
@@ -72,12 +67,6 @@ class TerminalRecordingUpdate(BaseModel):
                 "content_metadata": "Header_content_of_the_asciinema_recording_here",
             }
         }
-
-
-class TerminalRecordingTogglePublish(BaseModel):
-    """Pydantic model for publishing a terminal recording."""
-    recording_id: int
-    is_published: bool
 
 
 @router.post("/create")
@@ -161,21 +150,3 @@ async def read_recording(request: Request, recording_id: int, db: Session = Depe
     if recording is None:
         raise HTTPException(status_code=404, detail="Recording not found")
     return recording
-
-
-@router.post("/publish")
-@limiter.limit("5/minute")
-@value_error_handler
-async def publish_recording(
-    payload: TerminalRecordingTogglePublish,
-    request: Request,
-    db: Session = Depends(get_db),
-    keycloak_id: UserRead = Depends(extract_user_id_or_raise)
-):
-    recording = db.query(TerminalRecording).filter_by(id=payload.recording_id).first()
-    if recording is None:
-        raise HTTPException(status_code=404, detail="Recording not found")
-    
-    recording.published = payload.is_published
-    db.commit()
-    return {"message": f"Recording {'published' if payload.is_published else 'unpublished'} successfully"}

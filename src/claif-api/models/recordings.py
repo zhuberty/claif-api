@@ -1,10 +1,10 @@
 from sqlalchemy import Boolean, Column, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from models.base_models import Creatable, Deletable, ORMBase
+from models.base_models import Creatable, ORMBase
 
 
 # SQLAlchemy models
-class Recording(ORMBase, Creatable, Deletable):
+class Recording(ORMBase, Creatable):
     """ Base class for all recording types. """
 
     __abstract__ = True
@@ -22,8 +22,6 @@ class RecordingAnnotatable(Recording):
     content_metadata = Column(String)
     content_body = Column(String)
     annotations_count = Column(Integer, index=True)
-    published = Column(Boolean, index=True, default=False)
-    locked_for_review = Column(Boolean, index=True, default=False)
 
 
 class TerminalRecording(RecordingAnnotatable):
@@ -32,7 +30,6 @@ class TerminalRecording(RecordingAnnotatable):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_recordings")
     annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
     annotation_reviews = relationship("TerminalAnnotationReview", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
-    deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)
 
 
 class AudioFile(Recording):

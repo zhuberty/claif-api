@@ -2,7 +2,6 @@ from sqlalchemy import inspect
 from models.recordings import TerminalRecording, AudioTranscription, AudioFile
 from models.annotations import AudioTranscriptionAnnotation, TerminalRecordingAnnotation
 from models.annotation_reviews import TerminalAnnotationReview, AudioAnnotationReview
-from models.deletion_requests import DeletionRequest
 from models.users import User
 
 
@@ -38,7 +37,6 @@ def print_all_model_schemas():
         TerminalAnnotationReview,
         AudioAnnotationReview,
         AudioFile,
-        DeletionRequest,
         User
     ]
 
