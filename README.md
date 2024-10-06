@@ -261,7 +261,6 @@ deletion_request_id                 INTEGER
 id                                  INTEGER
 is_deleted                          BOOLEAN
 q_can_anno_be_halved                BOOLEAN
-q_can_provide_tintin_segment        BOOLEAN
 q_can_you_improve_anno              BOOLEAN
 q_can_you_provide_markdown          BOOLEAN
 q_does_anno_match_content           BOOLEAN
