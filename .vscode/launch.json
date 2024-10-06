@@ -5,15 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Seed TerminalRecordings",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "seed_scripts.terminal_recordings",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/claif-api",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
             "name": "Pytest Debugger: Integration Tests",
             "type": "debugpy",
             "request": "launch",
