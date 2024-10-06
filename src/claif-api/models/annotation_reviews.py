@@ -12,6 +12,7 @@ class AnnotationReview(ORMBase, Creatable):
     """ Base class for all annotation review types. """
 
     __abstract__ = True
+    revision_number = Column(Integer, index=True)
     q_does_anno_match_content = Column(Boolean, index=True)
     q_can_anno_be_halved = Column(Boolean, index=True)
     q_how_well_anno_matches_content = Column(Integer, CheckConstraint(
@@ -57,6 +58,7 @@ class AnnotationReviewRead(AnnotationReviewQuestions):
     id: int
     annotation_id: int
     recording_id: int
+    revision_number: int
     creator_id: int
     creator: UserRead
     created_at: datetime
@@ -69,7 +71,6 @@ class AnnotationReviewRead(AnnotationReviewQuestions):
 annotation_review_create_example = {
     "example": {
         "annotation_id": 1,
-        "recording_id": 1,
         "q_does_anno_match_content": True,
         "q_can_anno_be_halved": False,
         "q_how_well_anno_matches_content": 5,
@@ -82,7 +83,6 @@ annotation_review_create_example = {
 class AnnotationReviewCreate(AnnotationReviewQuestions):
     """Pydantic model for creating a terminal annotation review."""
     annotation_id: Annotated[int, conint(gt=0)]
-    recording_id: Annotated[int, conint(gt=0)]
 
     class Config:
         schema_extra = annotation_review_create_example
@@ -91,7 +91,6 @@ class AnnotationReviewCreate(AnnotationReviewQuestions):
 class AnnotationReviewUpdate(AnnotationReviewQuestions):
     """Pydantic model for updating a terminal recording review."""
     annotation_id: Annotated[int, conint(gt=0)]
-    recording_id: Annotated[int, conint(gt=0)]
 
     class Config:
         schema_extra = annotation_review_create_example

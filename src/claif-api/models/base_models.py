@@ -17,3 +17,10 @@ class Creatable(Base):
 
     __abstract__ = True
     created_at = Column(DateTime, index=True, default=datetime.now(timezone.utc))
+
+
+class Deletable(Base):
+    """ Base class for all deletable recording types. """
+
+    __abstract__ = True
+    deleted_at = Column(DateTime, index=True, default=None)

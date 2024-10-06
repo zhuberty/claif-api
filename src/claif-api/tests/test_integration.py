@@ -168,6 +168,7 @@ def test_get_updated_terminal_recording(base_url, access_token):
     assert response_data["revision_number"] == 2
     assert response_data["title"] == "Updated Recording Title"
     assert response_data["description"] == "Updated description with more details."
+    assert response_data["deleted_at"] == None
 
 
 @pytest.mark.order(7)
@@ -186,7 +187,6 @@ def test_create_terminal_annotation_review(base_url, access_token):
     # Construct the payload for creating a new AnnotationReview
     payload = {
         "annotation_id": annotation.id,
-        "recording_id": annotation.recording_id,
         "q_does_anno_match_content": True,
         "q_can_anno_be_halved": False,
         "q_how_well_anno_matches_content": 5,
@@ -202,7 +202,4 @@ def test_create_terminal_annotation_review(base_url, access_token):
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
     assert response_data["message"] == "Annotation review created"
-    assert response_data["annotation_review"] is not None
-    assert response_data["annotation_review"]["creator_id"] == 2
-    assert response_data["annotation_review"]["annotation_id"] == annotation.id
-    assert response_data["annotation_review"]["recording_id"] == annotation.recording_id
+    assert response_data["annotation_review_id"] > 0
