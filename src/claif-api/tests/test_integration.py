@@ -8,6 +8,7 @@ from utils.database import get_db
 from utils.auth import extract_keycloak_id_from_token
 from models.recordings import TerminalRecording
 from models.users import User
+from models.utils.schema import get_model_schema_string
 from tests.conftest import logger
 
 
@@ -24,6 +25,16 @@ def test_set_user_keycloak_id(access_token):
 
 
 @pytest.mark.order(2)
+def test_get_schema_string():
+    """Test getting the schema string for the TerminalRecording model."""
+    schema_string = get_model_schema_string(TerminalRecording)
+    assert schema_string is not None
+    assert schema_string.startswith("### ")
+    assert schema_string.endswith("```\n\n")
+    assert len(schema_string) > 1000
+
+
+@pytest.mark.order(3)
 def test_create_terminal_recording(base_url, access_token):
     """Test creating a new TerminalRecording."""
 
@@ -64,7 +75,7 @@ def test_create_terminal_recording(base_url, access_token):
     assert saved_recording["is_deleted"] is False
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(4)
 def test_update_terminal_recording(base_url, access_token):
     """Test updating an existing TerminalRecording."""
 
@@ -100,7 +111,7 @@ def test_update_terminal_recording(base_url, access_token):
     assert update_response_data["recording_id"] == previous_recording.id + 1
 
 
-@pytest.mark.order(4)
+@pytest.mark.order(5)
 def test_get_terminal_recording(base_url, access_token):
     """Test getting a TerminalRecording by ID."""
 
