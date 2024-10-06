@@ -24,9 +24,9 @@ services:
     build:
       context: ./src/claif-api
     command: >
-      bash -c "./wait_for_db.sh claif-db:5432
-      && ./wait_for_keycloak.sh keycloak
-      && ./seed_db.sh claif-db"
+      bash -c "./scripts/wait_for_db.sh claif-db:5432
+      && ./scripts/wait_for_keycloak.sh keycloak
+      && ./scripts/seed_db.sh claif-db"
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app

@@ -21,9 +21,9 @@ RUN poetry install --no-root --no-interaction --no-ansi
 COPY . .
 
 # Make the database and Keycloak wait scripts executable
-RUN chmod +x /app/wait_for_db.sh /app/wait_for_keycloak.sh
+RUN chmod +x /app/scripts/wait_for_db.sh /app/scripts/wait_for_keycloak.sh
 
 EXPOSE 8000
 
 # Command to wait for Keycloak, DB, and start Uvicorn
-CMD ["bash", "-c", "./wait_for_db.sh claif-db:5432 && ./wait_for_keycloak.sh keycloak:8080 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["bash", "-c", "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak:8080 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000"]
