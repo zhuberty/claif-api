@@ -6,7 +6,7 @@ from models.recordings import TerminalRecording
 from models.users import User, UserRead
 from utils.database import get_db
 from utils.auth import extract_user_id_or_raise, get_current_user, limiter
-from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations
+from models.utils.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations
 from utils.exception_handlers import value_error_handler
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
