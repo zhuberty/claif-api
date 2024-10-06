@@ -168,6 +168,7 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
+deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
 id                                  INTEGER
@@ -205,6 +206,7 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
+deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
 id                                  INTEGER
@@ -247,6 +249,7 @@ q_can_you_provide_markdown          BOOLEAN
 q_does_anno_match_content           BOOLEAN
 q_how_well_anno_matches_content     INTEGER
 recording_id                        INTEGER
+revision_number                     INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to TerminalRecordingAnnotation)
@@ -266,6 +269,7 @@ q_can_you_provide_markdown          BOOLEAN
 q_does_anno_match_content           BOOLEAN
 q_how_well_anno_matches_content     INTEGER
 recording_id                        INTEGER
+revision_number                     INTEGER
 Relationships:
 - creator (related to User)
 - annotation (related to AudioTranscriptionAnnotation)
@@ -277,6 +281,7 @@ Relationships:
 ```
 created_at                          DATETIME
 creator_id                          INTEGER
+deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
 file_url                            VARCHAR
