@@ -5,11 +5,25 @@ from sqlalchemy.orm.session import Session
 from utils.config import get_auth_headers
 from utils.files import read_first_line_of_file, read_file
 from utils.database import get_db
+from utils.auth import extract_keycloak_id_from_token
 from models.terminal_recordings import TerminalRecording
+from models.users import User
 from tests.conftest import logger
 
 
 @pytest.mark.order(1)
+def test_set_user_keycloak_id(access_token):
+    """Test setting the Keycloak ID for the test user."""
+    db: Session = next(get_db())
+    user = db.query(User).filter_by(username="user1").first()
+    assert user is not None, "User not found"
+    user.keycloak_id = extract_keycloak_id_from_token(access_token)
+    db.commit()
+    db.refresh(user)
+    assert len(user.keycloak_id) == 36, "Invalid Keycloak ID length"
+
+
+@pytest.mark.order(2)
 def test_create_terminal_recording(base_url, access_token):
     """Test creating a new TerminalRecording."""
 
@@ -50,7 +64,7 @@ def test_create_terminal_recording(base_url, access_token):
     assert saved_recording["is_deleted"] is False
 
 
-@pytest.mark.order(2)
+@pytest.mark.order(3)
 def test_update_terminal_recording(base_url, access_token):
     """Test updating an existing TerminalRecording."""
 
@@ -86,7 +100,7 @@ def test_update_terminal_recording(base_url, access_token):
     assert update_response_data["recording_id"] == previous_recording.id + 1
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(4)
 def test_get_terminal_recording(base_url, access_token):
     """Test getting a TerminalRecording by ID."""
 

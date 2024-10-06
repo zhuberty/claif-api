@@ -1,13 +1,10 @@
-import time
-from keycloak import KeycloakOpenID, KeycloakGetError
-
 from routers import users, auth
 from routers.terminal_recordings import terminal_recordings
 from models.base_models import ORMBase
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
 from utils._logging import logging
-from utils.env import KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT_ID, KEYCLOAK_REALM
+from utils.auth import fetch_keycloak_public_key
 
 
 # Initialize FastAPI app
@@ -17,28 +14,6 @@ app = init_fastapi_app()
 app.include_router(users.router, prefix="/v1/users", tags=["users"])
 app.include_router(terminal_recordings.router, prefix="/v1/recordings/terminal", tags=["terminal_recordings"])
 app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
-
-
-# Function to check Keycloak realm availability and fetch the public key
-def fetch_keycloak_public_key():
-    keycloak_openid = KeycloakOpenID(
-        server_url=KEYCLOAK_SERVER_URL + "/",
-        client_id=KEYCLOAK_CLIENT_ID,
-        realm_name=KEYCLOAK_REALM
-    )
-
-    # Retry logic to wait for the realm to be available
-    while True:
-        try:
-            # Attempt to get the public key from Keycloak
-            public_key = keycloak_openid.public_key()
-            return "-----BEGIN PUBLIC KEY-----\n" + public_key + "\n-----END PUBLIC KEY-----"
-        except KeycloakGetError as e:
-            if e.response_code == 404:
-                logging.info("Keycloak realm does not exist yet. Retrying in 5 seconds...")
-                time.sleep(5)  # Wait before retrying
-            else:
-                raise e
 
 
 # Create the database tables, create enum, and fetch Keycloak public key at startup
