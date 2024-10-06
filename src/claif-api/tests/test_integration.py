@@ -6,7 +6,7 @@ from utils.config import get_auth_headers
 from utils.files import read_first_line_of_file, read_file
 from utils.database import get_db
 from utils.auth import extract_keycloak_id_from_token
-from models.terminal_recordings import TerminalRecording
+from models.recordings import TerminalRecording
 from models.users import User
 from tests.conftest import logger
 

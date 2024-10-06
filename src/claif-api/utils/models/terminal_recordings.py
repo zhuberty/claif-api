@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 import json
 from sqlalchemy.orm import Session
-from models.terminal_recordings import TerminalRecording, TerminalRecordingAnnotation
+from models.recordings import TerminalRecording
+from models.annotations import TerminalRecordingAnnotation
 from utils._logging import logging
 
 def parse_asciinema_recording(recording_content: str):

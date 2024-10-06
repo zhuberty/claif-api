@@ -1,11 +1,8 @@
 import json
-import logging
 from datetime import datetime
-
-from json import JSONDecodeError
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, conint
-from models.terminal_recordings import TerminalRecording
+from models.recordings import TerminalRecording
 from models.users import User, UserRead
 from utils.database import get_db
 from utils.auth import extract_user_id_or_raise, get_current_user, limiter
@@ -149,7 +146,6 @@ async def update_recording(
         previous_revision_id = current_recording.id
         current_revision_number = current_recording.revision_number + 1
 
-
         # create a new recording with the updated title, description, and revision numbers
         updated_terminal_recording = TerminalRecording(
             creator_id=current_user.id,
@@ -177,7 +173,7 @@ async def update_recording(
 
         return {"message": "Recording updated", "recording_id": updated_terminal_recording.id}
 
-    except (ValueError, JSONDecodeError) as e:
+    except (ValueError) as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
