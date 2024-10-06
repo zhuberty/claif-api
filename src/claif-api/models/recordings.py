@@ -30,18 +30,6 @@ class TerminalRecording(RecordingAnnotatable):
     __tablename__ = "terminal_recordings"
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_recordings")
-    source_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
-    source_revision = relationship(
-        "TerminalRecording",
-        foreign_keys=[source_revision_id],
-        remote_side="TerminalRecording.id"
-    )
-    previous_revision_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
-    previous_revision = relationship(
-        "TerminalRecording",
-        foreign_keys=[previous_revision_id],
-        remote_side="TerminalRecording.id"
-    )
     annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
     annotation_reviews = relationship("TerminalAnnotationReview", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
     deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)
@@ -63,15 +51,3 @@ class AudioTranscription(RecordingAnnotatable):
     audio_file = relationship("AudioFile", foreign_keys=[audio_file_id], back_populates="audio_transcriptions")
     annotations = relationship("AudioTranscriptionAnnotation", back_populates="recording", lazy="dynamic")
     annotation_reviews = relationship("AudioAnnotationReview", back_populates="recording", lazy="dynamic")
-    source_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
-    source_revision = relationship(
-        "AudioTranscription",
-        foreign_keys=[source_revision_id],
-        remote_side="AudioTranscription.id"
-    )
-    previous_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
-    previous_revision = relationship(
-        "AudioTranscription",
-        foreign_keys=[previous_revision_id],
-        remote_side="AudioTranscription.id"
-    )

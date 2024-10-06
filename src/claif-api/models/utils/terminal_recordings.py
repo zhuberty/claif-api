@@ -66,7 +66,7 @@ def parse_content_body(lines: list):
 
 
 def extract_annotations(content_metadata: dict):
-    """Extracts annotations and handles nested child annotations."""
+    """Extracts annotations from recording content metadata."""
     annotations = []
     if content_metadata.get("librecode_annotations"):
         librecode_annotations = content_metadata["librecode_annotations"]
@@ -75,7 +75,7 @@ def extract_annotations(content_metadata: dict):
             for layer in librecode_annotations["layers"]:
                 if "annotations" in layer:
                     for annotation in layer["annotations"]:
-                        # Extract individual annotation and any nested children
+                        # Extract individual annotation data
                         extracted_annotation = extract_annotation_data(annotation)
                         annotations.append(extracted_annotation)
                 else:
@@ -89,20 +89,12 @@ def extract_annotations(content_metadata: dict):
 
 
 def extract_annotation_data(annotation):
-    """Extracts annotation data recursively, including nested child annotations."""
+    """Extracts annotation data."""
     annotation_data = {
         "text": annotation.get("text"),
         "beginning": annotation.get("beginning"),
         "end": annotation.get("end"),
-        "children": []
     }
-
-    # Recursively extract child annotations if present
-    if "children" in annotation:
-        for child_annotation in annotation["children"]:
-            child_data = extract_annotation_data(child_annotation)
-            annotation_data["children"].append(child_data)
-
     return annotation_data
 
 
@@ -159,30 +151,21 @@ def save_terminal_recording(db: Session, terminal_recording: TerminalRecording):
     db.refresh(terminal_recording)
 
 
-def create_annotation(db: Session, annotation_data: Dict[str, Any], recording_id: int, parent_annotation_id: int = None):
-    """Create an annotation and recursively add child annotations."""
+def create_annotation(db: Session, annotation_data: Dict[str, Any], recording_id: int, revision_number: int):
+    """Create an annotation."""
     annotation = TerminalRecordingAnnotation(
         recording_id=recording_id,
-        parent_annotation_id=parent_annotation_id,
+        revision_number=revision_number,
         annotation_text=annotation_data.get("text"),
         start_time_milliseconds=annotation_data.get("beginning"),
         end_time_milliseconds=annotation_data.get("end"),
-        children_count=len(annotation_data.get("children", []))
     )
-    
     db.add(annotation)
-    db.commit()
-    db.refresh(annotation)
-
-    for child in annotation_data.get("children", []):
-        create_annotation(db, child, recording_id, annotation.id)
-
 
 def save_annotations(db: Session, annotations: List[Dict[str, Any]], recording_id: int):
     """Save all annotations for a given recording."""
     for annotation in annotations:
         create_annotation(db, annotation, recording_id)
-    db.commit()
 
 
 def get_and_create_terminal_recording(

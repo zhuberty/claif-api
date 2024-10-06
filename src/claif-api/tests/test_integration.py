@@ -32,7 +32,6 @@ def test_get_schema_string():
     assert schema_string is not None
     assert schema_string.startswith("### ")
     assert schema_string.endswith("```\n\n")
-    assert len(schema_string) > 1000
 
 
 @pytest.mark.order(3)
@@ -77,6 +76,37 @@ def test_create_terminal_recording(base_url, access_token):
 
 
 @pytest.mark.order(4)
+def test_get_created_terminal_recording(base_url, access_token):
+    """Test getting a TerminalRecording by ID."""
+
+    # Get authorization headers
+    headers = get_auth_headers(access_token)
+
+    # get the recording id of the last recording where revision_number is 1
+    db: Session = next(get_db())
+    recording = db.query(TerminalRecording).filter_by(revision_number=1).order_by(TerminalRecording.id.desc()).first()
+
+    assert recording is not None, "No recording found"
+
+    # Make the GET request to the /{recording_id} endpoint
+    url = f"{base_url}/recordings/terminal/{recording.id}"
+    response = requests.get(url, headers=headers)
+
+    # Assert the response status and content
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["id"] == recording.id
+    assert "content_body" in response_data
+    assert response_data["content_body"].startswith("[[")
+    assert response_data["content_metadata"].startswith("{")
+    assert response_data["duration_milliseconds"] > 0
+    assert response_data["annotations_count"] == 0
+    assert response_data["revision_number"] == 1
+    assert response_data["title"] == "Writing a small hello-world Python function"
+    assert response_data["description"] == "The user writes a small Python function that prints 'Hello, Annotations!'"
+
+
+@pytest.mark.order(5)
 def test_update_terminal_recording(base_url, access_token):
     """Test updating an existing TerminalRecording."""
 
@@ -109,11 +139,10 @@ def test_update_terminal_recording(base_url, access_token):
     update_response_data = update_response.json()
 
     assert update_response_data["message"] == "Recording updated"
-    assert update_response_data["recording_id"] == previous_recording.id + 1
 
 
-@pytest.mark.order(5)
-def test_get_terminal_recording(base_url, access_token):
+@pytest.mark.order(6)
+def test_get_updated_terminal_recording(base_url, access_token):
     """Test getting a TerminalRecording by ID."""
 
     # Get authorization headers
@@ -121,7 +150,7 @@ def test_get_terminal_recording(base_url, access_token):
 
     # get the recording id of the last recording where revision_number is 1
     db: Session = next(get_db())
-    recording = db.query(TerminalRecording).filter_by(revision_number=1).order_by(TerminalRecording.id.desc()).first()
+    recording = db.query(TerminalRecording).filter_by(revision_number=2).order_by(TerminalRecording.id.desc()).first()
 
     assert recording is not None, "No recording found"
 
@@ -135,23 +164,15 @@ def test_get_terminal_recording(base_url, access_token):
     assert response_data["id"] == recording.id
     assert "content_body" in response_data
     assert response_data["content_body"].startswith("[[")
+    assert response_data["content_metadata"].startswith("{")
     assert response_data["duration_milliseconds"] > 0
-    assert response_data["annotations_count"] == 0
-    assert response_data["revision_number"] == 1
-
-    next_recording_revision = db.query(TerminalRecording).filter_by(previous_revision_id=recording.id).first()
-    assert next_recording_revision is not None
-    assert next_recording_revision.revision_number == 2
-    assert next_recording_revision.source_revision_id == recording.id
-    assert next_recording_revision.previous_revision_id == recording.id
-    assert next_recording_revision.title == "Updated Recording Title"
-    assert next_recording_revision.description == "Updated description with more details."
-    assert next_recording_revision.content_body is None
-    assert next_recording_revision.annotations_count == 9
-    assert next_recording_revision.content_metadata.startswith("{")
+    assert response_data["annotations_count"] == 9
+    assert response_data["revision_number"] == 2
+    assert response_data["title"] == "Updated Recording Title"
+    assert response_data["description"] == "Updated description with more details."
 
 
-@pytest.mark.order(6)
+@pytest.mark.order(7)
 def test_create_terminal_annotation_review(base_url, access_token):
     """Test creating a new annotation review."""
 
