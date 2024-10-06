@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -26,7 +27,15 @@ async def create_annotation_review(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    pass
+    # Create a new annotation review
+    annotation_review = TerminalAnnotationReview(
+        **payload.dict(),
+        creator_id=current_user.id,
+    )
+    db.add(annotation_review)
+    db.commit()
+    db.refresh(annotation_review)
+    return {"message": "Annotation review created", "annotation_review": AnnotationReviewRead.from_orm(annotation_review)}
 
 
 @router.post("/update")
@@ -40,7 +49,7 @@ async def update_annotation_review(
 ):
     pass
 
-
+    
 @router.get("/{recording_id}", response_model=AnnotationReviewRead)
 @limiter.limit("20/minute")
 @value_error_handler

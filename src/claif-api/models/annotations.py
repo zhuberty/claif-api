@@ -56,8 +56,8 @@ class AudioTranscriptionAnnotation(Annotation):
     __tablename__ = "audio_transcription_annotations"
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_annotations")
-    audio_transcription_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
-    audio_transcription = relationship("AudioTranscription", foreign_keys=[audio_transcription_id], back_populates="annotations")
+    recording_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
+    recording = relationship("AudioTranscription", foreign_keys=[recording_id], back_populates="annotations")
     annotation_reviews = relationship("AudioAnnotationReview", back_populates="annotation", lazy="dynamic")
 
     # Association with child annotations via the association table

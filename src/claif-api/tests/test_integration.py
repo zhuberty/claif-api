@@ -7,6 +7,7 @@ from utils.files import read_first_line_of_file, read_file
 from utils.database import get_db
 from utils.auth import extract_keycloak_id_from_token
 from models.recordings import TerminalRecording
+from models.annotations import TerminalRecordingAnnotation
 from models.users import User
 from models.utils.schema import get_model_schema_string
 from tests.conftest import logger
@@ -148,3 +149,41 @@ def test_get_terminal_recording(base_url, access_token):
     assert next_recording_revision.content_body is None
     assert next_recording_revision.annotations_count == 9
     assert next_recording_revision.content_metadata.startswith("{")
+
+
+@pytest.mark.order(6)
+def test_create_terminal_annotation_review(base_url, access_token):
+    """Test creating a new annotation review."""
+
+    # get the recording id of the last recording where revision_number is 2
+    db: Session = next(get_db())
+
+    recording = db.query(TerminalRecording).filter_by(revision_number=2).order_by(TerminalRecording.id.desc()).first()
+    assert recording is not None, "No recording found"
+
+    annotation: TerminalRecordingAnnotation = recording.annotations.first()
+    assert annotation is not None, "No annotations found"
+
+    # Construct the payload for creating a new AnnotationReview
+    payload = {
+        "annotation_id": annotation.id,
+        "recording_id": annotation.recording_id,
+        "q_does_anno_match_content": True,
+        "q_can_anno_be_halved": False,
+        "q_how_well_anno_matches_content": 5,
+        "q_can_you_improve_anno": True,
+        "q_can_you_provide_markdown": False,
+    }
+
+    # Make the POST request to the /create endpoint
+    headers = get_auth_headers(access_token)
+    url = f"{base_url}/annotation_reviews/create"
+    response = requests.post(url, json=payload, headers=headers)
+
+    assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+    response_data = response.json()
+    assert response_data["message"] == "Annotation review created"
+    assert response_data["annotation_review"] is not None
+    assert response_data["annotation_review"]["creator_id"] == 2
+    assert response_data["annotation_review"]["annotation_id"] == annotation.id
+    assert response_data["annotation_review"]["recording_id"] == annotation.recording_id

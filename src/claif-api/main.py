@@ -1,4 +1,4 @@
-from routers import users, auth, terminal_recordings
+from routers import users, auth, terminal_recordings, annotation_reviews
 from models.base_models import ORMBase
 from utils.fastapi import init_fastapi_app
 from utils.database import engine
@@ -10,9 +10,10 @@ from utils.auth import fetch_keycloak_public_key
 app = init_fastapi_app()
 
 # Register routers
+app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
 app.include_router(users.router, prefix="/v1/users", tags=["users"])
 app.include_router(terminal_recordings.router, prefix="/v1/recordings/terminal", tags=["terminal_recordings"])
-app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
+app.include_router(annotation_reviews.router, prefix="/v1/annotation_reviews", tags=["annotation_reviews"])
 
 
 # Create the database tables, create enum, and fetch Keycloak public key at startup

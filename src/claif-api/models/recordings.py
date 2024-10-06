@@ -43,7 +43,7 @@ class TerminalRecording(RecordingAnnotatable):
         remote_side="TerminalRecording.id"
     )
     annotations = relationship("TerminalRecordingAnnotation", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
-    annotation_reviews = relationship("TerminalAnnotationReview", back_populates="terminal_recording", lazy="dynamic", cascade="all, delete-orphan")
+    annotation_reviews = relationship("TerminalAnnotationReview", back_populates="recording", lazy="dynamic", cascade="all, delete-orphan")
     deletion_request_id = Column(Integer, ForeignKey("deletion_requests.id"), index=True)
 
 
@@ -61,8 +61,8 @@ class AudioTranscription(RecordingAnnotatable):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_transcriptions")
     audio_file_id = Column(Integer, ForeignKey("audio_files.id"), index=True)
     audio_file = relationship("AudioFile", foreign_keys=[audio_file_id], back_populates="audio_transcriptions")
-    annotations = relationship("AudioTranscriptionAnnotation", back_populates="audio_transcription", lazy="dynamic")
-    annotation_reviews = relationship("AudioAnnotationReview", back_populates="audio_transcription", lazy="dynamic")
+    annotations = relationship("AudioTranscriptionAnnotation", back_populates="recording", lazy="dynamic")
+    annotation_reviews = relationship("AudioAnnotationReview", back_populates="recording", lazy="dynamic")
     source_revision_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
     source_revision = relationship(
         "AudioTranscription",

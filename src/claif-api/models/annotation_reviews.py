@@ -28,8 +28,8 @@ class TerminalAnnotationReview(AnnotationReview):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_annotation_reviews")
     annotation_id = Column(Integer, ForeignKey("terminal_recording_annotations.id"), index=True)
     annotation = relationship("TerminalRecordingAnnotation", foreign_keys=[annotation_id], back_populates="annotation_reviews")
-    terminal_recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
-    terminal_recording = relationship("TerminalRecording", foreign_keys=[terminal_recording_id], back_populates="annotation_reviews")
+    recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
+    recording = relationship("TerminalRecording", foreign_keys=[recording_id], back_populates="annotation_reviews")
 
 
 class AudioAnnotationReview(AnnotationReview):
@@ -38,8 +38,8 @@ class AudioAnnotationReview(AnnotationReview):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_annotation_reviews")
     annotation_id = Column(Integer, ForeignKey("audio_transcription_annotations.id"), index=True)
     annotation = relationship("AudioTranscriptionAnnotation", foreign_keys=[annotation_id], back_populates="annotation_reviews")
-    audio_transcription_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
-    audio_transcription = relationship("AudioTranscription", foreign_keys=[audio_transcription_id], back_populates="annotation_reviews")
+    recording_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
+    recording = relationship("AudioTranscription", foreign_keys=[recording_id], back_populates="annotation_reviews")
 
 
 # Pydantic models (serializers/validators)
@@ -60,7 +60,10 @@ class AnnotationReviewRead(AnnotationReviewQuestions):
     creator_id: int
     creator: UserRead
     created_at: datetime
-    audio_recording_id: int
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
 
 
 annotation_review_create_example = {
