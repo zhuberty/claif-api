@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Optional
 from pydantic import BaseModel, conint
 from sqlalchemy import CheckConstraint, Column, Integer, ForeignKey, Boolean
@@ -29,7 +30,6 @@ class TerminalAnnotationReview(AnnotationReview):
     annotation = relationship("TerminalRecordingAnnotation", foreign_keys=[annotation_id], back_populates="annotation_reviews")
     terminal_recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     terminal_recording = relationship("TerminalRecording", foreign_keys=[terminal_recording_id], back_populates="annotation_reviews")
-    q_can_provide_tintin_segment = Column(Boolean, index=True)
 
 
 class AudioAnnotationReview(AnnotationReview):
@@ -42,48 +42,53 @@ class AudioAnnotationReview(AnnotationReview):
     audio_transcription = relationship("AudioTranscription", foreign_keys=[audio_transcription_id], back_populates="annotation_reviews")
 
 
-# Pydantic models
-class AnnotationReviewRead(BaseModel):
-    """Pydantic model for reading terminal recordings."""
-    creator_id: int
-    creator: UserRead
-    annotation_id: int
-    q_can_anno_be_halved: bool
+# Pydantic models (serializers/validators)
+class AnnotationReviewQuestions(BaseModel):
+    """Pydantic model for annotation reviews."""
     q_does_anno_match_content: bool
+    q_can_anno_be_halved: bool
     q_how_well_anno_matches_content: int
     q_can_you_improve_anno: bool
     q_can_you_provide_markdown: bool
-    
-
-class AnnotationReviewCreate(BaseModel):
-    """Pydantic model for creating a terminal recording."""
-    title: str
-    description: Optional[str]
-    recording_content: Optional[str]
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "title": "Example Recording Title",
-                "description": "Description of the terminal recording",
-                "recording_content": "Contents_of_the_asciinema_recording_here",
-            }
-        }
 
 
-class AnnotationReviewUpdate(BaseModel):
-    """Pydantic model for updating a terminal recording."""
+class AnnotationReviewRead(AnnotationReviewQuestions):
+    """Pydantic model for terminal annotation reviews."""
+    id: int
+    annotation_id: int
+    recording_id: int
+    creator_id: int
+    creator: UserRead
+    created_at: datetime
+    audio_recording_id: int
+
+
+annotation_review_create_example = {
+    "example": {
+        "annotation_id": 1,
+        "recording_id": 1,
+        "q_does_anno_match_content": True,
+        "q_can_anno_be_halved": False,
+        "q_how_well_anno_matches_content": 5,
+        "q_can_you_improve_anno": True,
+        "q_can_you_provide_markdown": False,
+    }
+}
+
+
+class AnnotationReviewCreate(AnnotationReviewQuestions):
+    """Pydantic model for creating a terminal annotation review."""
+    annotation_id: Annotated[int, conint(gt=0)]
     recording_id: Annotated[int, conint(gt=0)]
-    title: Optional[str]
-    description: Optional[str]
-    content_metadata: Optional[str]
 
     class Config:
-        schema_extra = {
-            "example": {
-                "recording_id": 1,
-                "title": "Updated Recording Title",
-                "description": "Updated description of the terminal recording",
-                "content_metadata": "Header_content_of_the_asciinema_recording_here",
-            }
-        }
+        schema_extra = annotation_review_create_example
+
+
+class AnnotationReviewUpdate(AnnotationReviewQuestions):
+    """Pydantic model for updating a terminal recording review."""
+    annotation_id: Annotated[int, conint(gt=0)]
+    recording_id: Annotated[int, conint(gt=0)]
+
+    class Config:
+        schema_extra = annotation_review_create_example
