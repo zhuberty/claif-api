@@ -7,6 +7,7 @@ from models.users import User, UserRead
 from utils.database import get_db
 from utils.auth import extract_user_id_or_raise, get_current_user, limiter
 from utils.models.terminal_recordings import get_and_create_terminal_recording, create_annotation, extract_annotations
+from utils.exception_handlers import value_error_handler
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, Annotated
@@ -81,104 +82,99 @@ class TerminalRecordingTogglePublish(BaseModel):
 
 @router.post("/create")
 @limiter.limit("5/minute")
+@value_error_handler
 async def create_recording(
     payload: TerminalRecordingCreate,
     request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        # Prepare the revision number and IDs for the new recording
-        current_revision_number = 1
+    # Prepare the revision number and IDs for the new recording
+    current_revision_number = 1
 
-       # Create the new terminal recording without source_revision_id
-        terminal_recording = get_and_create_terminal_recording(
-            db=db,
-            creator_id=current_user.id,
-            title=payload.title,
-            description=payload.description,
-            recording_content=payload.recording_content,
-            source_revision_id=None,  # Will be updated after the commit
-            previous_revision_id=None,
-            revision_number=current_revision_number,
-        )
+    # Create the new terminal recording without source_revision_id
+    terminal_recording = get_and_create_terminal_recording(
+        db=db,
+        creator_id=current_user.id,
+        title=payload.title,
+        description=payload.description,
+        recording_content=payload.recording_content,
+        source_revision_id=None,  # Will be updated after the commit
+        previous_revision_id=None,
+        revision_number=current_revision_number,
+    )
 
-        db.add(terminal_recording)
-        db.commit()
+    db.add(terminal_recording)
+    db.commit()
 
-        # Refresh to get the generated ID
-        db.refresh(terminal_recording)
+    # Refresh to get the generated ID
+    db.refresh(terminal_recording)
 
-        # Now Update the source_revision_id with the recording's own ID
-        terminal_recording.source_revision_id = terminal_recording.id
-        db.commit()
-        db.refresh(terminal_recording)
+    # Now Update the source_revision_id with the recording's own ID
+    terminal_recording.source_revision_id = terminal_recording.id
+    db.commit()
+    db.refresh(terminal_recording)
 
-        return {"message": "Recording created", "recording": TerminalRecordingRead.from_orm(terminal_recording)}
-
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Recording created", "recording": TerminalRecordingRead.from_orm(terminal_recording)}
 
 
 @router.post("/update")
 @limiter.limit("5/minute")
+@value_error_handler
 async def update_recording(
     payload: TerminalRecordingUpdate,
     request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Get the annotations from the encoded asciinema file-header string
+    content_metadata = None
+    annotations = []
+    if payload.content_metadata is not None:
+        content_metadata = json.loads(payload.content_metadata)
+        annotations = extract_annotations(content_metadata)
+
+    # Retrieve the current recording
+    current_recording = db.query(TerminalRecording).filter_by(id=payload.recording_id).first()
+    if current_recording is None:
+        raise HTTPException(status_code=404, detail=f"Recording with ID {payload.recording_id} not found")
+    
+    # Prepare the revision number and IDs for the updated recording
+    source_revision_id = current_recording.source_revision_id
+    previous_revision_id = current_recording.id
+    current_revision_number = current_recording.revision_number + 1
+
+    # create a new recording with the updated title, description, and revision numbers
+    updated_terminal_recording = TerminalRecording(
+        creator_id=current_user.id,
+        title=payload.title,
+        description=payload.description,
+        source_revision_id=source_revision_id,
+        previous_revision_id=previous_revision_id,
+        revision_number=current_revision_number,
+        annotations_count=len(annotations),
+        content_metadata=payload.content_metadata,
+    )
+
+    db.add(updated_terminal_recording)
+    db.commit()
+    db.refresh(updated_terminal_recording)
+
+    # Create annotations for the updated recording
     try:
-        # Get the annotations from the encoded asciinema file-header string
-        content_metadata = None
-        annotations = []
-        if payload.content_metadata is not None:
-            content_metadata = json.loads(payload.content_metadata)
-            annotations = extract_annotations(content_metadata)
-
-        # Retrieve the current recording
-        current_recording = db.query(TerminalRecording).filter_by(id=payload.recording_id).first()
-        if current_recording is None:
-            raise HTTPException(status_code=404, detail=f"Recording with ID {payload.recording_id} not found")
-        
-        # Prepare the revision number and IDs for the updated recording
-        source_revision_id = current_recording.source_revision_id
-        previous_revision_id = current_recording.id
-        current_revision_number = current_recording.revision_number + 1
-
-        # create a new recording with the updated title, description, and revision numbers
-        updated_terminal_recording = TerminalRecording(
-            creator_id=current_user.id,
-            title=payload.title,
-            description=payload.description,
-            source_revision_id=source_revision_id,
-            previous_revision_id=previous_revision_id,
-            revision_number=current_revision_number,
-            annotations_count=len(annotations),
-            content_metadata=payload.content_metadata,
-        )
-
-        db.add(updated_terminal_recording)
+        for annotation in annotations:
+            create_annotation(db, annotation, updated_terminal_recording.id)
+    except Exception as e:
+        db.delete(updated_terminal_recording)  # this cascade deletes annotations, too
         db.commit()
-        db.refresh(updated_terminal_recording)
-
-        # Create annotations for the updated recording
-        try:
-            for annotation in annotations:
-                create_annotation(db, annotation, updated_terminal_recording.id)
-        except Exception as e:
-            db.delete(updated_terminal_recording)  # this cascade deletes annotations, too
-            db.commit()
-            raise HTTPException(status_code=400, detail=str(e))
-
-        return {"message": "Recording updated", "recording_id": updated_terminal_recording.id}
-
-    except (ValueError) as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    return {"message": "Recording updated", "recording_id": updated_terminal_recording.id}
 
 
 @router.get("/{recording_id}", response_model=TerminalRecordingRead)
 @limiter.limit("20/minute")
+@value_error_handler
 async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db), response_model=TerminalRecordingRead):
     recording = db.query(TerminalRecording).filter_by(id=recording_id).first()
     if recording is None:
@@ -188,6 +184,7 @@ async def read_recording(request: Request, recording_id: int, db: Session = Depe
 
 @router.post("/publish")
 @limiter.limit("5/minute")
+@value_error_handler
 async def publish_recording(
     payload: TerminalRecordingTogglePublish,
     request: Request,
