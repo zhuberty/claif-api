@@ -9,8 +9,8 @@
             "type": "debugpy",
             "request": "launch",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/claif-api/cli_tool/claif_cli.py",
-            "cwd": "${workspaceFolder}/src/claif-api/cli_tool",
+            "program": "${workspaceFolder}/src/claif-api/claif_cli/main.py",
+            "cwd": "${workspaceFolder}/src/claif-api/claif_cli",
             "args": [
                 "--use-alt-port",  // port 8000
                 "review-recording",
