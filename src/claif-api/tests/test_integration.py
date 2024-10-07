@@ -178,6 +178,7 @@ def test_get_annotations():
     for annotation in annotations:
         assert annotation.recording_id == recording.id
         assert annotation.revision_number == recording.revision_number
+        assert annotation.level >= 0
         assert len(annotation.annotation_text) > 0
 
 

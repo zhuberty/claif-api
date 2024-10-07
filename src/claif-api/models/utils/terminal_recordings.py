@@ -73,11 +73,11 @@ def extract_annotations(content_metadata: dict):
         librecode_annotations = content_metadata["librecode_annotations"]
 
         if "layers" in librecode_annotations:
-            for layer in librecode_annotations["layers"]:
+            for layer_level, layer in enumerate(librecode_annotations["layers"]):
                 if "annotations" in layer:
                     for annotation in layer["annotations"]:
                         # Extract individual annotation data
-                        extracted_annotation = extract_annotation_data(annotation)
+                        extracted_annotation = extract_annotation_data(annotation, layer_level)
                         annotations.append(extracted_annotation)
                 else:
                     logging.debug("No annotations found in layer.")
@@ -89,12 +89,13 @@ def extract_annotations(content_metadata: dict):
     return annotations
 
 
-def extract_annotation_data(annotation):
+def extract_annotation_data(annotation, layer_level):
     """Extracts annotation data."""
     annotation_data = {
         "text": annotation.get("text"),
         "beginning": annotation.get("beginning"),
         "end": annotation.get("end"),
+        "layer_level": layer_level,
     }
     return annotation_data
 
@@ -107,5 +108,6 @@ def create_annotation(db: Session, annotation_data: Dict[str, Any], recording_id
         annotation_text=annotation_data.get("text"),
         start_time_milliseconds=annotation_data.get("beginning"),
         end_time_milliseconds=annotation_data.get("end"),
+        level=annotation_data.get("layer_level"),
     )
     db.add(annotation)

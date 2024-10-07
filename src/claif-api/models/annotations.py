@@ -17,6 +17,7 @@ class Annotation(ORMBase):
     start_time_milliseconds = Column(Float)
     end_time_milliseconds = Column(Float)
     reviews_count = Column(Integer, default=0)
+    level = Column(Integer)
     
 
 class TerminalRecordingAnnotation(Annotation):
@@ -48,6 +49,7 @@ class TerminalAnnotationRead(BaseModel):
     start_time_milliseconds: int
     end_time_milliseconds: int
     reviews_count: int
+    level: int
 
     class Config:
         orm_mode = True
