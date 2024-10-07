@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from models.recordings import TerminalRecording
 from models.users import User
 from models.recordings import TerminalRecordingCreate, TerminalRecordingRead, TerminalRecordingUpdate
+from models.annotations import TerminalAnnotationRead, TerminalAnnotationRead
+from models.annotation_reviews import AnnotationReviewRead
 from models.utils.terminal_recordings import create_annotation, extract_annotations, parse_asciinema_recording
 from utils.database import get_db
 from utils.auth import get_current_user, limiter
@@ -43,7 +45,30 @@ async def create_recording(
     # Refresh to get the generated ID
     db.refresh(terminal_recording)
 
-    return {"message": "Recording created", "recording": TerminalRecordingRead.from_orm(terminal_recording)}
+    return {"message": "Recording created", "recording_id": terminal_recording.id}
+
+
+@router.get("/{recording_id}")
+@limiter.limit("20/minute")
+@value_error_handler
+async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db)):
+    # Fetch the recording from the database
+    recording = db.query(TerminalRecording).filter_by(id=recording_id).first()
+    if recording is None:
+        raise HTTPException(status_code=404, detail="Recording not found")
+
+    # Convert the dynamic annotations relationship into a list of Pydantic models
+    annotations = list(recording.annotations.all())  # Ensure annotations are loaded as a list
+    annotations_list = [TerminalAnnotationRead.from_orm(annotation) for annotation in annotations]
+
+    annotation_reviews = list(recording.annotation_reviews.all())
+    annotation_reviews_list = [AnnotationReviewRead.from_orm(review) for review in annotation_reviews]
+
+    return {
+        "recording": TerminalRecordingRead.from_orm(recording), 
+        "annotations": annotations_list,
+        "annotation_reviews": annotation_reviews_list
+    }
 
 
 @router.post("/update")
@@ -84,13 +109,3 @@ async def update_recording(
 
     db.commit()
     return {"message": "Recording updated"}
-
-
-@router.get("/{recording_id}", response_model=TerminalRecordingRead)
-@limiter.limit("20/minute")
-@value_error_handler
-async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db), response_model=TerminalRecordingRead):
-    recording = db.query(TerminalRecording).filter_by(id=recording_id).first()
-    if recording is None:
-        raise HTTPException(status_code=404, detail="Recording not found")
-    return recording

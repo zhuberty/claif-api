@@ -41,7 +41,7 @@ class AudioFile(Recording):
     file_url = Column(String)
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_files")
-    audio_transcriptions = relationship("AudioTranscription", back_populates="audio_file", lazy="dynamic")
+    audio_transcription = relationship("AudioTranscription", back_populates="audio_file", lazy="dynamic")
 
 
 class AudioTranscription(RecordingAnnotatable):
@@ -49,7 +49,7 @@ class AudioTranscription(RecordingAnnotatable):
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_transcriptions")
     audio_file_id = Column(Integer, ForeignKey("audio_files.id"), index=True)
-    audio_file = relationship("AudioFile", foreign_keys=[audio_file_id], back_populates="audio_transcriptions")
+    audio_file = relationship("AudioFile", foreign_keys=[audio_file_id], back_populates="audio_transcription")
     annotations = relationship("AudioTranscriptionAnnotation", back_populates="recording", lazy="dynamic")
     annotation_reviews = relationship("AudioAnnotationReview", back_populates="recording", lazy="dynamic")
 

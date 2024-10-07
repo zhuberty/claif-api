@@ -25,7 +25,7 @@ class TerminalRecordingAnnotation(Annotation):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_annotations")
     recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     recording = relationship("TerminalRecording", foreign_keys=[recording_id], back_populates="annotations")
-    annotation_reviews = relationship("TerminalAnnotationReview", back_populates="annotation", lazy="dynamic")
+    annotation_review = relationship("TerminalAnnotationReview", back_populates="annotation", lazy="dynamic")
 
 
 class AudioTranscriptionAnnotation(Annotation):
@@ -34,7 +34,7 @@ class AudioTranscriptionAnnotation(Annotation):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_annotations")
     recording_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
     recording = relationship("AudioTranscription", foreign_keys=[recording_id], back_populates="annotations")
-    annotation_reviews = relationship("AudioAnnotationReview", back_populates="annotation", lazy="dynamic")
+    annotation_review = relationship("AudioAnnotationReview", back_populates="annotation", lazy="dynamic")
 
 
 # Pydantic models
@@ -46,3 +46,6 @@ class TerminalAnnotationRead(BaseModel):
     annotation_text: str
     start_time_milliseconds: int
     end_time_milliseconds: int
+
+    class Config:
+        orm_mode = True

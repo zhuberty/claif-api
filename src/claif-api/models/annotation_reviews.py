@@ -28,7 +28,7 @@ class TerminalAnnotationReview(AnnotationReview):
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="terminal_annotation_reviews")
     annotation_id = Column(Integer, ForeignKey("terminal_recording_annotations.id"), index=True)
-    annotation = relationship("TerminalRecordingAnnotation", foreign_keys=[annotation_id], back_populates="annotation_reviews")
+    annotation = relationship("TerminalRecordingAnnotation", foreign_keys=[annotation_id], back_populates="annotation_review")
     recording_id = Column(Integer, ForeignKey("terminal_recordings.id"), index=True)
     recording = relationship("TerminalRecording", foreign_keys=[recording_id], back_populates="annotation_reviews")
 
@@ -38,7 +38,7 @@ class AudioAnnotationReview(AnnotationReview):
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_annotation_reviews")
     annotation_id = Column(Integer, ForeignKey("audio_transcription_annotations.id"), index=True)
-    annotation = relationship("AudioTranscriptionAnnotation", foreign_keys=[annotation_id], back_populates="annotation_reviews")
+    annotation = relationship("AudioTranscriptionAnnotation", foreign_keys=[annotation_id], back_populates="annotation_review")
     recording_id = Column(Integer, ForeignKey("audio_transcriptions.id"), index=True)
     recording = relationship("AudioTranscription", foreign_keys=[recording_id], back_populates="annotation_reviews")
 

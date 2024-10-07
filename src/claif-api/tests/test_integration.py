@@ -1,4 +1,3 @@
-import json
 import requests
 import pytest
 from sqlalchemy.orm.session import Session
@@ -10,7 +9,6 @@ from models.recordings import TerminalRecording
 from models.annotations import TerminalRecordingAnnotation
 from models.users import User
 from models.utils.schema import get_model_schema_string
-from tests.conftest import logger
 
 
 @pytest.mark.order(1)
@@ -63,15 +61,8 @@ def test_create_terminal_recording(base_url, access_token):
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
     
-    saved_recording: TerminalRecording = response_data["recording"]
     assert response_data["message"] == "Recording created"
-    assert saved_recording is not None
-    
-    assert saved_recording["creator_id"] == 2  # Assuming this is the correct user ID
-    assert saved_recording["title"] == payload["title"]
-    assert saved_recording["description"] == payload["description"]
-    assert saved_recording["duration_milliseconds"] > 0
-    assert saved_recording["annotations_count"] == 0  # Assuming no annotations on create
+    assert response_data["recording_id"] > 0
 
 
 @pytest.mark.order(4)
@@ -90,19 +81,21 @@ def test_get_created_terminal_recording(base_url, access_token):
     # Make the GET request to the /{recording_id} endpoint
     url = f"{base_url}/recordings/terminal/{recording.id}"
     response = requests.get(url, headers=headers)
-
-    # Assert the response status and content
-    assert response.status_code == 200
     response_data = response.json()
-    assert response_data["id"] == recording.id
-    assert "content_body" in response_data
-    assert response_data["content_body"].startswith("[[")
-    assert response_data["content_metadata"].startswith("{")
-    assert response_data["duration_milliseconds"] > 0
-    assert response_data["annotations_count"] == 0
-    assert response_data["revision_number"] == 1
-    assert response_data["title"] == "Writing a small hello-world Python function"
-    assert response_data["description"] == "The user writes a small Python function that prints 'Hello, Annotations!'"
+
+    assert response.status_code == 200
+    assert response_data["recording"] is not None
+    response_recording = response_data["recording"]
+    assert response_data["annotations"] == []
+    assert response_data["annotation_reviews"] == []
+    assert response_recording["id"] == recording.id
+    assert response_recording["content_body"].startswith("[[")
+    assert response_recording["content_metadata"].startswith("{")
+    assert response_recording["duration_milliseconds"] > 0
+    assert response_recording["annotations_count"] == 0
+    assert response_recording["revision_number"] == 1
+    assert response_recording["title"] == "Writing a small hello-world Python function"
+    assert response_recording["description"] == "The user writes a small Python function that prints 'Hello, Annotations!'"
 
 
 @pytest.mark.order(5)
@@ -159,25 +152,40 @@ def test_get_updated_terminal_recording(base_url, access_token):
     # Assert the response status and content
     assert response.status_code == 200
     response_data = response.json()
-    assert response_data["id"] == recording.id
-    assert "content_body" in response_data
-    assert response_data["content_body"].startswith("[[")
-    assert response_data["content_metadata"].startswith("{")
-    assert response_data["duration_milliseconds"] > 0
-    assert response_data["annotations_count"] == 9
-    assert response_data["revision_number"] == 2
-    assert response_data["title"] == "Updated Recording Title"
-    assert response_data["description"] == "Updated description with more details."
-    assert response_data["deleted_at"] == None
+    assert response_data["recording"] is not None
+    recording_response = response_data["recording"]
+    assert len(response_data["annotations"]) == 9
+    assert response_data["annotation_reviews"] == []
+    assert recording_response["id"] == recording.id
+    assert recording_response["content_body"].startswith("[[")
+    assert recording_response["content_metadata"].startswith("{")
+    assert recording_response["duration_milliseconds"] > 0
+    assert recording_response["annotations_count"] == 9
+    assert recording_response["revision_number"] == 2
+    assert recording_response["title"] == "Updated Recording Title"
+    assert recording_response["description"] == "Updated description with more details."
+    assert recording_response["deleted_at"] == None
 
 
 @pytest.mark.order(7)
+def test_get_annotations():
+    """Test getting all annotations for a recording."""
+    db = next(get_db())
+    recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
+    assert recording is not None, "No recording found"
+    annotations: list[TerminalRecordingAnnotation] = recording.annotations.all()
+    assert len(annotations) == 9
+    for annotation in annotations:
+        assert annotation.recording_id == recording.id
+        assert annotation.revision_number == recording.revision_number
+        assert len(annotation.annotation_text) > 0
+
+
+@pytest.mark.order(8)
 def test_create_terminal_annotation_review(base_url, access_token):
     """Test creating a new annotation review."""
 
-    # get the recording id of the last recording where revision_number is 2
     db: Session = next(get_db())
-
     recording = db.query(TerminalRecording).order_by(TerminalRecording.id.desc()).first()
     assert recording is not None, "No recording found"
 
@@ -203,3 +211,27 @@ def test_create_terminal_annotation_review(base_url, access_token):
     response_data = response.json()
     assert response_data["message"] == "Annotation review created"
     assert response_data["annotation_review_id"] > 0
+
+
+@pytest.mark.order(9)
+def test_get_terminal_recording_with_reviews(base_url, access_token):
+    """Test getting all annotation reviews for a recording."""
+    # get the recording id of the last recording where revision_number is 2
+    db: Session = next(get_db())
+    recording = db.query(TerminalRecording).filter_by(revision_number=2).order_by(TerminalRecording.id.desc()).first()
+    assert recording is not None, "No recording found"
+
+    headers = get_auth_headers(access_token)
+    url = f"{base_url}/recordings/terminal/{recording.id}"
+    response = requests.get(url, headers=headers)
+    response_data = response.json()
+    assert response.status_code == 200
+    assert "annotation_reviews" in response_data
+    for review in response_data["annotation_reviews"]:
+        assert review["annotation_id"] > 0
+        assert review["creator_id"] == 2
+        assert review["q_does_anno_match_content"] in [True, False]
+        assert review["q_can_anno_be_halved"] in [True, False]
+        assert review["q_how_well_anno_matches_content"] in [1, 2, 3, 4, 5]
+        assert review["q_can_you_improve_anno"] in [True, False]
+        assert review["q_can_you_provide_markdown"] in [True, False]
