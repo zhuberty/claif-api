@@ -1,5 +1,6 @@
 import requests
-from auth_utils import get_auth_headers, handle_unauthorized
+from auth_actions import handle_unauthorized
+from auth_utils import get_auth_headers
 
 def fetch_recording(base_url, recording_id):
     url = f"{base_url}/recordings/terminal/read/{recording_id}"
@@ -19,6 +20,8 @@ def fetch_recording(base_url, recording_id):
                 return response.json()
             else:
                 print(f"Error fetching recording: {response.status_code} - {response.text}")
+        else:
+            print("Unable to fetch the recording due to authorization failure.")
     else:
         print(f"Error fetching recording: {response.status_code} - {response.text}")
     return None
@@ -26,7 +29,6 @@ def fetch_recording(base_url, recording_id):
 def create_annotation_review(base_url, annotation):
     print(f"Annotation text: {annotation['annotation_text']}")
 
-    # Prompt the user for answers
     q_does_anno_match_content = input("Does the annotation match the content? (yes/no): ").strip().lower() == 'yes'
     q_can_anno_be_halved = input("Can the annotation be halved? (yes/no): ").strip().lower() == 'yes'
     q_how_well_anno_matches_content = int(input("How well does the annotation match the content (1-5): ").strip())

@@ -79,7 +79,7 @@ def test_get_created_terminal_recording(base_url, access_token):
     assert recording is not None, "No recording found"
 
     # Make the GET request to the /{recording_id} endpoint
-    url = f"{base_url}/recordings/terminal/{recording.id}"
+    url = f"{base_url}/recordings/terminal/read/{recording.id}"
     response = requests.get(url, headers=headers)
     response_data = response.json()
 
@@ -146,7 +146,7 @@ def test_get_updated_terminal_recording(base_url, access_token):
     assert recording is not None, "No recording found"
 
     # Make the GET request to the /{recording_id} endpoint
-    url = f"{base_url}/recordings/terminal/{recording.id}"
+    url = f"{base_url}/recordings/terminal/read/{recording.id}"
     response = requests.get(url, headers=headers)
 
     # Assert the response status and content
@@ -223,7 +223,7 @@ def test_get_terminal_recording_with_reviews(base_url, access_token):
     assert recording is not None, "No recording found"
 
     headers = get_auth_headers(access_token)
-    url = f"{base_url}/recordings/terminal/{recording.id}"
+    url = f"{base_url}/recordings/terminal/read/{recording.id}"
     response = requests.get(url, headers=headers)
     response_data = response.json()
     assert response.status_code == 200
@@ -245,3 +245,20 @@ def test_get_terminal_recording_with_reviews(base_url, access_token):
         assert review["q_how_well_anno_matches_content"] in [1, 2, 3, 4, 5]
         assert review["q_can_you_improve_anno"] in [True, False]
         assert review["q_can_you_provide_markdown"] in [True, False]
+
+
+@pytest.mark.order(10)
+def test_list_recordings(base_url, access_token):
+    """Test listing all recordings."""
+    headers = get_auth_headers(access_token)
+    url = f"{base_url}/recordings/terminal/list"
+    response = requests.get(url, headers=headers)
+    assert response.status_code == 200
+    response_data = response.json()
+    assert len(response_data) > 0
+    for recording in response_data:
+        assert recording["id"] > 0
+        assert len(recording["title"]) > 0
+        assert len(recording["description"]) > 0
+        assert recording["revision_number"] > 0
+        assert recording["creator_id"] > 0

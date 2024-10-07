@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from models.recordings import TerminalRecording
 from models.users import User
-from models.recordings import TerminalRecordingCreate, TerminalRecordingRead, TerminalRecordingUpdate
+from models.recordings import TerminalRecordingCreate, TerminalRecordingRead, TerminalRecordingUpdate, TerminalRecordingListRead
 from models.annotations import TerminalAnnotationRead, TerminalAnnotationRead
 from models.annotation_reviews import AnnotationReviewRead
 from models.utils.terminal_recordings import create_annotation, extract_annotations, parse_asciinema_recording
@@ -11,6 +11,7 @@ from utils.database import get_db
 from utils.auth import get_current_user, limiter
 from utils.exception_handlers import value_error_handler
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import load_only
 
 router = APIRouter()
 
@@ -48,7 +49,7 @@ async def create_recording(
     return {"message": "Recording created", "recording_id": terminal_recording.id}
 
 
-@router.get("/{recording_id}")
+@router.get("/read/{recording_id}")
 @limiter.limit("20/minute")
 @value_error_handler
 async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db)):
@@ -69,6 +70,20 @@ async def read_recording(request: Request, recording_id: int, db: Session = Depe
         "annotations": annotations_list,
         "annotation_reviews": annotation_reviews_list
     }
+
+
+@router.get("/list")
+@limiter.limit("5/minute")
+@value_error_handler
+async def list_recordings(request: Request, db: Session = Depends(get_db)):
+    recordings = db.query(TerminalRecording).options(load_only(
+        TerminalRecording.id,
+        TerminalRecording.revision_number,
+        TerminalRecording.title,
+        TerminalRecording.description, 
+        TerminalRecording.creator_id,
+    )).all()
+    return [TerminalRecordingListRead.from_orm(recording) for recording in recordings]
 
 
 @router.post("/update")

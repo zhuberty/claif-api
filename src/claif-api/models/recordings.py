@@ -76,6 +76,19 @@ class TerminalRecordingRead(BaseModel):
         arbitrary_types_allowed = True
 
 
+# Pydantic models
+class TerminalRecordingListRead(BaseModel):
+    """Pydantic model for reading terminal recordings in a list. """
+    id: int
+    title: str
+    description: str
+    revision_number: int
+    creator_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class TerminalRecordingCreate(BaseModel):
     """Pydantic model for creating a terminal recording."""
     title: str
