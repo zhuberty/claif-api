@@ -194,7 +194,7 @@ start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - recording (related to TerminalRecording)
-- annotation_reviews (related to TerminalAnnotationReview)
+- annotation_review (related to TerminalAnnotationReview)
 ```
 
 
@@ -233,7 +233,7 @@ start_time_milliseconds             FLOAT
 Relationships:
 - creator (related to User)
 - recording (related to AudioTranscription)
-- annotation_reviews (related to AudioAnnotationReview)
+- annotation_review (related to AudioAnnotationReview)
 ```
 
 
@@ -291,7 +291,7 @@ size_bytes                          INTEGER
 title                               VARCHAR
 Relationships:
 - creator (related to User)
-- audio_transcriptions (related to AudioTranscription)
+- audio_transcription (related to AudioTranscription)
 ```
 
 
