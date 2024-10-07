@@ -5,15 +5,28 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: CLI Tool",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/claif-api/cli_tool/claif_cli.py",
+            "cwd": "${workspaceFolder}/src/claif-api/cli_tool",
+            "args": [
+                "--use-alt-port",  // port 8000
+                "review-recording",
+                "2"
+            ]
+        },
+        {
             "name": "Pytest Debugger: Integration Tests",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "cwd": "${workspaceFolder}/src/claif-api",
             "args": [
-                "-s",  // Do not capture stdout. Instead, let it print to the stdout
-                "-v",  // Verbose output
-                "tests"  // Run tests in the tests directory
+                "-s", // Do not capture stdout. Instead, let it print to the stdout
+                "-v", // Verbose output
+                "tests" // Run tests in the tests directory
             ],
             "envFile": "${workspaceFolder}/.env"
         },

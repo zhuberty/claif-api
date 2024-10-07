@@ -39,6 +39,7 @@ async def create_annotation_review(
         revision_number=annotation.revision_number,
     )
     db.add(annotation_review)
+    annotation.reviews_count += 1
     db.commit()
     db.refresh(annotation_review)
     return {"message": "Annotation review created", "annotation_review_id": annotation_review.id}

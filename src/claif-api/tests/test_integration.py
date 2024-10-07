@@ -226,6 +226,15 @@ def test_get_terminal_recording_with_reviews(base_url, access_token):
     response = requests.get(url, headers=headers)
     response_data = response.json()
     assert response.status_code == 200
+
+    assert "annotations" in response_data
+    found_annotation_with_reviews = False
+    for annotation in response_data["annotations"]:
+        if annotation["reviews_count"] > 0:
+            found_annotation_with_reviews = True
+            break
+    assert found_annotation_with_reviews, "No annotations with reviews found"
+
     assert "annotation_reviews" in response_data
     for review in response_data["annotation_reviews"]:
         assert review["annotation_id"] > 0
