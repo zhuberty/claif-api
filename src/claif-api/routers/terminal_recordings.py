@@ -52,23 +52,31 @@ async def create_recording(
 @router.get("/read/{recording_id}")
 @limiter.limit("20/minute")
 @value_error_handler
-async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db)):
-    # Fetch the recording from the database
+async def read_recording(
+    request: Request,
+    recording_id: int,
+    revision_number: int = None,
+    db: Session = Depends(get_db),
+):
+    # Fetch the recording
     recording = db.query(TerminalRecording).filter_by(id=recording_id).first()
     if recording is None:
         raise HTTPException(status_code=404, detail="Recording not found")
 
     # Convert the dynamic annotations relationship into a list of Pydantic models
-    annotations = list(recording.annotations.all())  # Ensure annotations are loaded as a list
+    if revision_number is None:
+        revision_number = recording.revision_number
+    annotations = list(recording.annotations.filter_by(revision_number=revision_number).all())
     annotations_list = [TerminalAnnotationRead.from_orm(annotation) for annotation in annotations]
 
-    annotation_reviews = list(recording.annotation_reviews.all())
+    annotation_reviews = list(recording.annotation_reviews.filter_by(revision_number=revision_number).all())
     annotation_reviews_list = [AnnotationReviewRead.from_orm(review) for review in annotation_reviews]
 
     return {
         "recording": TerminalRecordingRead.from_orm(recording), 
         "annotations": annotations_list,
-        "annotation_reviews": annotation_reviews_list
+        "annotation_reviews": annotation_reviews_list,
+        "selected_revision_number": revision_number,
     }
 
 

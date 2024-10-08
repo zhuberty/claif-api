@@ -64,6 +64,7 @@ def test_get_created_terminal_recording(base_url, access_token):
     assert response_recording["title"] == "Writing a small hello-world Python function"
     assert response_recording["description"] == "The user writes a small Python function that prints 'Hello, Annotations!'"
 
+
 @pytest.mark.order(103)
 def test_update_terminal_recording(base_url, access_token):
     """Test updating an existing TerminalRecording."""
@@ -100,7 +101,8 @@ def test_get_updated_terminal_recording(base_url, access_token):
     assert recording is not None, "No recording found"
 
     url = f"{base_url}/recordings/terminal/read/{recording.id}"
-    response = requests.get(url, headers=headers)
+    params = {"revision_number": recording.revision_number}
+    response = requests.get(url, headers=headers, params=params)
     response_data = response.json()
 
     assert response.status_code == 200

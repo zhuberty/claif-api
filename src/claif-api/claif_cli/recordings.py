@@ -1,4 +1,5 @@
 from display_utils import display_annotations
+from annotation_reviews import create_review
 from api_requests import api_request
 
 
@@ -6,20 +7,17 @@ def list_recordings(base_url):
     return api_request(base_url, "/recordings/terminal/list")
 
 
-def fetch_recording(base_url, recording_id):
+def fetch_recording(base_url, recording_id, revision_number):
+    params = {"revision_number": revision_number}
     return api_request(base_url, f"/recordings/terminal/read/{recording_id}")
-
-
-def create_review(base_url, annotation_data):
-    return api_request(base_url, "/annotations/review", method="POST", json=annotation_data)
 
 
 def delete_recording(base_url, recording_id):
     return api_request(base_url, f"/recordings/terminal/delete/{recording_id}", method="DELETE")
 
 
-def review_recording(base_url, recording_id):
-    recording = fetch_recording(base_url, recording_id)
+def review_recording(base_url, recording_id, revision_number):
+    recording = fetch_recording(base_url, recording_id, revision_number)
     if not recording:
         return
 
@@ -38,12 +36,35 @@ def review_recording(base_url, recording_id):
             print("Exiting...")
             break
 
-        selected_annotation = next((anno for anno in annotations if anno['id'] == annotation_id), None)
+        selected_annotation = None
+        for annotation in annotations:
+            if annotation['id'] == annotation_id:
+                selected_annotation = annotation
+                break
         if not selected_annotation:
             print("Invalid annotation ID. Please select a valid one from the table.")
             continue
 
-        create_review(base_url, selected_annotation)
+        response = create_review(base_url, selected_annotation)
+
+        if "message" in response:
+            print(response["message"])
+        else:
+            print("An error occurred while creating the review.")
 
         # Update the local annotations list to reflect the new review count
         selected_annotation['reviews_count'] += 1
+
+
+def create_recording(base_url, recording_filepath, title, description):
+    with open(recording_filepath, 'r') as file:
+        recording_content = file.read()
+
+    payload = {
+        "title": title,
+        "description": description,
+        "recording_content": recording_content,
+    }
+    response = api_request(base_url, "/recordings/terminal/create", method="POST", json=payload)
+    if "message" in response:
+        print(response["message"])

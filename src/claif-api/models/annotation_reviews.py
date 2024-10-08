@@ -70,7 +70,7 @@ class AnnotationReviewRead(AnnotationReviewQuestions):
 
 annotation_review_create_example = {
     "example": {
-        "annotation_id": 1,
+        "annotation_id": 20,
         "q_does_anno_match_content": True,
         "q_can_anno_be_halved": False,
         "q_how_well_anno_matches_content": 5,
