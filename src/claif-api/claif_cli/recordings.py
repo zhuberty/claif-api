@@ -68,3 +68,33 @@ def create_recording(base_url, recording_filepath, title, description):
     response = api_request(base_url, "/recordings/terminal/create", method="POST", json=payload)
     if "message" in response:
         print(response["message"])
+
+
+def update_recording(base_url, recording_id, recording_filepath=None, title=None, description=None):
+    content_metadata = None
+    if recording_filepath:
+        # get content metadata from filepath which is first line of the file
+        with open(recording_filepath, 'r') as file:
+            content_metadata = file.readline()
+            # make sure it is not larger than 2 MB
+            if not content_metadata.startswith('{"version"') or not content_metadata.endswith("}\n"):
+                print("The file's metadata is not in the correct format.")
+                return
+            elif len(content_metadata) > 1024 * 2:
+                print("The file's metadata is too large (>2MB).")
+                return
+            
+    # if title, description, and metadata are all empty or null, return
+    if not title and not description and not content_metadata:
+        print("No changes provided. Please provide at least one change.")
+        return
+    
+    payload = {
+        "recording_id": recording_id,
+        "title": title,
+        "description": description,
+        "content_metadata": content_metadata,
+    }
+    response = api_request(base_url, f"/recordings/terminal/update", method="POST", json=payload)
+    if "message" in response:
+        print(response["message"])

@@ -92,10 +92,6 @@ def test_cli_create_terminal_recording(monkeypatch, setup_cli):
     asciinema_recordings_dir = Path(__file__).parent.parent / "asciinema_recording_samples"
     recording_filepath = asciinema_recordings_dir / "recording_1_revision_1.txt"
 
-    # Set up input prompts for the create-recording command
-    inputs = ["CLI Test Recording", "CLI Test Description"]
-    set_input_prompts(monkeypatch, inputs)
-
     # Pass in args: create-recording, recording_filepath, title, description
     patch_sys_argv(monkeypatch, [
         "create-recording", str(recording_filepath),
@@ -111,3 +107,30 @@ def test_cli_create_terminal_recording(monkeypatch, setup_cli):
     captured_output_value = captured_output.getvalue()
     assert "Error" not in captured_output.getvalue()
     assert "Recording created" in captured_output_value
+
+
+@pytest.mark.order(903)
+def test_cli_update_terminal_recording(monkeypatch, setup_cli):
+    # Unpack the fixture
+    main_module, _ = setup_cli
+
+    # Get the most recent recording with a revision greater than 1
+    db: pytest.Session = next(get_db())
+    recording = db.query(TerminalRecording).filter(TerminalRecording.revision_number > 1).order_by(TerminalRecording.id.desc()).first()
+
+    # Pass in args
+    recording_filepath = Path(__file__).parent.parent / "asciinema_recording_samples" / "recording_1_revision_2.txt"
+    patch_sys_argv(monkeypatch, [
+        "update-recording", str(recording.id), f"--recording_filepath={recording_filepath}",
+        "--title=CLI Test Recording Updated", "--description=CLI Test Description Updated"
+    ])
+
+    # Capture stdout
+    captured_output = capture_output(monkeypatch)
+
+    # Call the CLI Tool's main function
+    main_module.main()
+
+    captured_output_value = captured_output.getvalue()
+    assert "Error" not in captured_output.getvalue()
+    assert "Recording updated" in captured_output_value
