@@ -10,9 +10,8 @@ from tests.utils.config import get_base_url
 # Set up the logger
 logging.basicConfig(
     level=logging.DEBUG,
-    format='pytest:%(levelname)s:\t%(message)s',
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("pytest")
 
 
 @pytest.fixture(scope="session")
