@@ -1,4 +1,3 @@
-import os
 from utils.env import CLAIF_API_HOST, CLAIF_API_PORT
 
 def get_base_url():

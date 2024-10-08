@@ -3,9 +3,7 @@ import json
 import logging
 import requests
 import pytest
-from utils.env import (
-    TEST_USER_USERNAME, TEST_USER_PASSWORD
-)
+from utils.env import (TEST_USER_USERNAME, TEST_USER_PASSWORD)
 from tests.utils.config import get_base_url
 
 

@@ -14,7 +14,7 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    login_parser = subparsers.add_parser("login", help="Login and obtain an access token")
+    login_parser = subparsers.add_parser("login", help="Login to the FastAPI app")
 
     review_parser = subparsers.add_parser("create-review", help="Create an annotation review")
     review_parser.add_argument("annotation_id", type=int, help="ID of the annotation to review")
