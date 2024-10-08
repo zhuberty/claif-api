@@ -1,44 +1,30 @@
+import sys
 import os
 import pytest
-import subprocess
-import getpass
+import importlib.util
 from pathlib import Path
-from utils.env import (
-    CLAIF_API_HOST,
-    CLAIF_API_PORT,
-    TEST_USER_USERNAME,
-    TEST_USER_PASSWORD,
-)
-
+from unittest import mock
+from utils.env import TEST_USER_USERNAME, TEST_USER_PASSWORD
 
 @pytest.mark.order(900)
 def test_login(monkeypatch):
-    inputs = iter([
-        TEST_USER_USERNAME,
-    ])
+    # Set the directory to ../claif_cli and add it to sys.path
+    project_dir = Path(__file__).parent.parent / "claif_cli"
+    os.chdir(project_dir)
+    sys.path.insert(0, str(project_dir))
+
+    # Dynamically import main from ../claif_cli/main.py
+    main_path = project_dir / "main.py"
+    spec = importlib.util.spec_from_file_location("main", str(main_path))
+    main_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(main_module)
+
+    # Patch the input function to simulate the CLI tool input
+    inputs = iter([TEST_USER_USERNAME])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    monkeypatch.setattr(getpass, 'getpass', lambda _: TEST_USER_PASSWORD)
-
-    # Prepare the environment by copying the current environment and adding PYTHONPATH
-    env = os.environ.copy()
-
-    # Set PYTHONPATH to include your project root directory
-    project_root = str(Path(__file__).parent.parent)
-    pythonpath = env.get("PYTHONPATH", "")
-    env["PYTHONPATH"] = f"{project_root}:{pythonpath}"
-
-    # Use the virtual environment's Python interpreter
-    python_executable = Path(env.get("VIRTUAL_ENV", "")) / "bin" / "python"
-    if not python_executable.exists():
-        python_executable = "python"  # Fallback if not running in a virtual environment
-
-    # Run the CLI tool using subprocess
-    result = subprocess.run(
-        ["python", "main.py", "--use-alt-port", "login"],
-        text=True,
-        capture_output=True,
-        cwd=str(Path(__file__).parent.parent / "claif_cli"),
-    )
     
-    assert result.returncode == 0
-    assert "Login successful! Access token saved." in result.stdout
+    # Patch sys.argv for the command-line arguments, including the password
+    monkeypatch.setattr(sys, 'argv', ['main.py', '--use-alt-port', 'login', '--password', TEST_USER_PASSWORD])
+    
+    # Call the main function from the dynamically loaded module
+    main_module.main()

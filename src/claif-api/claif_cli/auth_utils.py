@@ -24,11 +24,10 @@ def save_access_token(token):
     with open(TOKEN_FILE, 'w') as f:
         json.dump({"access_token": token}, f)
 
-def login(base_url):
-    username = input("Username: ").strip()
-    password = getpass("Password: ").strip()  # Use getpass to securely enter the password
-
-    url = f"{base_url}/auth/token"
+def login(base_url, password=None):
+    username = input("Username: ")
+    password = password or getpass("Password: ")
+    url = f"{base_url}/token"
     payload = {
         "username": username,
         "password": password,
