@@ -27,7 +27,7 @@ def save_access_token(token):
 def login(base_url, password=None):
     username = input("Username: ")
     password = password or getpass("Password: ")
-    url = f"{base_url}/token"
+    url = f"{base_url}/auth/token"
     payload = {
         "username": username,
         "password": password,
