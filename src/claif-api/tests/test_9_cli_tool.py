@@ -4,7 +4,10 @@ import pytest
 import importlib.util
 from pathlib import Path
 from unittest import mock
+from io import StringIO
 from utils.env import TEST_USER_USERNAME, TEST_USER_PASSWORD
+from conftest import logger
+
 
 @pytest.mark.order(900)
 def test_login(monkeypatch):
@@ -26,5 +29,23 @@ def test_login(monkeypatch):
     # Patch sys.argv for the command-line arguments, including the password
     monkeypatch.setattr(sys, 'argv', ['main.py', '--use-alt-port', 'login', '--password', TEST_USER_PASSWORD])
     
+    # Redirect stdout to capture print output
+    captured_output = StringIO()
+    monkeypatch.setattr(sys, 'stdout', captured_output)
+    
+    access_token_path = project_dir / "access_token.json"
+
+    # Check if access_token.json exists and delete it
+    if os.path.exists(access_token_path):
+        logger.info("Removing existing access token file")
+        os.remove(access_token_path)
+
     # Call the main function from the dynamically loaded module
     main_module.main()
+
+    # Retrieve the captured output
+    output = captured_output.getvalue()
+
+    # Assertions to check if the expected output is in the captured output
+    assert output == "Login successful! Access token saved.\n"
+    assert os.path.exists(access_token_path)
