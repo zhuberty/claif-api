@@ -166,9 +166,6 @@ def test_cli_host_flags(monkeypatch, setup_cli):
     # Pass in args
     patch_sys_argv(monkeypatch, ["--base-url=http://incorrect-localhost:8000/v1", "list-recordings"])
 
-    # Capture stdout
-    captured_output = capture_output(monkeypatch)
-
     # Call the CLI Tool's main function
     raised_expected_errors = False
     try:

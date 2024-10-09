@@ -13,7 +13,7 @@ DEFAULT_URL = "http://localhost:8000/v1"
 def main():
     parser = argparse.ArgumentParser(description="CLI tool for interacting with FastAPI app.")
     parser.add_argument("--base-url", default=DEFAULT_URL, help="Base URL of the FastAPI app")
-    parser.add_argument("--password", help="Provide password directly for testing purposes")
+    parser.add_argument("--password", help="Don't use this for prod environments. Provide password directly for testing purposes")
 
     subparsers = parser.add_subparsers(dest="command")
 

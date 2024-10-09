@@ -33,6 +33,98 @@ The services include:
 Coming Soon
 
 # Using the API
+## CLI Tool
+
+### Installation
+To install the CLI tool, follow these steps:
+
+1. **Navigate to the CLI Directory**
+   - Go to the `src/claif-api/claif_cli` directory.
+
+2. **Install Dependencies**
+   - Install the necessary dependencies using Poetry:
+     ```bash
+     poetry install
+     ```
+
+3. **Run the CLI Tool**
+   - Execute the CLI tool with:
+      ```bash
+      PYTHONPATH=./ poetry run python main.py --base-url=http://localhost:8000/v1 login
+      
+      Username: testuser
+      Password: 
+      Login successful! Access token saved.
+      ```
+   - The CLI tool is now ready to use. The access token is saved in a file named `access_token.txt` in the current directory.
+     - After 30 minutes it will expire and then it will ask you for your username and password again.
+
+### Usage
+The CLAIF-CLI provides several commands to interact with the API. Below is a list of available commands and their usage:
+
+#### Available Commands
+
+- **Login**: Authenticate with the FastAPI app.
+  ```bash
+  python main.py login
+  ```
+
+- **Review a Recording**: Review an existing recording by its ID.
+  ```bash
+  python main.py review-recording <recording_id> [--revision-number <number>]
+  ```
+  - `<recording_id>`: The ID of the recording to review.
+  - `--revision-number`: Optional. Specify the revision number of the recording.
+
+- **Create a New Recording**: Create a new terminal or audio recording.
+  ```bash
+  python main.py create-recording <recording_filepath> <recording_title> <recording_description>
+  ```
+  - `<recording_filepath>`: Path to the recording file.
+  - `<recording_title>`: Title for the new recording.
+  - `<recording_description>`: Description of the recording.
+
+- **Update an Existing Recording**: Update details of an existing recording by its ID.
+  ```bash
+  python main.py update-recording <recording_id> [--recording_filepath <path>] [--title <new_title>] [--description <new_description>]
+  ```
+  - `<recording_id>`: The ID of the recording to update.
+  - `--recording_filepath`: Optional. Path to the updated recording file.
+  - `--title`: Optional. New title for the recording.
+  - `--description`: Optional. New description for the recording.
+
+- **List All Recordings**: Display a list of all available recordings.
+  ```bash
+  python main.py list-recordings
+  ```
+
+#### Command-Line Options
+
+- `--base-url`: Specify the base URL of the FastAPI application. The default is `http://localhost:8000/v1`.
+
+#### Example Usage
+
+```bash
+# Login to the application
+python main.py login
+
+# Review a specific recording
+python main.py review-recording 123 --revision-number 2
+
+# Create a new recording
+python main.py create-recording /path/to/file.asciinema "My Recording" "This is a test recording"
+
+# Update an existing recording
+python main.py update-recording 123 --title "Updated Title" --description "New description for the recording"
+
+# List all recordings
+python main.py list-recordings
+
+# Ensure you have the correct base URL and authentication details before running the commands.
+# example:
+python main.py --base-url=https://anno-api.claif.org:8080/v1 login
+```
+
 ## Testing the API Swagger UI
 There is a Swagger UI available at http://localhost:8080/docs that provides a user-friendly interface to browse the API.
 
