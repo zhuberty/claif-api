@@ -1,12 +1,15 @@
 import sys
 import os
 import pytest
+from urllib3.exceptions import NameResolutionError, MaxRetryError
+from requests.exceptions import RequestException
 from pathlib import Path
+
+from models.recordings import TerminalRecording
 from utils.env import TEST_USER_USERNAME, TEST_USER_PASSWORD
 from utils.database import get_db
-from models.recordings import TerminalRecording
-from conftest import logger
 from utils.cli_test_helpers import load_cli_module, set_input_prompts, capture_output, patch_sys_argv
+from conftest import logger
 
 
 @pytest.fixture
@@ -105,7 +108,7 @@ def test_cli_create_terminal_recording(monkeypatch, setup_cli):
     main_module.main()
 
     captured_output_value = captured_output.getvalue()
-    assert "Error" not in captured_output.getvalue()
+    assert "Error" not in captured_output_value
     assert "Recording created" in captured_output_value
 
 
@@ -132,7 +135,7 @@ def test_cli_update_terminal_recording(monkeypatch, setup_cli):
     main_module.main()
 
     captured_output_value = captured_output.getvalue()
-    assert "Error" not in captured_output.getvalue()
+    assert "Error" not in captured_output_value
     assert "Recording updated" in captured_output_value
 
 
@@ -151,5 +154,37 @@ def test_cli_list_recordings(monkeypatch, setup_cli):
     main_module.main()
 
     captured_output_value = captured_output.getvalue()
-    assert "Error" not in captured_output.getvalue()
+    assert "Error" not in captured_output_value
     assert "CLI Test Recording Updated" in captured_output_value
+
+
+@pytest.mark.order(905)
+def test_cli_host_flags(monkeypatch, setup_cli):
+    # Unpack the fixture
+    main_module, _ = setup_cli
+
+    # Pass in args
+    patch_sys_argv(monkeypatch, ["--base-url=http://incorrect-localhost:8000/v1", "list-recordings"])
+
+    # Capture stdout
+    captured_output = capture_output(monkeypatch)
+
+    # Call the CLI Tool's main function
+    raised_expected_errors = False
+    try:
+        main_module.main()
+    except RequestException as e:
+        # Check if the exception is wrapping a MaxRetryError
+        if e.args and isinstance(e.args[0], MaxRetryError):
+            max_retry_error = e.args[0]
+            logger.info(f"As intended, MaxRetryError occurred.")
+            
+            # Further check if it is caused by a NameResolutionError
+            if max_retry_error.reason and isinstance(max_retry_error.reason, NameResolutionError):
+                logger.info(f"As intended, NameResolutionError occurred")
+                raised_expected_errors = True
+        else:
+            # Handle other RequestException errors
+            pytest.fail(f"An unintended requests-related error occurred: {e}")
+
+    assert raised_expected_errors

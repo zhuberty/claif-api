@@ -12,7 +12,6 @@
             "program": "${workspaceFolder}/src/claif-api/claif_cli/main.py",
             "cwd": "${workspaceFolder}/src/claif-api/claif_cli",
             "args": [
-                "--use-alt-port",  // port 8000
                 "list-recordings",
             ]
         },

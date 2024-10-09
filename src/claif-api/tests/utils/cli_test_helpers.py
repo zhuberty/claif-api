@@ -40,4 +40,4 @@ def patch_sys_argv(monkeypatch, command):
     """
     Patches sys.argv with the given command.
     """
-    monkeypatch.setattr(sys, 'argv', ['main.py', '--use-alt-port'] + command)
+    monkeypatch.setattr(sys, 'argv', ['main.py'] + command)

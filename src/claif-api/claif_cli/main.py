@@ -7,14 +7,12 @@ from recordings import (
     list_recordings,
 )
 
-DEFAULT_URL = "http://localhost:8080/v1"
-ALTERNATE_URL = "http://localhost:8000/v1"
+DEFAULT_URL = "http://localhost:8000/v1"
 
 
 def main():
     parser = argparse.ArgumentParser(description="CLI tool for interacting with FastAPI app.")
     parser.add_argument("--base-url", default=DEFAULT_URL, help="Base URL of the FastAPI app")
-    parser.add_argument("--use-alt-port", action="store_true", help="Use the alternate port (8000)")
     parser.add_argument("--password", help="Provide password directly for testing purposes")
 
     subparsers = parser.add_subparsers(dest="command")
@@ -41,7 +39,7 @@ def main():
     
     args = parser.parse_args()
 
-    base_url = ALTERNATE_URL if args.use_alt_port else args.base_url
+    base_url = args.base_url
 
     if args.command == "login":
         login(base_url, password=args.password)
