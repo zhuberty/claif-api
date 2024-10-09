@@ -260,6 +260,7 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
@@ -280,7 +281,9 @@ annotation_text                     VARCHAR
 creator_id                          INTEGER
 end_time_milliseconds               FLOAT
 id                                  INTEGER
+level                               INTEGER
 recording_id                        INTEGER
+reviews_count                       INTEGER
 revision_number                     INTEGER
 start_time_milliseconds             FLOAT
 Relationships:
@@ -298,6 +301,7 @@ content_body                        VARCHAR
 content_metadata                    VARCHAR
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
@@ -319,7 +323,9 @@ annotation_text                     VARCHAR
 creator_id                          INTEGER
 end_time_milliseconds               FLOAT
 id                                  INTEGER
+level                               INTEGER
 recording_id                        INTEGER
+reviews_count                       INTEGER
 revision_number                     INTEGER
 start_time_milliseconds             FLOAT
 Relationships:
@@ -334,6 +340,7 @@ Relationships:
 annotation_id                       INTEGER
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 id                                  INTEGER
 q_can_anno_be_halved                BOOLEAN
 q_can_you_improve_anno              BOOLEAN
@@ -354,6 +361,7 @@ Relationships:
 annotation_id                       INTEGER
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 id                                  INTEGER
 q_can_anno_be_halved                BOOLEAN
 q_can_you_improve_anno              BOOLEAN
@@ -373,6 +381,7 @@ Relationships:
 ```
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 deleted_at                          DATETIME
 description                         VARCHAR
 duration_milliseconds               FLOAT
@@ -391,6 +400,7 @@ Relationships:
 ```
 created_at                          DATETIME
 creator_id                          INTEGER
+creator_username                    VARCHAR
 id                                  INTEGER
 keycloak_id                         VARCHAR
 username                            VARCHAR
