@@ -134,3 +134,23 @@ def test_cli_update_terminal_recording(monkeypatch, setup_cli):
     captured_output_value = captured_output.getvalue()
     assert "Error" not in captured_output.getvalue()
     assert "Recording updated" in captured_output_value
+
+
+@pytest.mark.order(904)
+def test_cli_list_recordings(monkeypatch, setup_cli):
+    # Unpack the fixture
+    main_module, _ = setup_cli
+
+    # Pass in args
+    patch_sys_argv(monkeypatch, ["list-recordings"])
+
+    # Capture stdout
+    captured_output = capture_output(monkeypatch)
+
+    # Call the CLI Tool's main function
+    main_module.main()
+
+    captured_output_value = captured_output.getvalue()
+    assert "Error" not in captured_output.getvalue()
+    assert "CLI Test Recording Updated" in captured_output_value
+    assert "CLI Test Description Updated" in captured_output_value

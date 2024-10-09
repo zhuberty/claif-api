@@ -13,8 +13,7 @@
             "cwd": "${workspaceFolder}/src/claif-api/claif_cli",
             "args": [
                 "--use-alt-port",  // port 8000
-                "review-recording",
-                "2"
+                "list-recordings",
             ]
         },
         {

@@ -16,3 +16,25 @@ def display_annotations(annotations):
     
     headers = ["ID", "Annotation Text", "Reviews", "Start", "End", "Level"]
     print(tabulate(table_data, headers, tablefmt="grid"))
+
+
+def display_recordings_list(recordings):
+    table_data = []
+    for recording in recordings:
+        # Truncate description if it's longer than 20 characters
+        truncated_title = recording["title"][:30] + "..." if len(recording["title"]) > 30 else recording["title"]
+        
+        # Prepare row data
+        row = [
+            recording["id"],
+            truncated_title,
+            recording["revision_number"], 
+            recording["annotations_count"],
+            f"{int(recording['size_bytes'] / 1024)}KB", 
+            # duration in seconds rounded 0 decimal places
+            f"{int(recording['duration_milliseconds'] / 1000)}s"
+        ]
+        table_data.append(row)
+    
+    headers = ["ID", "Title", "Revis #", "Annos", "Size", "Duration"]
+    print(tabulate(table_data, headers, tablefmt="grid"))

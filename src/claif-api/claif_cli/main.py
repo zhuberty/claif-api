@@ -1,6 +1,11 @@
 import argparse
 from auth_utils import login
-from recordings import review_recording, create_recording, update_recording
+from recordings import (
+    review_recording,
+    create_recording,
+    update_recording,
+    list_recordings,
+)
 
 DEFAULT_URL = "http://localhost:8080/v1"
 ALTERNATE_URL = "http://localhost:8000/v1"
@@ -31,6 +36,8 @@ def main():
     update_recording_parser.add_argument("--recording_filepath", help="Path to the updated recording file")
     update_recording_parser.add_argument("--title", help="New title for the recording")
     update_recording_parser.add_argument("--description", help="New description for the recording")
+
+    list_recordings_parser = subparsers.add_parser("list-recordings", help="List all recordings")
     
     args = parser.parse_args()
 
@@ -55,6 +62,8 @@ def main():
             title=args.title, 
             description=args.description
         )
+    elif args.command == "list-recordings":
+        list_recordings(base_url)
 
 
 if __name__ == "__main__":

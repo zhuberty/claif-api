@@ -1,4 +1,4 @@
-from display_utils import display_annotations
+from display_utils import display_annotations, display_recordings_list
 from annotation_reviews import create_review
 from api_requests import api_request
 
@@ -98,3 +98,9 @@ def update_recording(base_url, recording_id, recording_filepath=None, title=None
     response = api_request(base_url, f"/recordings/terminal/update", method="POST", json=payload)
     if "message" in response:
         print(response["message"])
+
+
+def list_recordings(base_url):
+    recordings = api_request(base_url, "/recordings/terminal/list")
+    if recordings:
+        display_recordings_list(recordings)
