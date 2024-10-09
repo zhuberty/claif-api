@@ -35,6 +35,7 @@ async def create_annotation_review(
     annotation_review = TerminalAnnotationReview(
         **payload.dict(),
         creator_id=current_user.id,
+        creator_username=current_user.username,
         recording_id=annotation.recording_id,
         revision_number=annotation.revision_number,
     )

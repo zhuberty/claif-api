@@ -31,10 +31,10 @@ def display_recordings_list(recordings):
             recording["revision_number"], 
             recording["annotations_count"],
             f"{int(recording['size_bytes'] / 1024)}KB", 
-            # duration in seconds rounded 0 decimal places
-            f"{int(recording['duration_milliseconds'] / 1000)}s"
+            f"{int(recording['duration_milliseconds'] / 1000)}s",
+            recording["creator_username"],
         ]
         table_data.append(row)
     
-    headers = ["ID", "Title", "Revis #", "Annos", "Size", "Duration"]
+    headers = ["ID", "Title", "Revis #", "Annos", "Size", "Duration", "Creator"]
     print(tabulate(table_data, headers, tablefmt="grid"))

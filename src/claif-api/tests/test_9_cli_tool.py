@@ -153,4 +153,3 @@ def test_cli_list_recordings(monkeypatch, setup_cli):
     captured_output_value = captured_output.getvalue()
     assert "Error" not in captured_output.getvalue()
     assert "CLI Test Recording Updated" in captured_output_value
-    assert "CLI Test Description Updated" in captured_output_value

@@ -61,6 +61,7 @@ class AnnotationReviewRead(AnnotationReviewQuestions):
     revision_number: int
     creator_id: int
     creator: UserRead
+    creator_username: str
     created_at: datetime
 
     class Config:

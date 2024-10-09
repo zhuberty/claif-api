@@ -30,6 +30,7 @@ async def create_recording(
 
     terminal_recording = TerminalRecording(
         creator_id=current_user.id,
+        creator_username=current_user.username,
         title=payload.title,
         description=payload.description,
         revision_number=1,

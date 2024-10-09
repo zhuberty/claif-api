@@ -17,6 +17,7 @@ class Creatable(Base):
 
     __abstract__ = True
     created_at = Column(DateTime, index=True, default=datetime.now(timezone.utc))
+    creator_username = Column(String, index=True)
 
 
 class Deletable(Base):

@@ -84,6 +84,7 @@ class TerminalRecordingListRead(BaseModel):
     description: str
     revision_number: int
     creator_id: int
+    creator_username: str
     annotations_count: int
     size_bytes: int
     duration_milliseconds: int
