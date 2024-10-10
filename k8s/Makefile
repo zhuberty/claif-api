@@ -14,4 +14,4 @@ deploy: apply-flux apply-apps
 
 # Force a Flux reconciliation
 reconcile:
-	kubectl -n flux-system rollout restart deployment/flux-system-kustomize-controller
+	kubectl -n flux-system rollout restart deployment/kustomize-controller

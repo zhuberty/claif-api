@@ -8,5 +8,4 @@ spec:
   url: https://github.com/zhuberty/claif-api.git
   ref:
     branch: dev
-  secretRef:
-    name: flux-system
+  
