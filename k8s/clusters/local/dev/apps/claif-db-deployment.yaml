@@ -1,0 +1,33 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claif-db
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claif-db
+  template:
+    metadata:
+      labels:
+        app: claif-db
+    spec:
+      containers:
+      - name: claif-db
+        image: docker.io/bitnami/postgresql:12.20.0
+        env:
+          - name: POSTGRESQL_USERNAME
+            value: "postgres"
+          - name: POSTGRESQL_PASSWORD
+            value: "postgres"
+          - name: POSTGRESQL_DATABASE
+            value: "postgres"
+        volumeMounts:
+          - name: claif-db-data
+            mountPath: /bitnami/postgresql
+      volumes:
+      - name: claif-db-data
+        persistentVolumeClaim:
+          claimName: claif-db-data

@@ -1,0 +1,36 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: docker.io/bitnami/keycloak:25.0.6
+        command:
+          - /bin/bash
+          - -c
+          - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /opt/bitnami/keycloak/import-dev-settings.sh && wait"
+        env:
+          - name: KEYCLOAK_CREATE_ADMIN_USER
+            value: "true"
+          - name: KEYCLOAK_ADMIN
+            value: "user"
+          - name: KEYCLOAK_ADMIN_PASSWORD
+            value: "bitnami"
+        volumeMounts:
+          - name: keycloak-settings
+            mountPath: /opt/bitnami/keycloak
+      volumes:
+      - name: keycloak-settings
+        emptyDir: {}

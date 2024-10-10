@@ -1,20 +1,21 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: adminer
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: adminer
   template:
     metadata:
       labels:
-        app: nginx
+        app: adminer
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
+      - name: adminer
+        image: adminer:latest
         ports:
-        - containerPort: 80
+          - containerPort: 8080

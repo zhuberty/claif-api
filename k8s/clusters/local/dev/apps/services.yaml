@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: api-gateway
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30081
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: claif-api
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: claif-api
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30082
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: claif-db
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: claif-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 30083
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: adminer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30084
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: keycloak
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30085
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: keycloak-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 30086

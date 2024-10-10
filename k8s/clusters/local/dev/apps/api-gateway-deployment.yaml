@@ -1,0 +1,35 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: traefik
+        image: traefik:3.1.4
+        args:
+          - "--api.insecure=true"
+          - "--api.dashboard=true"
+          - "--providers.kubernetescrd"
+          - "--entrypoints.web.address=:80"
+          - "--accesslog=true"
+          - "--accesslog.filepath=/var/log/traefik/access.log"
+        ports:
+          - containerPort: 80
+          - containerPort: 8080
+        volumeMounts:
+          - name: traefik-logs
+            mountPath: /var/log/traefik
+      volumes:
+      - name: traefik-logs
+        emptyDir: {}

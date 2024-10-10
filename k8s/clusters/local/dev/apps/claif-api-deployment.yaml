@@ -1,0 +1,43 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claif-api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claif-api
+  template:
+    metadata:
+      labels:
+        app: claif-api
+    spec:
+      containers:
+      - name: claif-api
+        image: claif-api-image # Update with actual image reference if available
+        command: ["/bin/bash", "-c", "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db"]
+        env:
+          - name: UVICORN_WORKERS
+            value: "2"
+          - name: APP_MODULE
+            value: "main:app"
+          - name: DATABASE_URL
+            value: "postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db"
+          - name: KEYCLOAK_SERVER_URL
+            value: "http://keycloak:8080"
+          - name: KEYCLOAK_REALM
+            value: "fastapi"
+          - name: KEYCLOAK_CLIENT_ID
+            value: "fastapi-client"
+          - name: KEYCLOAK_CLIENT_SECRET
+            value: "g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy"
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - name: config
+            mountPath: /app/config
+      volumes:
+      - name: config
+        emptyDir: {}
