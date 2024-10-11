@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,6 +13,20 @@ spec:
       labels:
         app: claif-db
     spec:
+      initContainers:
+      - name: copy-db-script
+        image: docker.io/bitnami/postgresql:12.20.0
+        command:
+          - /bin/bash
+          - -c
+          - "cp /docker-entrypoint-initdb.d/setup-dev-db.sh /tmp/setup-dev-db.sh && chmod +x /tmp/setup-dev-db.sh"
+        volumeMounts:
+          - name: claif-db-script
+            mountPath: /docker-entrypoint-initdb.d/setup-dev-db.sh
+            subPath: setup-dev-db.sh
+          - name: tmp-script
+            mountPath: /tmp
+
       containers:
       - name: claif-db
         image: docker.io/bitnami/postgresql:12.20.0
@@ -27,7 +40,14 @@ spec:
         volumeMounts:
           - name: claif-db-data
             mountPath: /bitnami/postgresql
+          - name: tmp-script
+            mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: claif-db-data
         persistentVolumeClaim:
           claimName: claif-db-data
+      - name: claif-db-script
+        configMap:
+          name: claif-db-config
+      - name: tmp-script
+        emptyDir: {}

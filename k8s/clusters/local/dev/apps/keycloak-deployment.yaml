@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,13 +13,27 @@ spec:
       labels:
         app: keycloak
     spec:
+      initContainers:
+      - name: copy-keycloak-script
+        image: docker.io/bitnami/keycloak:25.0.6
+        command:
+          - /bin/bash
+          - -c
+          - "cp /opt/bitnami/keycloak/import-dev-settings.sh /tmp/import-dev-settings.sh && chmod +x /tmp/import-dev-settings.sh"
+        volumeMounts:
+          - name: keycloak-settings
+            mountPath: /opt/bitnami/keycloak/import-dev-settings.sh
+            subPath: import-dev-settings.sh
+          - name: tmp-script
+            mountPath: /tmp
+
       containers:
       - name: keycloak
         image: docker.io/bitnami/keycloak:25.0.6
         command:
           - /bin/bash
           - -c
-          - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /opt/bitnami/keycloak/import-dev-settings.sh && wait"
+          - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
         env:
           - name: KEYCLOAK_CREATE_ADMIN_USER
             value: "true"
@@ -28,9 +41,28 @@ spec:
             value: "user"
           - name: KEYCLOAK_ADMIN_PASSWORD
             value: "bitnami"
+          - name: KEYCLOAK_REALM
+            value: "fastapi"
+          - name: KEYCLOAK_USER_USERNAME
+            value: "testuser"
+          - name: KEYCLOAK_USER_FIRST_NAME
+            value: "Test"
+          - name: KEYCLOAK_USER_LAST_NAME
+            value: "User"
+          - name: KEYCLOAK_USER_EMAIL
+            value: "testuser@claif.org"
+          - name: KEYCLOAK_USER_PASSWORD
+            value: "testpassword"
+          - name: KEYCLOAK_CLIENT_ID
+            value: "fastapi-client"
+          - name: KEYCLOAK_CLIENT_SECRET
+            value: "g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy"
         volumeMounts:
-          - name: keycloak-settings
-            mountPath: /opt/bitnami/keycloak
+          - name: tmp-script
+            mountPath: /tmp
       volumes:
       - name: keycloak-settings
+        configMap:
+          name: keycloak-config
+      - name: tmp-script
         emptyDir: {}

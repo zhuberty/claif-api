@@ -8,11 +8,13 @@ spec:
   selector:
     app: api-gateway
   ports:
-    - protocol: TCP
+    - name: traefik-http-port
+      protocol: TCP
       port: 80
       targetPort: 80
       nodePort: 30080
-    - protocol: TCP
+    - name: traefik-dashboard-port
+      protocol: TCP
       port: 8080
       targetPort: 8080
       nodePort: 30081
@@ -29,7 +31,8 @@ spec:
   selector:
     app: claif-api
   ports:
-    - protocol: TCP
+    - name: api-port
+      protocol: TCP
       port: 8000
       targetPort: 8000
       nodePort: 30082
@@ -46,7 +49,8 @@ spec:
   selector:
     app: claif-db
   ports:
-    - protocol: TCP
+    - name: db-port
+      protocol: TCP
       port: 5432
       targetPort: 5432
       nodePort: 30083
@@ -63,7 +67,8 @@ spec:
   selector:
     app: adminer
   ports:
-    - protocol: TCP
+    - name: adminer-port
+      protocol: TCP
       port: 8080
       targetPort: 8080
       nodePort: 30084
@@ -80,7 +85,8 @@ spec:
   selector:
     app: keycloak
   ports:
-    - protocol: TCP
+    - name: keycloak-port
+      protocol: TCP
       port: 8080
       targetPort: 8080
       nodePort: 30085
@@ -97,7 +103,8 @@ spec:
   selector:
     app: keycloak-db
   ports:
-    - protocol: TCP
+    - name: keycloak-db-port
+      protocol: TCP
       port: 5432
       targetPort: 5432
       nodePort: 30086

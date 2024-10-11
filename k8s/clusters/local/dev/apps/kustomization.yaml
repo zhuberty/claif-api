@@ -5,7 +5,9 @@ resources:
   - api-gateway-deployment.yaml
   - claif-api-deployment.yaml
   - claif-db-deployment.yaml
+  - claif-db-configmap.yaml
   - adminer-deployment.yaml
   - keycloak-db-deployment.yaml
   - keycloak-deployment.yaml
+  - keycloak-configmap.yaml
   - services.yaml
