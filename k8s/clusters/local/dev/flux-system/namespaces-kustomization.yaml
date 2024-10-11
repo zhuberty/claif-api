@@ -1,15 +1,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: registry
+  name: namespaces
   namespace: flux-system
 spec:
   interval: 5m
-  path: "./k8s/clusters/local/dev/registry"
+  path: "./k8s/clusters/local/dev/namespaces"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
   timeout: 5m
-  dependsOn:
-    - name: namespaces

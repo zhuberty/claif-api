@@ -14,6 +14,7 @@ apply-registry:
 # Apply flux-system resources, including registry and dev-apps kustomizations
 apply-flux:
 	kubectl apply -f flux-system/gitrepository.yaml 
+	kubectl apply -f flux-system/namespaces-kustomization.yaml
 	kubectl apply -f flux-system/registry-kustomization.yaml
 	kubectl apply -f flux-system/dev-apps-kustomization.yaml
 
@@ -43,12 +44,12 @@ teardown:
 	kubectl delete -k apps --ignore-not-found=true
 
 	# Delete the flux-system resources
+	kubectl delete -f flux-system/namespaces-kustomization.yaml --ignore-not-found=true
 	kubectl delete -f flux-system/registry-kustomization.yaml --ignore-not-found=true
 	kubectl delete -f flux-system/dev-apps-kustomization.yaml --ignore-not-found=true
 	kubectl delete -f flux-system/gitrepository.yaml --ignore-not-found=true
 
 	# Delete the namespaces resources
-	kubectl delete -f namespaces/kustomization.yaml --ignore-not-found=true
 	kubectl delete -f namespaces/namespaces.yaml --ignore-not-found=true
 
 	# Delete all PersistentVolumeClaims (PVCs)
