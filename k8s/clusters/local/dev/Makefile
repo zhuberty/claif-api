@@ -17,6 +17,14 @@ apply-flux:
 	kubectl apply -f flux-system/namespaces-kustomization.yaml
 	kubectl apply -f flux-system/registry-kustomization.yaml
 	kubectl apply -f flux-system/dev-apps-kustomization.yaml
+	# Wait until the registry deployment is available
+	until kubectl rollout status deployment/registry -n registry | grep -q "successfully rolled out"; do \
+		echo "Waiting for registry deployment to be ready..."; \
+		sleep 10; \
+	done
+	# Call the build-and-deploy-claif-api block once the registry is ready
+	$(MAKE) build-and-deploy-claif-api
+
 
 # Apply application resources
 apply-apps:
