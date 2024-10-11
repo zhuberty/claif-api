@@ -1,27 +1,28 @@
-.PHONY: apply-flux apply-apps deploy reconcile build-and-deploy-claif-api teardown apply-registry
+.PHONY: apply-flux apply-apps deploy reconcile build-and-deploy-claif-api teardown apply-registry apply-namespaces
 
 # Apply namespaces resources
 apply-namespaces:
 	kubectl apply -f namespaces/namespaces.yaml
 	kubectl apply -f namespaces/kustomization.yaml
 
-# Apply registry resources manually
+# Apply registry resources manually (optional, if not using Flux)
 apply-registry:
 	kubectl apply -f registry/registry-deployment.yaml
 	kubectl apply -f registry/registry-service.yaml
 	kubectl rollout status deployment/registry -n registry
 
-# Apply flux-system resources
+# Apply flux-system resources, including registry and dev-apps kustomizations
 apply-flux:
 	kubectl apply -f flux-system/gitrepository.yaml 
-	kubectl apply -f flux-system/kustomization.yaml
+	kubectl apply -f flux-system/registry-kustomization.yaml
+	kubectl apply -f flux-system/dev-apps-kustomization.yaml
 
 # Apply application resources
 apply-apps:
 	kubectl apply -k apps
 
-# Deploy everything (registry first, then flux-system and apps)
-deploy: apply-namespaces apply-registry apply-flux apply-apps
+# Deploy everything (Flux manages registry and apps)
+deploy: apply-namespaces apply-flux apply-apps
 
 # Force a Flux reconciliation
 reconcile:
@@ -42,7 +43,8 @@ teardown:
 	kubectl delete -k apps --ignore-not-found=true
 
 	# Delete the flux-system resources
-	kubectl delete -f flux-system/kustomization.yaml --ignore-not-found=true
+	kubectl delete -f flux-system/registry-kustomization.yaml --ignore-not-found=true
+	kubectl delete -f flux-system/dev-apps-kustomization.yaml --ignore-not-found=true
 	kubectl delete -f flux-system/gitrepository.yaml --ignore-not-found=true
 
 	# Delete the namespaces resources
