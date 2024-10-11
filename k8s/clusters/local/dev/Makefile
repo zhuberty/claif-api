@@ -5,10 +5,11 @@ apply-namespaces:
 	kubectl apply -f namespaces/namespaces.yaml
 	kubectl apply -f namespaces/kustomization.yaml
 
-# Apply registry resources
+# Apply registry resources manually
 apply-registry:
 	kubectl apply -f registry/registry-deployment.yaml
 	kubectl apply -f registry/registry-service.yaml
+	kubectl rollout status deployment/registry -n registry
 
 # Apply flux-system resources
 apply-flux:
@@ -34,7 +35,6 @@ build-and-deploy-claif-api:
 	docker tag claif-api-claif-api:latest localhost:30500/claif-api:$$TAG; \
 	docker push localhost:30500/claif-api:$$TAG; \
 	kubectl set image deployment/claif-api claif-api=localhost:30500/claif-api:$$TAG -n default;
-
 
 # Teardown everything including volumes
 teardown:
