@@ -30,7 +30,37 @@ The services include:
 
 *NOTE - if you change a Dockerfile, you'll want to run:* `docker-compose up -d --build` *to rebuild the images*.
 ## Using Kubernetes
-Coming Soon
+### Prerequisites
+- Docker (https://docs.docker.com/engine/install/)
+- Kubernetes (https://kubernetes.io/docs/setup/)
+- kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- Helm (https://helm.sh/docs/intro/install/)
+
+### Install development environment
+```bash
+cd k8s/clusters/local/dev/
+make apply-flux
+```
+
+### Using the API running in Kubernetes
+Using the CLI tool which is located at `src/claif-api/claif_cli`:
+```bash
+cd src/claif-api/claif_cli
+PYTHONPATH=./ poetry run python main.py --base-url=http://localhost:30082/v1 login
+
+Username: testuser
+Password: 
+Login successful! Access token saved.
+
+PYTHONPATH=./ poetry run python main.py --base-url=http://localhost:30082/v1 list-recordings
++------+----------------------------+-----------+---------+--------+------------+-----------+
+|   ID | Title                      |   Revis   |   Annos | Size   | Duration   | Creator   |
++======+============================+===========+=========+========+============+===========+
+|    2 | CLI Test Recording         |         1 |       0 | 15KB   | 57s        | user1     |
++------+----------------------------+-----------+---------+--------+------------+-----------+
+|    1 | CLI Test Recording Updated |         3 |       9 | 15KB   | 57s        | user1     |
++------+----------------------------+-----------+---------+--------+------------+-----------+
+```
 
 # Using the API
 ## CLI Tool
