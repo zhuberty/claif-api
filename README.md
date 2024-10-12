@@ -11,8 +11,8 @@ The services include:
 - Keycloak (Identity and Access Management)
 - Keycloak Database (Postgres)
 
-# Installation
-## Using Docker and Docker-Compose
+# Installing the API and Services
+## Installing with Docker and Docker-Compose
 
 ### Prerequisites
 - Docker (https://docs.docker.com/engine/install/)
@@ -29,17 +29,31 @@ The services include:
 - list the running containers with `docker ps`
 
 *NOTE - if you change a Dockerfile, you'll want to run:* `docker-compose up -d --build` *to rebuild the images*.
-## Using Kubernetes
+
+## Installing to a Kubernetes Cluster
 ### Prerequisites
 - Docker (https://docs.docker.com/engine/install/)
 - Kubernetes (https://kubernetes.io/docs/setup/)
 - kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - Helm (https://helm.sh/docs/intro/install/)
 
+
+### Install Flux
+```bash
+curl -s https://fluxcd.io/install.sh | sudo bash
+flux install
+```
+
 ### Install development environment
 ```bash
 cd k8s/clusters/local/dev/
 make apply-flux
+```
+
+### Teardown development environment (and registry)
+```bash
+cd k8s/clusters/local/dev/
+make teardown
 ```
 
 ### Using the API running in Kubernetes
@@ -54,7 +68,7 @@ Login successful! Access token saved.
 
 PYTHONPATH=./ poetry run python main.py --base-url=http://localhost:30082/v1 list-recordings
 +------+----------------------------+-----------+---------+--------+------------+-----------+
-|   ID | Title                      |   Revis   |   Annos | Size   | Duration   | Creator   |
+|   ID | Title                      |  Revision |   Annos | Size   | Duration   | Creator   |
 +======+============================+===========+=========+========+============+===========+
 |    2 | CLI Test Recording         |         1 |       0 | 15KB   | 57s        | user1     |
 +------+----------------------------+-----------+---------+--------+------------+-----------+

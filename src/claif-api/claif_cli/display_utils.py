@@ -36,5 +36,5 @@ def display_recordings_list(recordings):
         ]
         table_data.append(row)
     
-    headers = ["ID", "Title", "Revis #", "Annos", "Size", "Duration", "Creator"]
+    headers = ["ID", "Title", "Revision", "Annos", "Size", "Duration", "Creator"]
     print(tabulate(table_data, headers, tablefmt="grid"))
