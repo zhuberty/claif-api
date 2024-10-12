@@ -3,7 +3,6 @@
 # Apply namespaces resources
 apply-namespaces:
 	kubectl apply -f namespaces/namespaces.yaml
-	kubectl apply -f namespaces/kustomization.yaml
 
 # Apply registry resources manually (optional, if not using Flux)
 apply-registry:
@@ -44,7 +43,7 @@ build-and-deploy-claif-api:
 	docker-compose build; \
 	docker tag claif-api-claif-api:latest localhost:30500/claif-api:$$TAG; \
 	docker push localhost:30500/claif-api:$$TAG; \
-	kubectl set image deployment/claif-api claif-api=localhost:30500/claif-api:$$TAG -n default;
+	kubectl set image deployment/claif-api claif-api=localhost:30500/claif-api:$$TAG -n claif-dev;
 
 # Teardown everything including volumes
 teardown:
@@ -61,7 +60,7 @@ teardown:
 	kubectl delete -f namespaces/namespaces.yaml --ignore-not-found=true
 
 	# Delete all PersistentVolumeClaims (PVCs)
-	kubectl delete pvc --all --namespace=default --ignore-not-found=true
+	kubectl delete pvc --all --namespace=claif-dev --ignore-not-found=true
 	kubectl delete pvc --all --namespace=registry --ignore-not-found=true
 
 	# Optionally delete all PersistentVolumes (PVs) if they are not dynamically managed
