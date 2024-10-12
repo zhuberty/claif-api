@@ -23,6 +23,7 @@ services:
     command: >
       bash -c "./scripts/wait_for_db.sh claif-db:5432
       && ./scripts/wait_for_keycloak.sh keycloak
+      && ./scripts/wait_for_minio.sh minio:9000
       && ./scripts/seed_db.sh claif-db"
     environment:
       - UVICORN_WORKERS=2
@@ -37,8 +38,9 @@ services:
       - CLAIF_API_PORT=80
       - TEST_USER_USERNAME=testuser
       - TEST_USER_PASSWORD=testpassword
+      - MINIO_ENDPOINT=minio:9000
       - MINIO_SERVER_ACCESS_KEY=minio-user
-      - MINIO_SERVER_SECRET_KEY=minio-minio-password
+      - MINIO_SERVER_SECRET_KEY=minio-password
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.claif-api.rule=PathPrefix(`/`)"
@@ -49,6 +51,7 @@ services:
     depends_on:
       - claif-db
       - keycloak
+      - minio
 
   claif-db:
     container_name: claif-db
@@ -118,8 +121,8 @@ services:
     container_name: minio
     image: 'bitnami/minio:2024.10.2'
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '9000:9000'  # MinIO server (S3-compatible)
+      - '9001:9001'  # MinIO console (dashboard)
     environment:
       - MINIO_ROOT_USER=minio-user
       - MINIO_ROOT_PASSWORD=minio-password

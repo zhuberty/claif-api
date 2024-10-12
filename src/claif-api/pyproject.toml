@@ -7,7 +7,8 @@ license = "GPL-3.0"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"  # your Python version
+# python greater than 3.9 and less than 3.13
+python = ">=3.9,<3.13"
 fastapi = "0.115.0"
 uvicorn = {version = "0.30.6", extras = ["standard"]}
 sqlalchemy = "2.0.35"
@@ -17,12 +18,13 @@ python-keycloak = "4.4.0"
 python-jose = {version = "3.3.0", extras = ["cryptography"]}
 fastapi-security = {version = "0.5.0", extras = ["oauth2"]}
 slowapi = "0.1.9"
-python-multipart = "^0.0.5"
+python-multipart = "0.0.12"
 alembic = "1.13.3"
 pytest = "8.3.3"
 pytest-order = "1.3.0"
 pytest-json-report = "1.5.0"
-tabulate = "^0.9.0"
+tabulate = "0.9.0"
+minio = "7.2.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

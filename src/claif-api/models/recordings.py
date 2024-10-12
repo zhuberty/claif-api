@@ -38,10 +38,11 @@ class TerminalRecording(RecordingAnnotatable):
 
 class AudioFile(Recording):
     __tablename__ = "audio_files"
-    file_url = Column(String)
+    storage_path = Column(String, nullable=False)
     creator_id = Column(Integer, ForeignKey("users.id"), index=True)
     creator = relationship("User", foreign_keys=[creator_id], back_populates="audio_files")
     audio_transcription = relationship("AudioTranscription", back_populates="audio_file", lazy="dynamic")
+    content_type = Column(String)
 
 
 class AudioTranscription(RecordingAnnotatable):

@@ -18,5 +18,4 @@ def get_auth_headers(access_token):
     """Construct the Authorization header for authenticated requests."""
     return {
         "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
     }

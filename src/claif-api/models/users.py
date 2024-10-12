@@ -22,6 +22,7 @@ class User(ORMBase, Creatable):
     terminal_recordings = relationship("TerminalRecording", back_populates="creator", lazy="dynamic")
     terminal_annotations = relationship("TerminalRecordingAnnotation", back_populates="creator", lazy="dynamic")
     terminal_annotation_reviews = relationship("TerminalAnnotationReview", back_populates="creator", lazy="dynamic")
+    audio_files = relationship("AudioFile", back_populates="creator", lazy="dynamic")
 
 
 # Pydantic Models
