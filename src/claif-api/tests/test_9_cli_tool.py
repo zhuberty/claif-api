@@ -185,3 +185,23 @@ def test_cli_host_flags(monkeypatch, setup_cli):
             pytest.fail(f"An unintended requests-related error occurred: {e}")
 
     assert raised_expected_errors
+
+
+@pytest.mark.order(906)
+def test_cli_create_audio_file(monkeypatch, setup_cli):
+    # Unpack the fixture
+    main_module, _ = setup_cli
+
+    # Pass in args
+    audio_filepath = Path(__file__).parent.parent / "audio_recording_samples" / "frankenstein_passage_two_speakers_medium_quality.m4a"
+    patch_sys_argv(monkeypatch, ["create-audio-file", str(audio_filepath)])
+
+    # Capture stdout
+    captured_output = capture_output(monkeypatch)
+
+    # Call the CLI Tool's main function
+    main_module.main()
+
+    captured_output_value = captured_output.getvalue()
+    assert "Error" not in captured_output_value
+    assert "File uploaded and metadata stored successfully" in captured_output_value

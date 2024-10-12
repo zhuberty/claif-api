@@ -6,6 +6,7 @@ from recordings import (
     update_recording,
     list_recordings,
 )
+from audio_files import create_audio_file
 
 DEFAULT_URL = "http://localhost:8000/v1"
 
@@ -36,6 +37,9 @@ def main():
     update_recording_parser.add_argument("--description", help="New description for the recording")
 
     list_recordings_parser = subparsers.add_parser("list-recordings", help="List all recordings")
+
+    create_audio_file_parser = subparsers.add_parser("create-audio-file", help="Create a new audio file")
+    create_audio_file_parser.add_argument("audio_filepath", help="Path to the audio file")
     
     args = parser.parse_args()
 
@@ -62,6 +66,8 @@ def main():
         )
     elif args.command == "list-recordings":
         list_recordings(base_url)
+    elif args.command == "create-audio-file":
+        create_audio_file(base_url, args.audio_filepath)
 
 
 if __name__ == "__main__":

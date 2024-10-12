@@ -2,7 +2,7 @@ import requests
 from auth_utils import get_auth_headers, handle_unauthorized
 
 
-def api_request(base_url, endpoint, method="GET", data=None, json=None, params=None):
+def api_request(base_url, endpoint, method="GET", data=None, json=None, params=None, files=None):
     """
     Makes an HTTP request to the API endpoint with authorization and retry logic.
     
@@ -13,6 +13,7 @@ def api_request(base_url, endpoint, method="GET", data=None, json=None, params=N
         - data (dict, optional): Form data to send with the request (for POST).
         - json (dict, optional): JSON data to send with the request (for POST).
         - params (dict, optional): URL parameters to send with the request.
+        - files (dict, optional): Files to upload with the request (for POST).
         
     Returns:
         - The response JSON if the request is successful, otherwise None.
@@ -22,14 +23,14 @@ def api_request(base_url, endpoint, method="GET", data=None, json=None, params=N
     if not headers:
         return None
 
-    response = requests.request(method, url, headers=headers, data=data, json=json, params=params)
+    response = requests.request(method, url, headers=headers, data=data, json=json, params=params, files=files)
     if response.status_code == 200:
         return response.json()
     elif response.status_code == 401:
         new_token = handle_unauthorized(base_url)
         if new_token:
             headers = {"Authorization": f"Bearer {new_token}"}
-            response = requests.request(method, url, headers=headers, data=data, json=json, params=params)
+            response = requests.request(method, url, headers=headers, data=data, json=json, params=params, files=files)
             if response.status_code == 200:
                 return response.json()
             else:
