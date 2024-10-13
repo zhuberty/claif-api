@@ -193,7 +193,7 @@ def test_cli_create_audio_file(monkeypatch, setup_cli):
     main_module, _ = setup_cli
 
     # Pass in args
-    audio_filepath = Path(__file__).parent.parent / "audio_recording_samples" / "frankenstein_passage_two_speakers_medium_quality.m4a"
+    audio_filepath = Path(__file__).parent.parent / "audio_recording_samples" / "frankenstein_passage_two_speakers_medium_quality.wav"
     patch_sys_argv(monkeypatch, ["create-audio-file", str(audio_filepath)])
 
     # Capture stdout

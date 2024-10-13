@@ -1,5 +1,6 @@
 import mimetypes
 from fastapi import APIRouter, Depends, Request, UploadFile, File, HTTPException
+import requests
 from sqlalchemy.orm import Session
 from models.recordings import AudioFile
 from models.users import User
@@ -7,6 +8,7 @@ from utils.database import get_db
 from utils.auth import get_current_user, limiter
 from utils.exception_handlers import value_error_handler
 from utils.minio_utils import ensure_bucket_exists, upload_file_to_minio
+from utils.env import CLAIF_TRANSCRIBER_ENDPOINT
 from datetime import datetime, timezone
 import logging
 
@@ -39,6 +41,7 @@ async def create_file(
 
     # Generate a unique file name
     file_name = f"{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{file.filename}"
+    storage_path = f"audio/{file_name}"
 
     # Upload the file to MinIO
     try:
@@ -52,7 +55,7 @@ async def create_file(
     
     # Store file metadata in the database
     new_audio_file = AudioFile(
-        storage_path=f"audio/{file_name}",
+        storage_path=storage_path,
         creator_id=current_user.id,
         size_bytes=len(file_data),
         content_type=content_type,  # Store the correct content type
@@ -62,9 +65,21 @@ async def create_file(
         title=file.filename,
         description=None,
     )
+
+    response = requests.post(
+        f"{CLAIF_TRANSCRIBER_ENDPOINT}/transcribe",
+        json={"filepath": file_name}
+    )
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+    transcription_response = response.json()
     
     db.add(new_audio_file)
     db.commit()
     db.refresh(new_audio_file)
 
-    return {"message": "File uploaded and metadata stored successfully", "file_metadata": new_audio_file}
+    return {
+        "message": "File uploaded and metadata stored successfully.",
+        "file_metadata": new_audio_file,
+        "transcription": transcription_response
+    }

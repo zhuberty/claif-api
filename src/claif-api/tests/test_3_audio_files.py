@@ -1,7 +1,6 @@
 from pathlib import Path
 import pytest
 import requests
-from sqlalchemy.orm.session import Session
 from utils.config import get_auth_headers
 
 @pytest.mark.order(300)
@@ -10,7 +9,7 @@ def test_create_audio_file(base_url, access_token):
     
     # Path to the audio file
     samples_path = Path(__file__).parent.parent / "audio_recording_samples"
-    audio_filepath = samples_path / "frankenstein_passage_two_speakers_medium_quality.m4a"
+    audio_filepath = samples_path / "frankenstein_passage_two_speakers_medium_quality.wav"
     assert audio_filepath.exists(), f"File not found: {audio_filepath}"
 
     # Prepare the file upload and other metadata
@@ -34,7 +33,7 @@ def test_create_audio_file(base_url, access_token):
     response_data = response.json()
 
     # Check if the response contains the correct message and metadata
-    assert response_data["message"] == "File uploaded and metadata stored successfully"
+    assert response_data["message"] == "File uploaded and metadata stored successfully."
     assert "file_metadata" in response_data
     assert response_data["file_metadata"]["id"] > 0
     assert "storage_path" in response_data["file_metadata"]

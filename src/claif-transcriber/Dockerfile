@@ -1,7 +1,7 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14-2024-03-11
 
 # Install bash, curl, and necessary build tools for Poetry and dependencies
-RUN apk add --no-cache bash curl gcc musl-dev postgresql-dev
+RUN apk add --no-cache bash curl gcc musl-dev ffmpeg git g++ make wget
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
@@ -17,13 +17,21 @@ COPY pyproject.toml poetry.lock* ./
 # Install dependencies with Poetry
 RUN poetry install --no-root --no-interaction --no-ansi
 
+RUN git clone https://github.com/ggerganov/whisper.cpp.git
+
+# Build whisper.cpp
+RUN cd whisper.cpp && make && cd ..
+
+# Create a link to the whisper.cpp binary
+RUN ln -s /app/whisper.cpp/main /usr/local/bin/whisper
+
+# Get the tinydiarize model
+RUN whisper.cpp/models/download-ggml-model.sh small.en-tdrz
+
 # Copy all project files
 COPY . .
-
-# Make the database and Keycloak wait scripts executable
-RUN chmod +x /app/scripts/wait_for_db.sh /app/scripts/wait_for_keycloak.sh
 
 EXPOSE 8000
 
 # Command to wait for Keycloak, DB, and start Uvicorn
-CMD ["bash", "-c", "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak:8080 && poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --log-level debug"]
+CMD ["bash", "-c", "poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --log-level debug"]
