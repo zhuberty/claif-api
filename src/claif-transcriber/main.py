@@ -4,7 +4,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from minio import Minio
 from minio.error import S3Error
-from pydub import AudioSegment
 import os
 import io
 import json
@@ -63,22 +62,33 @@ async def transcribe_audio(request: TranscriptionRequest):
 
             # Process transcription_result for speaker turns and segments
             transcription_list = []
-            lines = transcription_result.strip().split("[SPEAKER_TURN]")
+            lines = transcription_result.strip().replace("\n", "").split("[")
 
             for line in lines:
-                if line.strip():  # Ensure there is content
+                line = line.strip()  # Remove any leading or trailing whitespace/newline characters
+                if line and "]" in line:  # Ensure the line has a closing timestamp bracket
                     try:
-                        # Extract timestamp and text
-                        segments = line.split("]")[0].strip("[")
-                        text = line.split("]")[-1].strip()
-                        start, end = segments.split(" --> ")
+                        # Extract timestamp and text by splitting only once at the closing bracket
+                        segments, text = line.split("]", 1)
+                        text = text.strip()  # Clean up leading/trailing spaces from text
+
+                        # Split the timestamps into start and end
+                        if " --> " in segments:
+                            start, end = segments.split(" --> ")
+                        else:
+                            logger.warning(f"Skipped line without valid timestamps: {line}")
+                            continue
+
+                        # Append the cleaned data to the transcription list
                         transcription_list.append({"start": start, "end": end, "text": text})
-                    except ValueError:
-                        logger.warning(f"Skipped malformed line: {line}")
+
+                    except ValueError as e:
+                        logger.warning(f"Skipped malformed line: {line}, error: {e}")
                         continue  # Skip lines that don't match expected format
 
             # Convert to JSON
-            transcription_result_json = json.dumps(transcription_list)
+            transcription_result_json = json.dumps(transcription_list)  # Pretty-print for easier debugging
+
             logger.info(f"Transcription result processed successfully.")
 
             # Define the transcription bucket and key
