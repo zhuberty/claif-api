@@ -31,12 +31,6 @@ minio_client = Minio(
 class TranscriptionRequest(BaseModel):
     filepath: str
 
-# Function to convert m4a to wav
-def convert_to_wav(input_file, output_file):
-    logger.info(f"Converting {input_file} to {output_file}")
-    audio = AudioSegment.from_file(input_file, format="m4a")
-    audio.export(output_file, format="wav")
-    logger.info(f"Conversion to WAV successful: {output_file}")
 
 @app.post("/transcribe")
 async def transcribe_audio(request: TranscriptionRequest):
