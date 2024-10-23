@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: claif-api
-        image: localhost:30500/claif-api:latest
+        image: registry.registry.svc.cluster.local:5000/claif-api:latest
         command: ["/bin/bash", "-c", "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db"]
         env:
           - name: UVICORN_WORKERS
