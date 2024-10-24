@@ -8,9 +8,18 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: standard
-  hostPath:
+  storageClassName: local-storage
+  local:
     path: /mnt/data/claif-db
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: storage-type
+              operator: In
+              values:
+                - disk
+  volumeMode: Filesystem
 
 ---
 apiVersion: v1
@@ -23,6 +32,15 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: standard
-  hostPath:
+  storageClassName: local-storage
+  local:
     path: /mnt/data/keycloak-db
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: storage-type
+              operator: In
+              values:
+                - disk
+  volumeMode: Filesystem

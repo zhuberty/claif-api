@@ -4,7 +4,7 @@ metadata:
   name: claif-db-data
   namespace: claif-dev
 spec:
-  storageClassName: standard
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -18,7 +18,7 @@ metadata:
   name: keycloak-db-data
   namespace: claif-dev
 spec:
-  storageClassName: standard
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
