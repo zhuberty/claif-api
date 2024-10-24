@@ -38,19 +38,13 @@ The services include:
 - Helm (https://helm.sh/docs/intro/install/)
 
 
-### Install Flux
-```bash
-curl -s https://fluxcd.io/install.sh | sudo bash
-flux install
-```
-
 ### Install development environment
 ```bash
 cd k8s/clusters/local/dev/
-make apply-flux
+make build-and-deploy-claif-api
 ```
 
-### Teardown development environment (and registry)
+### Teardown development environment
 ```bash
 cd k8s/clusters/local/dev/
 make teardown
