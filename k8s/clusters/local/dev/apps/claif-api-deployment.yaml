@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: claif-api
-        image: claif-api:latest
+        image: docker.io/library/claif-api-claif-api:latest
         imagePullPolicy: Never
         command: ["/bin/bash", "-c", "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db"]
         env:
