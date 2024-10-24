@@ -27,6 +27,3 @@ teardown:
 
 	# Delete the namespaces resources
 	kubectl delete -f namespaces/namespaces.yaml --ignore-not-found=true
-
-	# Delete all PersistentVolumeClaims (PVCs)
-	kubectl delete pvc --all --namespace=claif-dev --ignore-not-found=true
