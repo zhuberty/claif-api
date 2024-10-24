@@ -22,8 +22,5 @@ build-and-deploy-claif-api:
 
 # Teardown everything including volumes
 teardown:
-	# Delete the application resources
 	kubectl delete -k apps --ignore-not-found=true
-
-	# Delete the namespaces resources
 	kubectl delete -f namespaces/namespaces.yaml --ignore-not-found=true
