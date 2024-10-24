@@ -30,6 +30,3 @@ teardown:
 
 	# Delete all PersistentVolumeClaims (PVCs)
 	kubectl delete pvc --all --namespace=claif-dev --ignore-not-found=true
-
-	# Optionally delete all PersistentVolumes (PVs) if they are not dynamically managed
-	kubectl delete pv --all --ignore-not-found=true
