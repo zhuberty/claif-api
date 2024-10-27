@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-claif-api
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-claif-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-claif-api
+    spec:
+      containers:
+      - name: claif-api
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/bash", "-c", "{{ .Values.command }}"]
+        env:
+          - name: UVICORN_WORKERS
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: UVICORN_WORKERS
+          - name: APP_MODULE
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: APP_MODULE
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: DATABASE_URL
+          - name: KEYCLOAK_SERVER_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: KEYCLOAK_SERVER_URL
+          - name: KEYCLOAK_REALM
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: KEYCLOAK_REALM
+          - name: KEYCLOAK_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: KEYCLOAK_CLIENT_ID
+          - name: KEYCLOAK_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: KEYCLOAK_CLIENT_SECRET
+          - name: CLAIF_API_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: CLAIF_API_HOST
+          - name: CLAIF_API_PORT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: CLAIF_API_PORT
+        ports:
+          - containerPort: {{ .Values.containerPort }}

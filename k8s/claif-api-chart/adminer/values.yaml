@@ -1,0 +1,14 @@
+namespace: claif-dev
+replicaCount: 1
+
+image:
+  repository: "adminer"
+  tag: "latest"
+
+containerPort: 8080
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30084

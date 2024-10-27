@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-claif-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Release.Name }}-claif-ingress
+  ports:
+    - name: traefik-http-port
+      protocol: TCP
+      port: {{ .Values.service.ports.http }}
+      targetPort: {{ .Values.service.ports.http }}
+      nodePort: {{ .Values.service.nodePorts.http }}
+    - name: traefik-dashboard-port
+      protocol: TCP
+      port: {{ .Values.service.ports.dashboard }}
+      targetPort: {{ .Values.service.ports.dashboard }}
+      nodePort: {{ .Values.service.nodePorts.dashboard }}

@@ -1,0 +1,15 @@
+apiVersion: v2
+name: adminer
+description: A Helm chart for deploying Adminer
+type: application
+version: 1.0.0
+appVersion: "latest"
+
+keywords:
+  - adminer
+  - database
+  - admin
+
+maintainers:
+  - name: Zach Huberty
+    email: zach@example.com

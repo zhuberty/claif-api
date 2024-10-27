@@ -1,0 +1,23 @@
+apiVersion: v2
+name: claif-api
+version: "1.0.0"
+dependencies:
+  - name: claif-api
+    version: "1.0.0"
+    repository: "file://claif-api"
+  - name: claif-db
+    version: "1.0.0"
+    repository: "file://claif-db"
+  - name: keycloak
+    version: "1.0.0"
+    repository: "file://keycloak"
+  - name: keycloak-db
+    version: "1.0.0"
+    repository: "file://keycloak-db"
+  - name: adminer
+    version: "1.0.0"
+    repository: "file://adminer"
+  - name: claif-ingress
+    version: "1.0.0"
+    repository: "file://claif-ingress"
+  

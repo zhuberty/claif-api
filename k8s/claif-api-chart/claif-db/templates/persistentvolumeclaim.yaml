@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-claif-db-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: {{ .Values.persistentVolumeClaim.storageClassName }}
+  accessModes:
+    - {{ .Values.persistentVolumeClaim.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storage }}
+  selector:
+    matchLabels:
+      pv-name: {{ .Release.Name }}-claif-db-pv

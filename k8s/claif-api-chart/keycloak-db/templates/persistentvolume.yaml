@@ -1,0 +1,32 @@
+{{- if .Values.keycloakDb.usePersistentStorage }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-keycloak-db-pv
+  labels:
+    pv-name: {{ .Release.Name }}-keycloak-db-pv
+spec:
+  capacity:
+    storage: {{ .Values.keycloakDb.persistentVolume.capacity }}
+  accessModes:
+    - {{ .Values.keycloakDb.persistentVolume.accessMode }}
+  persistentVolumeReclaimPolicy: {{ .Values.keycloakDb.persistentVolume.reclaimPolicy }}
+  storageClassName: {{ .Values.keycloakDb.persistentVolume.storageClassName }}
+  volumeMode: {{ .Values.keycloakDb.persistentVolume.volumeMode }}
+  {{- if eq .Values.keycloakDb.persistentVolume.type "local" }}
+  local:
+    path: {{ .Values.keycloakDb.persistentVolume.path }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: {{ .Values.keycloakDb.persistentVolume.nodeAffinity.key }}
+              operator: {{ .Values.keycloakDb.persistentVolume.nodeAffinity.operator }}
+              values:
+                {{ toYaml .Values.keycloakDb.persistentVolume.nodeAffinity.values | indent 16 }}
+  {{- else if eq .Values.keycloakDb.persistentVolume.type "hostPath" }}
+  hostPath:
+    path: {{ .Values.keycloakDb.persistentVolume.path }}
+    type: DirectoryOrCreate
+  {{- end }}
+{{- end }}

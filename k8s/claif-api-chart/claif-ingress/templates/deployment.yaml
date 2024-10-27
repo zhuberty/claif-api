@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-claif-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-claif-ingress
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-claif-ingress
+    spec:
+      containers:
+      - name: traefik
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        args:
+          - "--api.insecure={{ .Values.traefik.api.insecure }}"
+          - "--api.dashboard={{ .Values.traefik.api.dashboard }}"
+          - "--providers.kubernetescrd"
+          - "--entrypoints.web.address={{ .Values.traefik.entrypoints.web.address }}"
+          - "--accesslog={{ .Values.traefik.accesslog.enabled }}"
+          - "--accesslog.filepath={{ .Values.traefik.accesslog.filepath }}"
+        ports:
+          - containerPort: {{ .Values.traefik.containerPorts.http }}
+          - containerPort: {{ .Values.traefik.containerPorts.dashboard }}
+        volumeMounts:
+          - name: traefik-logs
+            mountPath: {{ .Values.traefik.volumeMounts.logs }}
+      volumes:
+      - name: traefik-logs
+        emptyDir: {}

@@ -1,0 +1,45 @@
+namespace: claif-dev
+replicaCount: 1
+
+image:
+  repository: "docker.io/bitnami/postgresql"
+  tag: "12.20.0"
+
+secretName: "claif-db-secrets"
+mountPath: "/bitnami/postgresql"
+
+nodeAffinity:
+  key: "storage-type"
+  operator: "In"
+  values:
+    - "disk"
+
+# Database ConfigMap settings
+dbUser: "claif_db_user"
+dbPassword: "claif_db_password"
+dbName: "claif_db"
+
+persistentVolume:
+  type: hostPath
+  path: /tmp/claif-db
+  capacity: 1Gi
+  accessMode: ReadWriteOnce
+  reclaimPolicy: Retain
+  storageClassName: local-storage
+  volumeMode: Filesystem
+  nodeAffinity: {}
+  labels:
+    app: claif-db
+
+persistentVolumeClaim:
+  storageClassName: local-storage
+  accessMode: ReadWriteOnce
+  storage: 1Gi
+  labels:
+    app: claif-db
+
+service:
+  type: NodePort
+  port: 5432
+  targetPort: 5432
+  nodePort: 30083

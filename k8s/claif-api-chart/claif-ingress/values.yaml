@@ -1,0 +1,31 @@
+namespace: claif-dev
+replicaCount: 1
+
+image:
+  repository: "traefik"
+  tag: "3.1.4"
+
+traefik:
+  api:
+    insecure: "true"
+    dashboard: "true"
+  entrypoints:
+    web:
+      address: ":80"
+  accesslog:
+    enabled: "true"
+    filepath: "/var/log/traefik/access.log"
+  containerPorts:
+    http: 80
+    dashboard: 8080
+  volumeMounts:
+    logs: "/var/log/traefik"
+
+service:
+  type: NodePort
+  ports:
+    http: 80
+    dashboard: 8080
+  nodePorts:
+    http: 30080
+    dashboard: 30081

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-keycloak-db
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.keycloakDb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-keycloak-db
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-keycloak-db
+    spec:
+      containers:
+        - name: keycloak-db
+          image: {{ .Values.keycloakDb.image.repository }}:{{ .Values.keycloakDb.image.tag }}
+          env:
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDb.secretName }}
+                  key: POSTGRESQL_USERNAME
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDb.secretName }}
+                  key: POSTGRESQL_PASSWORD
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDb.secretName }}
+                  key: POSTGRESQL_DATABASE
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.keycloakDb.mountPath }}
+      volumes:
+        - name: data
+          {{- if .Values.keycloakDb.usePersistentStorage }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-keycloak-db-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.keycloakDb.nodeAffinity.key }}
+                    operator: {{ .Values.keycloakDb.nodeAffinity.operator }}
+                    values:
+                      {{ toYaml .Values.keycloakDb.nodeAffinity.values | nindent 22 }}
