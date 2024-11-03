@@ -53,6 +53,12 @@ declare -A KEYCLOAK_DB_SECRETS=(
   [POSTGRESQL_DATABASE]=""
 )
 
+# Function to generate safe random strings
+generate_safe_random_string() {
+  local LENGTH=${1:-32}
+  tr -dc 'A-Za-z0-9' </dev/urandom | head -c ${LENGTH}
+}
+
 # Function to generate secrets
 generate_secrets() {
   local -n SECRET_KEYS=$1
@@ -68,7 +74,7 @@ generate_secrets() {
       SECRET_KEYS[$KEY]="${!ENV_VAR}"
     else
       # Generate a random value if not set
-      SECRET_KEYS[$KEY]="$(openssl rand -base64 32)"
+      SECRET_KEYS[$KEY]="$(generate_safe_random_string)"
     fi
   done
 
