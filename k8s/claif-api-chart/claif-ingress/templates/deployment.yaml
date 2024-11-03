@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-claif-ingress
+  name: claif-ingress
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-claif-ingress
+      app: claif-ingress
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-claif-ingress
+        app: claif-ingress
     spec:
       containers:
       - name: traefik

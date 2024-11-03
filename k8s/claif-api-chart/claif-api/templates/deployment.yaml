@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-claif-api
+  name: claif-api
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-claif-api
+      app: claif-api
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-claif-api
+        app: claif-api
     spec:
       containers:
       - name: claif-api
         {{- if .Values.useContainerd }}
-        image: {{ .Values.image.repository }}/{{ .Release.Name }}-claif-api:{{ .Values.global.image.tag }}
+        image: {{ .Values.image.repository }}/claif-api:{{ .Values.global.image.tag }}
         {{- else }}
-        image: {{ .Release.Name }}-claif-api:{{ .Values.global.image.tag }}
+        image: claif-api-claif-api:{{ .Values.global.image.tag }}
         {{- end }}
         imagePullPolicy: {{ .Values.global.image.pullPolicy }}
         command: ["/bin/bash", "-c", "{{ .Values.command }}"]

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-db-config
+  name: db-config
   namespace: {{ .Values.namespace }}
 data:
   setup-dev-db.sh: |

@@ -10,24 +10,7 @@ secretName: "keycloak-secrets"
 keycloak:
   createAdminUser: "true"
 
-# Keycloak admin credentials
-keycloakAdmin: "admin"
-keycloakAdminPassword: "admin_password"
-
-# Keycloak realm and user information
-keycloakRealm: "myrealm"
-keycloakUserUsername: "user"
-keycloakUserFirstName: "UserFirst"
-keycloakUserLastName: "UserLast"
-keycloakUserEmail: "user@example.com"
-keycloakUserPassword: "user_password"
-
-# Keycloak client information
-keycloakClientId: "my-client-id"
-keycloakClientSecret: "my-client-secret"
-
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8080
   targetPort: 8080
-  nodePort: 30085

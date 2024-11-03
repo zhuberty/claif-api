@@ -7,11 +7,11 @@ image:
 
 useContainerd: true
 
-# claif-api-db configurations
-claif-api-db:
+# claif-db configurations
+claif-db:
   persistentVolume:
     type: local
-    path: /mnt/data/claif-api-db
+    path: /mnt/data/claif-db
     capacity: 10Gi
     accessMode: ReadWriteOnce
     reclaimPolicy: Retain
@@ -24,13 +24,13 @@ claif-api-db:
         - staging-node1
         - staging-node2
     labels:
-      app: claif-api-db
+      app: claif-db
   persistentVolumeClaim:
     storageClassName: local-storage
     accessMode: ReadWriteOnce
     storage: 10Gi
     labels:
-      app: claif-api-db
+      app: claif-db
 
 # Keycloak-DB configurations
 keycloak-db:

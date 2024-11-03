@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-claif-api-db-pvc
+  name: claif-db-pvc
   namespace: {{ .Values.namespace }}
 spec:
   storageClassName: {{ .Values.persistentVolumeClaim.storageClassName }}
@@ -13,5 +13,5 @@ spec:
       storage: {{ .Values.persistentVolumeClaim.storage }}
   selector:
     matchLabels:
-      pv-name: {{ .Release.Name }}-claif-api-db-pv
+      pv-name: claif-db-pv
 {{- end }}

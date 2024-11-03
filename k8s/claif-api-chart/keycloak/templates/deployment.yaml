@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-keycloak
+  name: keycloak
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-keycloak
+      app: keycloak
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-keycloak
+        app: keycloak
     spec:
       securityContext:
         fsGroup: 1001
@@ -95,6 +95,6 @@ spec:
       volumes:
       - name: keycloak-settings
         configMap:
-          name: {{ .Release.Name }}-keycloak-config
+          name: keycloak-config
       - name: tmp-script
         emptyDir: {}

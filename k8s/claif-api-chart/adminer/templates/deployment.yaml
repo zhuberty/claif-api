@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-adminer
+  name: adminer
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-adminer
+      app: adminer
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-adminer
+        app: adminer
     spec:
       containers:
       - name: adminer

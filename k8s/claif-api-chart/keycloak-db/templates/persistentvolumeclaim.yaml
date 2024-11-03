@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-keycloak-db-pvc
+  name: keycloak-db-pvc
   namespace: {{ .Values.namespace }}
 spec:
   storageClassName: {{ .Values.keycloakDb.persistentVolumeClaim.storageClassName }}
@@ -13,5 +13,5 @@ spec:
       storage: {{ .Values.keycloakDb.persistentVolumeClaim.storage }}
   selector:
     matchLabels:
-      pv-name: {{ .Release.Name }}-keycloak-db-pv
+      pv-name: keycloak-db-pv
 {{- end }}

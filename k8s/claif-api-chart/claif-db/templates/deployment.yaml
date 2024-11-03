@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-claif-api-db
+  name: claif-db
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-claif-api-db
+      app: claif-db
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-claif-api-db
+        app: claif-db
     spec:
       containers:
-      - name: claif-api-db
+      - name: claif-db
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:
           - name: POSTGRESQL_USERNAME
@@ -39,7 +39,7 @@ spec:
         - name: data
           {{- if .Values.usePersistentStorage }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-claif-api-db-pvc
+            claimName: claif-db-pvc
           {{- else }}
           emptyDir: {}
           {{- end }}

@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-keycloak-db-pv
+  name: keycloak-db-pv
   labels:
-    pv-name: {{ .Release.Name }}-keycloak-db-pv
+    pv-name: keycloak-db-pv
 spec:
   capacity:
     storage: {{ .Values.keycloakDb.persistentVolume.capacity }}

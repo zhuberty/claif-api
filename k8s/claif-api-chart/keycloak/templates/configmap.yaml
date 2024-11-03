@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-keycloak-config
+  name: keycloak-config
   namespace: {{ .Values.namespace }}
 data:
   import-dev-settings.sh: |
@@ -21,39 +21,39 @@ data:
     /opt/bitnami/keycloak/bin/kcadm.sh config credentials \
         --server http://127.0.0.1:8080 \
         --realm master \
-        --user "{{ .Values.keycloakAdmin }}" \
-        --password "{{ .Values.keycloakAdminPassword }}" \
+        --user "$KEYCLOAK_ADMIN" \
+        --password "$KEYCLOAK_ADMIN_PASSWORD" \
         --config "$CONFIG_FILE"
 
     # Create the realm if it doesn't exist
     /opt/bitnami/keycloak/bin/kcadm.sh create realms \
-        -s realm="{{ .Values.keycloakRealm }}" \
+        -s realm="$KEYCLOAK_REALM" \
         -s enabled=true \
         -s 'accessTokenLifespan=1800' \
         -s 'accessTokenLifespanForImplicitFlow=1800' \
         --config "$CONFIG_FILE" || true
 
     # Create the user with email verified and no required actions
-    /opt/bitnami/keycloak/bin/kcadm.sh create users -r "{{ .Values.keycloakRealm }}" \
-        -s username="{{ .Values.keycloakUserUsername }}" \
-        -s firstName="{{ .Values.keycloakUserFirstName }}" \
-        -s lastName="{{ .Values.keycloakUserLastName }}" \
+    /opt/bitnami/keycloak/bin/kcadm.sh create users -r "$KEYCLOAK_REALM" \
+        -s username="$KEYCLOAK_USER_USERNAME" \
+        -s firstName="$KEYCLOAK_USER_FIRST_NAME" \
+        -s lastName="$KEYCLOAK_USER_LAST_NAME" \
         -s enabled=true \
-        -s email="{{ .Values.keycloakUserEmail }}" \
+        -s email="$KEYCLOAK_USER_EMAIL" \
         -s emailVerified=true \
         -s requiredActions=[] \
         --config "$CONFIG_FILE"
 
     # Set the user's password as non-temporary
-    /opt/bitnami/keycloak/bin/kcadm.sh set-password -r "{{ .Values.keycloakRealm }}" \
-        --username "{{ .Values.keycloakUserUsername }}" \
-        --new-password "{{ .Values.keycloakUserPassword }}" \
+    /opt/bitnami/keycloak/bin/kcadm.sh set-password -r "$KEYCLOAK_REALM" \
+        --username "$KEYCLOAK_USER_USERNAME" \
+        --new-password "$KEYCLOAK_USER_PASSWORD" \
         --temporary=false \
         --config "$CONFIG_FILE"
 
     # Create the client
-    /opt/bitnami/keycloak/bin/kcadm.sh create clients -r "{{ .Values.keycloakRealm }}" \
-        -s clientId="{{ .Values.keycloakClientId }}" \
+    /opt/bitnami/keycloak/bin/kcadm.sh create clients -r "$KEYCLOAK_REALM" \
+        -s clientId="$KEYCLOAK_CLIENT_ID" \
         -s enabled=true \
         -s protocol="openid-connect" \
         -s 'redirectUris=["http://localhost/*"]' \
