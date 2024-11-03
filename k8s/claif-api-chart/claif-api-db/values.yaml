@@ -5,7 +5,7 @@ image:
   repository: "docker.io/bitnami/postgresql"
   tag: "12.20.0"
 
-secretName: "claif-db-secrets"
+secretName: "claif-api-db-secrets"
 mountPath: "/bitnami/postgresql"
 
 nodeAffinity:
@@ -23,7 +23,7 @@ usePersistentStorage: false
 
 persistentVolume:
   type: hostPath
-  path: /tmp/claif-db
+  path: /tmp/claif-api-db
   capacity: 1Gi
   accessMode: ReadWriteOnce
   reclaimPolicy: Retain
@@ -31,14 +31,14 @@ persistentVolume:
   volumeMode: Filesystem
   nodeAffinity: {}
   labels:
-    app: claif-db
+    app: claif-api-db
 
 persistentVolumeClaim:
   storageClassName: local-storage
   accessMode: ReadWriteOnce
   storage: 1Gi
   labels:
-    app: claif-db
+    app: claif-api-db
 
 service:
   type: ClusterIP

@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-claif-db-pv
+  name: {{ .Release.Name }}-claif-api-db-pv
   labels:
-    pv-name: {{ .Release.Name }}-claif-db-pv
+    pv-name: {{ .Release.Name }}-claif-api-db-pv
 spec:
   capacity:
     storage: {{ .Values.persistentVolume.capacity }}

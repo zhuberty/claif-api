@@ -2,8 +2,8 @@ dependencies:
 - name: claif-api
   repository: file://claif-api
   version: 1.0.0
-- name: claif-db
-  repository: file://claif-db
+- name: claif-api-db
+  repository: file://claif-api-db
   version: 1.0.0
 - name: keycloak
   repository: file://keycloak
@@ -17,5 +17,5 @@ dependencies:
 - name: claif-ingress
   repository: file://claif-ingress
   version: 1.0.0
-digest: sha256:b5319d6132340b547e49309912a6ca13b35d78d1071b6f8019fe970cb366f920
-generated: "2024-10-26T15:42:49.09039723-05:00"
+digest: sha256:7fa722fcdd9b18a2a20fa1d68b4066efc9d632bd22d734f13dae8cb91acbf6fa
+generated: "2024-11-03T12:17:08.869797339-06:00"

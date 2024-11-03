@@ -5,9 +5,9 @@ dependencies:
   - name: claif-api
     version: "1.0.0"
     repository: "file://claif-api"
-  - name: claif-db
+  - name: claif-api-db
     version: "1.0.0"
-    repository: "file://claif-db"
+    repository: "file://claif-api-db"
   - name: keycloak
     version: "1.0.0"
     repository: "file://keycloak"

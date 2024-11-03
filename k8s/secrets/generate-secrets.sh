@@ -10,7 +10,7 @@ NAMESPACE="$1"
 
 # Define the secret names
 CLAIF_API_SECRET_NAME="claif-api-secrets"
-CLAIF_DB_SECRET_NAME="claif-db-secrets"
+CLAIF_DB_SECRET_NAME="claif-api-db-secrets"
 KEYCLOAK_SECRET_NAME="keycloak-secrets"
 KEYCLOAK_DB_SECRET_NAME="keycloak-db-secrets"
 

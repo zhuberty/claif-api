@@ -21,14 +21,14 @@ services:
     build:
       context: ./src/claif-api
     command: >
-      bash -c "./scripts/wait_for_db.sh claif-db:5432
+      bash -c "./scripts/wait_for_db.sh claif-api-db:5432
       && ./scripts/wait_for_keycloak.sh keycloak
       && ./scripts/wait_for_minio.sh minio:9000
-      && ./scripts/seed_db.sh claif-db"
+      && ./scripts/seed_db.sh claif-api-db"
     environment:
       - UVICORN_WORKERS=2
       - APP_MODULE=main:app
-      - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db
+      - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-api-db:5432/claif_db
       - KEYCLOAK_SERVER_URL=http://keycloak:8080
       - KEYCLOAK_REALM=fastapi
       - KEYCLOAK_CLIENT_ID=fastapi-client
@@ -50,21 +50,21 @@ services:
     ports:
       - 8001:8000
     depends_on:
-      - claif-db
+      - claif-api-db
       - keycloak
       - minio
       - claif-transcriber
 
-  claif-db:
-    container_name: claif-db
+  claif-api-db:
+    container_name: claif-api-db
     image: docker.io/bitnami/postgresql:12.20.0
     environment:
       - POSTGRESQL_USERNAME=postgres
       - POSTGRESQL_PASSWORD=postgres
       - POSTGRESQL_DATABASE=postgres
     volumes:
-      - claif-db-data:/bitnami/postgresql
-      - ./src/claif-db/setup-dev-db.sh:/docker-entrypoint-initdb.d/setup-dev-db.sh
+      - claif-api-db-data:/bitnami/postgresql
+      - ./src/claif-api-db/setup-dev-db.sh:/docker-entrypoint-initdb.d/setup-dev-db.sh
     ports:
       - "5433:5432"
   
@@ -152,7 +152,7 @@ services:
       - minio
 
 volumes:
-  claif-db-data:
+  claif-api-db-data:
   keycloak-db-data:
   minio-data:
   transcriber-models:

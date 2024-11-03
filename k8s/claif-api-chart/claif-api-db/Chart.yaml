@@ -1,5 +1,5 @@
 apiVersion: v2
-name: claif-db
+name: claif-api-db
 type: application
 version: 1.0.0
 appVersion: "0.1.0"
