@@ -33,12 +33,16 @@ spec:
                 name: {{ .Values.secretName }}
                 key: POSTGRESQL_DATABASE
         volumeMounts:
-          - name: {{ .Release.Name }}-claif-db-pv
-            mountPath: {{ .Values.mountPath }}
+            - name: data
+              mountPath: {{ .Values.mountPath }}
       volumes:
-      - name: {{ .Release.Name }}-claif-db-pv
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-claif-db-pvc
+        - name: data
+          {{- if .Values.usePersistentStorage }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-claif-db-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

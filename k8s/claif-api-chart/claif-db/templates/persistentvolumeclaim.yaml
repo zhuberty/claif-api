@@ -1,3 +1,4 @@
+{{- if .Values.usePersistentStorage }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -13,3 +14,4 @@ spec:
   selector:
     matchLabels:
       pv-name: {{ .Release.Name }}-claif-db-pv
+{{- end }}

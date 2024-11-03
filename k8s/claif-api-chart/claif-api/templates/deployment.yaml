@@ -15,8 +15,12 @@ spec:
     spec:
       containers:
       - name: claif-api
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.useContainerd }}
+        image: {{ .Values.image.repository }}/{{ .Release.Name }}-claif-api:{{ .Values.global.image.tag }}
+        {{- else }}
+        image: {{ .Release.Name }}-claif-api:{{ .Values.global.image.tag }}
+        {{- end }}
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
         command: ["/bin/bash", "-c", "{{ .Values.command }}"]
         env:
           - name: UVICORN_WORKERS

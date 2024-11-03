@@ -2,9 +2,10 @@
 
 namespace: claif-staging
 
-# Global configurations (if any)
-global:
-  environment: staging
+image:
+  pullPolicy: "Never"
+
+useContainerd: true
 
 # Claif-DB configurations
 claif-db:

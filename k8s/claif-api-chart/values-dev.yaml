@@ -1,9 +1,13 @@
 # values-dev.yaml
 namespace: claif-dev
 
-# Global configurations (if any)
 global:
-  environment: dev
+  image:
+    repository: "docker.io/library"
+    tag: "latest"
+    pullPolicy: "Never"
+
+useContainerd: false
 
 # Keycloak-DB configurations
 keycloakDb:

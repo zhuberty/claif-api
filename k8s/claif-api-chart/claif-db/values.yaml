@@ -19,6 +19,8 @@ dbUser: "claif_db_user"
 dbPassword: "claif_db_password"
 dbName: "claif_db"
 
+usePersistentStorage: false
+
 persistentVolume:
   type: hostPath
   path: /tmp/claif-db
@@ -39,7 +41,6 @@ persistentVolumeClaim:
     app: claif-db
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 5432
   targetPort: 5432
-  nodePort: 30083
