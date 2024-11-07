@@ -22,10 +22,7 @@ traefik:
     logs: "/var/log/traefik"
 
 service:
-  type: NodePort
+  type: ClusterIP
   ports:
     http: 80
     dashboard: 8080
-  nodePorts:
-    http: 30080
-    dashboard: 30081

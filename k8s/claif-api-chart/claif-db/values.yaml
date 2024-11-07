@@ -1,10 +1,6 @@
 namespace: claif-dev
 replicaCount: 1
 
-image:
-  repository: "docker.io/bitnami/postgresql"
-  tag: "12.20.0"
-
 secretName: "claif-db-secrets"
 mountPath: "/bitnami/postgresql"
 
@@ -13,11 +9,6 @@ nodeAffinity:
   operator: "In"
   values:
     - "disk"
-
-# Database ConfigMap settings
-dbUser: "claif_db_user"
-dbPassword: "claif_db_password"
-dbName: "claif_db"
 
 usePersistentStorage: false
 

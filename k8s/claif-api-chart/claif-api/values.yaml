@@ -1,6 +1,8 @@
 namespace: claif-dev
 replicaCount: 1
 secretName: "claif-api-secrets"
+claifDbSecretName: "claif-db-secrets"
+keycloakSecretName: "keycloak-secrets"
 containerPort: 8000
 command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db"
 

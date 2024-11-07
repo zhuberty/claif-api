@@ -16,41 +16,40 @@ KEYCLOAK_DB_SECRET_NAME="keycloak-db-secrets"
 
 # Define the secrets for each group
 declare -A CLAIF_API_SECRETS=(
-  [UVICORN_WORKERS]=""
-  [APP_MODULE]=""
-  [DATABASE_URL]=""
-  [KEYCLOAK_SERVER_URL]=""
-  [KEYCLOAK_REALM]=""
-  [KEYCLOAK_CLIENT_ID]=""
-  [KEYCLOAK_CLIENT_SECRET]=""
-  [CLAIF_API_HOST]=""
-  [CLAIF_API_PORT]=""
+  [UVICORN_WORKERS]="1"
+  [DATABASE_URL]="claif-db"
+  [CLAIF_API_HOST]="claif-api"
+  [CLAIF_API_PORT]="8000"
 )
 
 declare -A CLAIF_DB_SECRETS=(
-  [POSTGRESQL_USERNAME]=""
-  [POSTGRESQL_PASSWORD]=""
-  [POSTGRESQL_DATABASE]=""
+  [CLAIF_DB_USER]="postgres"
+  [CLAIF_DB_PASSWORD]=""
+  [CLAIF_DB_DATABASE]=""
+  [NEW_DB_USER]=""
+  [NEW_DB_PASSWORD]=""
+  [NEW_DB_NAME]=""
 )
 
 declare -A KEYCLOAK_SECRETS=(
+  [KEYCLOAK_REALM]=""
+  [KEYCLOAK_CLIENT_ID]=""
+  [KEYCLOAK_CLIENT_SECRET]=""
   [KEYCLOAK_CREATE_ADMIN_USER]=""
   [KEYCLOAK_ADMIN]=""
   [KEYCLOAK_ADMIN_PASSWORD]=""
-  [KEYCLOAK_REALM]=""
   [KEYCLOAK_USER_USERNAME]=""
   [KEYCLOAK_USER_FIRST_NAME]=""
   [KEYCLOAK_USER_LAST_NAME]=""
-  [KEYCLOAK_USER_EMAIL]=""
+  [KEYCLOAK_USER_EMAIL]="keycloak-user@claif.org"
   [KEYCLOAK_USER_PASSWORD]=""
-  [KEYCLOAK_CLIENT_ID]=""
-  [KEYCLOAK_CLIENT_SECRET]=""
+  [KEYCLOAK_SERVER_URL]="keycloak"
 )
 
 declare -A KEYCLOAK_DB_SECRETS=(
-  [POSTGRESQL_USERNAME]=""
-  [POSTGRESQL_PASSWORD]=""
-  [POSTGRESQL_DATABASE]=""
+  [KEYCLOAK_DB_USERNAME]=""
+  [KEYCLOAK_DB_PASSWORD]=""
+  [KEYCLOAK_DB_DATABASE]=""
 )
 
 # Function to generate safe random strings
@@ -66,14 +65,12 @@ generate_secrets() {
 
   # Loop through each secret key
   for KEY in "${!SECRET_KEYS[@]}"; do
-    # Construct the environment variable name (e.g., CLAIFSEC_KEYCLOAK_ADMIN)
-    ENV_VAR="CLAIFSEC_${KEY}"
-
-    # Check if the environment variable is set
-    if [ -n "${!ENV_VAR}" ]; then
-      SECRET_KEYS[$KEY]="${!ENV_VAR}"
+    # Use default value if set, otherwise generate a random value
+    if [ -n "${SECRET_KEYS[$KEY]}" ]; then
+      # Default value is already set in the array, use it as is
+      :
     else
-      # Generate a random value if not set
+      # Generate a random value
       SECRET_KEYS[$KEY]="$(generate_safe_random_string)"
     fi
   done

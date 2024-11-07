@@ -21,17 +21,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.keycloakDb.secretName }}
-                  key: POSTGRESQL_USERNAME
+                  key: KEYCLOAK_DB_USERNAME
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.keycloakDb.secretName }}
-                  key: POSTGRESQL_PASSWORD
+                  key: KEYCLOAK_DB_PASSWORD
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.keycloakDb.secretName }}
-                  key: POSTGRESQL_DATABASE
+                  key: KEYCLOAK_DB_DATABASE
           volumeMounts:
             - name: data
               mountPath: {{ .Values.keycloakDb.mountPath }}

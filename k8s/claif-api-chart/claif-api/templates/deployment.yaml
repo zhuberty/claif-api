@@ -28,11 +28,6 @@ spec:
               secretKeyRef:
                 name: {{ .Values.secretName }}
                 key: UVICORN_WORKERS
-          - name: APP_MODULE
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: APP_MODULE
           - name: DATABASE_URL
             valueFrom:
               secretKeyRef:
@@ -41,22 +36,22 @@ spec:
           - name: KEYCLOAK_SERVER_URL
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.secretName }}
+                name: {{ .Values.keycloakSecretName }}
                 key: KEYCLOAK_SERVER_URL
           - name: KEYCLOAK_REALM
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.secretName }}
+                name: {{ .Values.keycloakSecretName }}
                 key: KEYCLOAK_REALM
           - name: KEYCLOAK_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.secretName }}
+                name: {{ .Values.keycloakSecretName }}
                 key: KEYCLOAK_CLIENT_ID
           - name: KEYCLOAK_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.secretName }}
+                name: {{ .Values.keycloakSecretName }}
                 key: KEYCLOAK_CLIENT_SECRET
           - name: CLAIF_API_HOST
             valueFrom:
@@ -68,5 +63,20 @@ spec:
               secretKeyRef:
                 name: {{ .Values.secretName }}
                 key: CLAIF_API_PORT
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.claifDbSecretName }}
+                key: NEW_DB_USER
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.claifDbSecretName }}
+                key: NEW_DB_PASSWORD
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.claifDbSecretName }}
+                key: NEW_DB_NAME
         ports:
           - containerPort: {{ .Values.containerPort }}

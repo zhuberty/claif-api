@@ -15,26 +15,46 @@ spec:
     spec:
       containers:
       - name: claif-db
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if .Values.useContainerd }}
+        image: {{ .Values.image.repository }}/claif-db:{{ .Values.global.image.tag }}
+        {{- else }}
+        image: claif-api-claif-db:{{ .Values.global.image.tag }}
+        {{- end }}
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
         env:
           - name: POSTGRESQL_USERNAME
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.secretName }}
-                key: POSTGRESQL_USERNAME
+                key: CLAIF_DB_USER
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.secretName }}
-                key: POSTGRESQL_PASSWORD
+                key: CLAIF_DB_PASSWORD
           - name: POSTGRESQL_DATABASE
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.secretName }}
-                key: POSTGRESQL_DATABASE
+                key: CLAIF_DB_DATABASE
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: NEW_DB_USER
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: NEW_DB_PASSWORD
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: NEW_DB_NAME
         volumeMounts:
-            - name: data
-              mountPath: {{ .Values.mountPath }}
+          - name: data
+            mountPath: {{ .Values.mountPath }}
       volumes:
         - name: data
           {{- if .Values.usePersistentStorage }}
@@ -43,6 +63,10 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: db-config
+          configMap:
+            name: db-config
+            defaultMode: 0755
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
