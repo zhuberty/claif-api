@@ -2,6 +2,9 @@
 
 CONFIG_FILE="/tmp/kcadm.config"
 
+# make KEYCLOAK_USER_USERNAME lowercase
+KEYCLOAK_USER_USERNAME=$(echo "$KEYCLOAK_USER_USERNAME" | tr '[:upper:]' '[:lower:]')
+
 # Wait for Keycloak to start
 until curl -s http://127.0.0.1:8080 > /dev/null; do
     echo "Waiting for Keycloak to start..."

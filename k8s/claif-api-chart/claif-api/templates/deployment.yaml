@@ -53,6 +53,16 @@ spec:
               secretKeyRef:
                 name: {{ .Values.keycloakSecretName }}
                 key: KEYCLOAK_CLIENT_SECRET
+          - name: TEST_USER_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.keycloakSecretName }}
+                key: KEYCLOAK_USER_USERNAME
+          - name: TEST_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.keycloakSecretName }}
+                key: KEYCLOAK_USER_PASSWORD
           - name: CLAIF_API_HOST
             valueFrom:
               secretKeyRef:

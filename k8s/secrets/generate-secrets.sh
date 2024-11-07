@@ -58,7 +58,6 @@ generate_safe_random_string() {
   tr -dc 'A-Za-z0-9' </dev/urandom | head -c ${LENGTH}
 }
 
-# Function to generate secrets
 generate_secrets() {
   local -n SECRET_KEYS=$1
   local SECRET_NAME=$2
@@ -72,6 +71,11 @@ generate_secrets() {
     else
       # Generate a random value
       SECRET_KEYS[$KEY]="$(generate_safe_random_string)"
+    fi
+
+    # Convert KEYCLOAK_USER_USERNAME to lowercase if it exists
+    if [ "$KEY" == "KEYCLOAK_USER_USERNAME" ]; then
+      SECRET_KEYS[$KEY]=$(echo "${SECRET_KEYS[$KEY]}" | tr '[:upper:]' '[:lower:]')
     fi
   done
 
