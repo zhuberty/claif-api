@@ -20,4 +20,7 @@ dependencies:
   - name: claif-ingress
     version: "1.0.0"
     repository: "file://claif-ingress"
+  - name: minio
+    version: "1.0.0"
+    repository: "file://minio"
   

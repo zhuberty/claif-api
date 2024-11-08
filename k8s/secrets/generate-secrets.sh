@@ -13,6 +13,7 @@ CLAIF_API_SECRET_NAME="claif-api-secrets"
 CLAIF_DB_SECRET_NAME="claif-db-secrets"
 KEYCLOAK_SECRET_NAME="keycloak-secrets"
 KEYCLOAK_DB_SECRET_NAME="keycloak-db-secrets"
+MINIO_SECRET_NAME="minio-secrets"
 
 # Define the secrets for each group
 declare -A CLAIF_API_SECRETS=(
@@ -50,6 +51,11 @@ declare -A KEYCLOAK_DB_SECRETS=(
   [KEYCLOAK_DB_USERNAME]=""
   [KEYCLOAK_DB_PASSWORD]=""
   [KEYCLOAK_DB_DATABASE]=""
+)
+
+declare -A MINIO_SECRETS=(
+  [MINIO_ACCESS_KEY]=""
+  [MINIO_SECRET_KEY]=""
 )
 
 # Function to generate safe random strings
@@ -113,3 +119,4 @@ generate_secrets CLAIF_API_SECRETS $CLAIF_API_SECRET_NAME
 generate_secrets CLAIF_DB_SECRETS $CLAIF_DB_SECRET_NAME
 generate_secrets KEYCLOAK_SECRETS $KEYCLOAK_SECRET_NAME
 generate_secrets KEYCLOAK_DB_SECRETS $KEYCLOAK_DB_SECRET_NAME
+generate_secrets MINIO_SECRETS $MINIO_SECRET_NAME

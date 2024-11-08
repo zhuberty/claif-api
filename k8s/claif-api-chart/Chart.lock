@@ -17,5 +17,8 @@ dependencies:
 - name: claif-ingress
   repository: file://claif-ingress
   version: 1.0.0
-digest: sha256:b5319d6132340b547e49309912a6ca13b35d78d1071b6f8019fe970cb366f920
-generated: "2024-11-03T15:01:49.369467422-06:00"
+- name: minio
+  repository: file://minio
+  version: 1.0.0
+digest: sha256:5f8da1e7070f9c8beb5b060ce7a38a73ca0ed58e6d08238aab81c3b5bec0d625
+generated: "2024-11-07T17:42:33.848582694-06:00"

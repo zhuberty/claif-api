@@ -1,0 +1,17 @@
+namespace: claif-dev
+replicaCount: 1
+
+image: "bitnami/minio:2024.10.2"
+
+secretName: "minio-secrets"
+
+keycloak:
+  createAdminUser: "true"
+
+service:
+  type: NodePort
+  ports:
+    http: 30086
+    dashboard: 30087
+
+mountPath: "/bitnami/minio/data"
