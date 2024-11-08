@@ -61,5 +61,5 @@ async def update_annotation_review(
 @router.get("/{recording_id}", response_model=AnnotationReviewRead)
 @limiter.limit("20/minute")
 @value_error_handler
-async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db), response_model=AnnotationReviewRead):
+async def read_recording(request: Request, recording_id: int, db: Session = Depends(get_db)):
     pass
