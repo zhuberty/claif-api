@@ -5,9 +5,6 @@ image: "bitnami/minio:2024.10.2"
 
 secretName: "minio-secrets"
 
-keycloak:
-  createAdminUser: "true"
-
 service:
   type: NodePort
   ports:

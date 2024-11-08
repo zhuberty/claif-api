@@ -21,9 +21,9 @@ tinydiarize_model_path = os.getenv(
 
 # Initialize MinIO client
 minio_client = Minio(
-    os.getenv("MINIO_SERVER_ENDPOINT", "localhost:9000"),
-    access_key=os.getenv("MINIO_SERVER_ACCESS_KEY", "minio-user"),
-    secret_key=os.getenv("MINIO_SERVER_SECRET_KEY", "minio-password"),
+    os.getenv("MINIO_ENDPOINT", "localhost:9000"),
+    access_key=os.getenv("MINIO_ROOT_USER", "minio-user"),
+    secret_key=os.getenv("MINIO_ROOT_PASSWORD", "minio-password"),
     secure=False
 )
 

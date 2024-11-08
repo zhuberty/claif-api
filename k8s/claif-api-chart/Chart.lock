@@ -20,5 +20,8 @@ dependencies:
 - name: minio
   repository: file://minio
   version: 1.0.0
-digest: sha256:5f8da1e7070f9c8beb5b060ce7a38a73ca0ed58e6d08238aab81c3b5bec0d625
-generated: "2024-11-07T17:42:33.848582694-06:00"
+- name: claif-transcriber
+  repository: file://claif-transcriber
+  version: 1.0.0
+digest: sha256:db9e3dce139b8b06b2140968e200d1f93154c0264d4dd4c54bc793e7a3ba8352
+generated: "2024-11-07T20:08:52.056176259-06:00"

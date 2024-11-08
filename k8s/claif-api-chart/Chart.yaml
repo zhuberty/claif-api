@@ -23,4 +23,7 @@ dependencies:
   - name: minio
     version: "1.0.0"
     repository: "file://minio"
+  - name: claif-transcriber
+    version: "1.0.0"
+    repository: "file://claif-transcriber"
   

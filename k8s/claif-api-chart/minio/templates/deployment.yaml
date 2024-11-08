@@ -22,16 +22,16 @@ spec:
             - containerPort: 9000
             - containerPort: 9001
           env:
-            - name: MINIO_ACCESS_KEY
+            - name: MINIO_ROOT_USER
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
-                  key: MINIO_ACCESS_KEY
-            - name: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
-                  key: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_PASSWORD
           volumeMounts:
             - name: data
               mountPath: {{ .Values.mountPath }}

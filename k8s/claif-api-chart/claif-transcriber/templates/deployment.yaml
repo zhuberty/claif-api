@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claif-transcriber
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: claif-transcriber
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: claif-transcriber
+  template:
+    metadata:
+      labels:
+        app: claif-transcriber
+    spec:
+      containers:
+        - name: claif-transcriber
+          {{- if .Values.useContainerd }}
+          image: {{ .Values.image.repository }}/claif-transcriber:{{ .Values.global.image.tag }}
+          {{- else }}
+          image: claif-api-claif-transcriber:{{ .Values.global.image.tag }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.minioSecretName }}
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.minioSecretName }}
+                  key: MINIO_ROOT_PASSWORD
+            - name: MINIO_ENDPOINT
+              value: {{ .Values.minioServerEndpoint }}

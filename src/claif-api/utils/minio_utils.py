@@ -1,13 +1,13 @@
 import io
 from minio import Minio
 from minio.error import S3Error
-from utils.env import MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_AUDIO_BUCKET
+from utils.env import MINIO_ENDPOINT, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD, MINIO_AUDIO_BUCKET
 
 # Initialize MinIO Client
 minio_client = Minio(
     endpoint=MINIO_ENDPOINT,
-    access_key=MINIO_ACCESS_KEY,
-    secret_key=MINIO_SECRET_KEY,
+    access_key=MINIO_ROOT_USER,
+    secret_key=MINIO_ROOT_PASSWORD,
     secure=False  # Set to True if using https
 )
 

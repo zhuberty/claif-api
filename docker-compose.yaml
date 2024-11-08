@@ -38,8 +38,8 @@ services:
       - TEST_USER_USERNAME=testuser
       - TEST_USER_PASSWORD=testpassword
       - MINIO_ENDPOINT=minio:9000
-      - MINIO_SERVER_ACCESS_KEY=minio-user
-      - MINIO_SERVER_SECRET_KEY=minio-password
+      - MINIO_ROOT_USER=minio-user
+      - MINIO_ROOT_PASSWORD=minio-password
       - CLAIF_TRANSCRIBER_ENDPOINT=http://claif-transcriber:8000
     labels:
       - "traefik.enable=true"
@@ -139,9 +139,9 @@ services:
     build:
       context: ./src/claif-transcriber
     environment:
-      - MINIO_SERVER_ENDPOINT=minio:9000
-      - MINIO_SERVER_ACCESS_KEY=minio-user
-      - MINIO_SERVER_SECRET_KEY=minio-password
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ROOT_USER=minio-user
+      - MINIO_ROOT_PASSWORD=minio-password
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.claif-transcriber.rule=PathPrefix(`/transcribe`)"

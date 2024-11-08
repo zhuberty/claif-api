@@ -1,0 +1,10 @@
+# values
+namespace: claif-dev
+replicaCount: 1
+
+minioSecretName: "minio-secrets"
+
+service:
+  port: 8000
+
+minioServerEndpoint: "minio:9000"

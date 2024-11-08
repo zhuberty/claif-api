@@ -54,8 +54,8 @@ declare -A KEYCLOAK_DB_SECRETS=(
 )
 
 declare -A MINIO_SECRETS=(
-  [MINIO_ACCESS_KEY]=""
-  [MINIO_SECRET_KEY]=""
+  [MINIO_ROOT_USER]=""
+  [MINIO_ROOT_PASSWORD]=""
 )
 
 # Function to generate safe random strings
