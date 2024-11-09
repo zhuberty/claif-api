@@ -1,0 +1,32 @@
+{{- if .Values.global.usePersistentStorage }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-pv
+  labels:
+    pv-name: minio-pv
+spec:
+  capacity:
+    storage: {{ .Values.persistentVolume.capacity }}
+  accessModes:
+    - {{ .Values.persistentVolume.accessMode }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistentVolume.reclaimPolicy }}
+  storageClassName: {{ .Values.persistentVolume.storageClassName }}
+  volumeMode: {{ .Values.persistentVolume.volumeMode }}
+  {{- if eq .Values.persistentVolume.type "local" }}
+  local:
+    path: {{ .Values.persistentVolume.path }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: {{ .Values.persistentVolume.nodeAffinity.key }}
+              operator: {{ .Values.persistentVolume.nodeAffinity.operator }}
+              values:
+                {{ toYaml .Values.persistentVolume.nodeAffinity.values | indent 16 }}
+  {{- else if eq .Values.persistentVolume.type "hostPath" }}
+  hostPath:
+    path: {{ .Values.persistentVolume.path }}
+    type: DirectoryOrCreate
+  {{- end }}
+{{- end }}

@@ -1,0 +1,17 @@
+{{- if .Values.global.usePersistentStorage }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc
+  namespace: {{ .Values.global.namespace }}
+spec:
+  storageClassName: {{ .Values.persistentVolumeClaim.storageClassName }}
+  accessModes:
+    - {{ .Values.persistentVolumeClaim.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storage }}
+  selector:
+    matchLabels:
+      pv-name: minio-pv
+{{- end }}

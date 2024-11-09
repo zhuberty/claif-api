@@ -11,3 +11,28 @@ service:
     dashboard: 30087
 
 mountPath: "/bitnami/minio/data"
+
+nodeAffinity:
+  key: "storage-type"
+  operator: "In"
+  values:
+    - "disk"
+
+persistentVolume:
+  type: hostPath
+  path: /tmp/minio
+  capacity: 1Gi
+  accessMode: ReadWriteOnce
+  reclaimPolicy: Retain
+  storageClassName: local-storage
+  volumeMode: Filesystem
+  nodeAffinity: {}
+  labels:
+    app: minio
+
+persistentVolumeClaim:
+  storageClassName: local-storage
+  accessMode: ReadWriteOnce
+  storage: 1Gi
+  labels:
+    app: minio
