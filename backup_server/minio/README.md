@@ -12,11 +12,26 @@ This script dynamically fetches the list of buckets from a MinIO server alias an
 
 ## Prerequisites
 
-- [MinIO Client (mc)](https://min.io/docs/minio/linux/reference/minio-mc.html) installed and configured.
-  - Ensure an alias (e.g., `myminio`) is set up using:
-    ```bash
-    mc alias set myminio http://<minio-server> <access-key> <secret-key>
-    ```
+### Install Dependencies
+
+- **Install MinIO Client (`mc`)**:
+  ```bash
+  wget https://dl.min.io/client/mc/release/linux-amd64/mc
+  chmod +x mc
+  sudo mv mc /usr/local/bin/
+  ```
+
+  Ensure the client is correctly installed by running:
+  ```bash
+  mc --version
+  ```
+
+- **Set Up MinIO Alias**:
+  Configure the MinIO client with an alias:
+  ```bash
+  mc alias set myminio http://<minio-server> <access-key> <secret-key>
+  ```
+
 - Sufficient disk space in the specified backup directory.
 - Script requires `bash` shell.
 
@@ -73,20 +88,6 @@ You can automate the script to run at regular intervals using a cronjob. Here's 
   ```bash
   chmod +x /path/to/backup_script.sh
   ```
-
-## Error Handling
-
-- If no buckets are found or there is an error retrieving the bucket list, the script will exit with an error message.
-- If a backup operation fails for a specific bucket, the script logs the error and continues with the next bucket.
-
-## Backup Location Considerations
-
-Choose a backup directory based on your system setup:
-- **Local Disk**: `/mnt/minio_backups` or a similar dedicated directory.
-- **Network Storage**: Use a NAS mount point, e.g., `/mnt/nas/backups`.
-- **External Storage**: Mount an external drive, e.g., `/media/backup_drive`.
-
-Ensure the directory has adequate disk space and is accessible by the script.
 
 ## Notes
 
