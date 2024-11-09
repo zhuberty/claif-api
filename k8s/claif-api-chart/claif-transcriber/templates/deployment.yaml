@@ -18,7 +18,7 @@ spec:
       containers:
         - name: claif-transcriber
           {{- if .Values.global.useContainerd }}
-          image: {{ .Values.global.image.repository }}/claif-transcriber:{{ .Values.global.image.tag }}
+          image: {{ .Values.global.image.repository }}/claif-api-claif-transcriber:{{ .Values.global.image.tag }}
           {{- else }}
           image: claif-api-claif-transcriber:{{ .Values.global.image.tag }}
           {{- end }}

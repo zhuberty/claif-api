@@ -16,7 +16,7 @@ spec:
       containers:
       - name: claif-api
         {{- if .Values.global.useContainerd }}
-        image: {{ .Values.global.image.repository }}/claif-api:{{ .Values.global.image.tag }}
+        image: {{ .Values.global.image.repository }}/claif-api-claif-api:{{ .Values.global.image.tag }}
         {{- else }}
         image: claif-api-claif-api:{{ .Values.global.image.tag }}
         {{- end }}
