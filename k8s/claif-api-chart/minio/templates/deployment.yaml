@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minio
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: minio
 spec:
@@ -37,7 +37,7 @@ spec:
               mountPath: {{ .Values.mountPath }}
       volumes:
         - name: data
-          {{- if .Values.usePersistentStorage }}
+          {{- if .Values.global.usePersistentStorage }}
           persistentVolumeClaim:
             claimName: minio-db-pvc
           {{- else }}

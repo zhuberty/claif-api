@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: claif-db
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: claif-db
-        {{- if .Values.useContainerd }}
-        image: {{ .Values.image.repository }}/claif-db:{{ .Values.global.image.tag }}
+        {{- if .Values.global.useContainerd }}
+        image: {{ .Values.global.image.repository }}/claif-db:{{ .Values.global.image.tag }}
         {{- else }}
         image: claif-api-claif-db:{{ .Values.global.image.tag }}
         {{- end }}
@@ -57,7 +57,7 @@ spec:
             mountPath: {{ .Values.mountPath }}
       volumes:
         - name: data
-          {{- if .Values.usePersistentStorage }}
+          {{- if .Values.global.usePersistentStorage }}
           persistentVolumeClaim:
             claimName: claif-db-pvc
           {{- else }}
@@ -67,6 +67,7 @@ spec:
           configMap:
             name: db-config
             defaultMode: 0755
+      {{- if .Values.global.usePersistentStorage }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -75,3 +76,4 @@ spec:
                   - key: {{ .Values.nodeAffinity.key }}
                     operator: {{ .Values.nodeAffinity.operator }}
                     values: {{ toYaml .Values.nodeAffinity.values | nindent 22 }}
+      {{- end }}

@@ -1,9 +1,8 @@
-namespace: claif-dev
-
 global:
+  namespace: claif-dev
+  useContainerd: false
   image:
     repository: "docker.io/library"
     tag: "latest"
     pullPolicy: "Never"
-    
-useContainerd: false
+    usePersistentStorage: false

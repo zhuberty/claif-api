@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: claif-transcriber
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: claif-transcriber
 spec:
@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: claif-transcriber
-          {{- if .Values.useContainerd }}
-          image: {{ .Values.image.repository }}/claif-transcriber:{{ .Values.global.image.tag }}
+          {{- if .Values.global.useContainerd }}
+          image: {{ .Values.global.image.repository }}/claif-transcriber:{{ .Values.global.image.tag }}
           {{- else }}
           image: claif-api-claif-transcriber:{{ .Values.global.image.tag }}
           {{- end }}

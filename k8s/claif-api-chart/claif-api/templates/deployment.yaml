@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: claif-api
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: claif-api
-        {{- if .Values.useContainerd }}
-        image: {{ .Values.image.repository }}/claif-api:{{ .Values.global.image.tag }}
+        {{- if .Values.global.useContainerd }}
+        image: {{ .Values.global.image.repository }}/claif-api:{{ .Values.global.image.tag }}
         {{- else }}
         image: claif-api-claif-api:{{ .Values.global.image.tag }}
         {{- end }}

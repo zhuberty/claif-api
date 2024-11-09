@@ -1,60 +1,8 @@
-# values-staging.yaml
-
-namespace: claif-staging
-
-image:
-  pullPolicy: "Never"
-
-useContainerd: true
-
-# claif-db configurations
-claif-db:
-  persistentVolume:
-    type: local
-    path: /mnt/data/claif-db
-    capacity: 10Gi
-    accessMode: ReadWriteOnce
-    reclaimPolicy: Retain
-    storageClassName: local-storage
-    volumeMode: Filesystem
-    nodeAffinity:
-      key: kubernetes.io/hostname
-      operator: In
-      values:
-        - staging-node1
-        - staging-node2
-    labels:
-      app: claif-db
-  persistentVolumeClaim:
-    storageClassName: local-storage
-    accessMode: ReadWriteOnce
-    storage: 10Gi
-    labels:
-      app: claif-db
-
-# Keycloak-DB configurations
-keycloak-db:
-  persistentVolume:
-    type: local
-    path: /mnt/data/keycloak-db
-    capacity: 10Gi
-    accessMode: ReadWriteOnce
-    reclaimPolicy: Retain
-    storageClassName: local-storage
-    volumeMode: Filesystem
-    nodeAffinity:
-      key: kubernetes.io/hostname
-      operator: In
-      values:
-        - staging-node1
-        - staging-node2
-    labels:
-      app: keycloak-db
-  persistentVolumeClaim:
-    storageClassName: local-storage
-    accessMode: ReadWriteOnce
-    storage: 10Gi
-    labels:
-      app: keycloak-db
-
-# Additional staging-specific configurations can go here
+global:
+  namespace: claif-staging
+  useContainerd: true
+  image:
+    repository: "docker.io/library"
+    tag: "latest"
+    pullPolicy: "Never"
+  usePersistentStorage: true

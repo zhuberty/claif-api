@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak-db
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.keycloakDb.replicaCount }}
   selector:
@@ -37,12 +37,13 @@ spec:
               mountPath: {{ .Values.keycloakDb.mountPath }}
       volumes:
         - name: data
-          {{- if .Values.keycloakDb.usePersistentStorage }}
+          {{- if .Values.global.usePersistentStorage }}
           persistentVolumeClaim:
             claimName: keycloak-db-pvc
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- if .Values.global.usePersistentStorage }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -52,3 +53,4 @@ spec:
                     operator: {{ .Values.keycloakDb.nodeAffinity.operator }}
                     values:
                       {{ toYaml .Values.keycloakDb.nodeAffinity.values | nindent 22 }}
+      {{- end }}

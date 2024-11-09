@@ -1,5 +1,3 @@
-# values
-namespace: claif-dev
 replicaCount: 1
 
 minioSecretName: "minio-secrets"

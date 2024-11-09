@@ -1,8 +1,4 @@
-namespace: claif-dev
-
-# Keycloak-DB configurations
 keycloakDb:
-  usePersistentStorage: false  # Set to true to use PV/PVC, false to use emptyDir
   replicaCount: 1
   image:
     repository: "docker.io/bitnami/postgresql"

@@ -1,9 +1,9 @@
-{{- if .Values.keycloakDb.usePersistentStorage }}
+{{- if .Values.global.usePersistentStorage }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: keycloak-db-pvc
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   storageClassName: {{ .Values.keycloakDb.persistentVolumeClaim.storageClassName }}
   accessModes:
