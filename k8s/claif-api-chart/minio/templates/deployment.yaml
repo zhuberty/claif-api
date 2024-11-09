@@ -39,7 +39,7 @@ spec:
         - name: data
           {{- if .Values.global.usePersistentStorage }}
           persistentVolumeClaim:
-            claimName: minio-db-pvc
+            claimName: minio-pvc
           {{- else }}
           emptyDir: {}
           {{- end }}
