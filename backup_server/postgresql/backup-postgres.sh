@@ -2,8 +2,8 @@
 
 # Check if the required arguments are provided
 if [ $# -lt 6 ]; then
-  echo "Usage: $0 <node_ip> <node_port> <db_name> <db_user> <db_password> <backup_directory> [<num_backups_to_keep>]"
-  echo "Example: $0 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres_backups 10"
+  echo "Usage: $0 <node_ip> <node_port> <db_name> <db_user> <db_password> <backup_directory> [<num_backups_to_keep>] [<log_file>]"
+  echo "Example: $0 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres_backups 10 /var/log/postgres_backup.log"
   exit 1
 fi
 
@@ -15,8 +15,8 @@ DB_USER=$4
 DB_PASSWORD=$5
 BACKUP_DIR=$6
 NUM_BACKUPS=${7:-10} # Default to 10 if not provided
+LOG_FILE=${8:-/tmp/postgres_backup.log} # Default to /tmp/postgres_backup.log if not provided
 BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
-LOG_FILE="/tmp/postgres_backup.log"
 
 # Ensure the backup directory exists
 mkdir -p "$BACKUP_DIR"
