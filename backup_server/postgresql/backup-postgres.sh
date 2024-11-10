@@ -43,13 +43,23 @@ unset PGPASSWORD
 
 # Manage backup retention
 echo "Managing backup retention to keep the last $NUM_BACKUPS backups."
-BACKUPS=($(ls -t "${BACKUP_DIR}/${DB_NAME}_*.sql")) # Sorted by modification time, newest first
-if [ ${#BACKUPS[@]} -gt $NUM_BACKUPS ]; then
-  DELETE_COUNT=$((${#BACKUPS[@]} - $NUM_BACKUPS))
-  for ((i=$NUM_BACKUPS; i<${#BACKUPS[@]}; i++)); do
-    echo "Deleting old backup: ${BACKUPS[$i]}"
-    rm -f "${BACKUPS[$i]}"
-  done
+echo "Looking for backups with pattern: ${DB_NAME}_*.sql in ${BACKUP_DIR}"
+BACKUPS=($(find "${BACKUP_DIR}" -name "${DB_NAME}_*.sql" -type f | sort -r))
+
+if [ ${#BACKUPS[@]} -gt 0 ]; then
+  echo "Found ${#BACKUPS[@]} backups."
+  if [ ${#BACKUPS[@]} -gt $NUM_BACKUPS ]; then
+    DELETE_COUNT=$((${#BACKUPS[@]} - $NUM_BACKUPS))
+    echo "Deleting $DELETE_COUNT old backups."
+    for ((i=$NUM_BACKUPS; i<${#BACKUPS[@]}; i++)); do
+      echo "Deleting old backup: ${BACKUPS[$i]}"
+      rm -f "${BACKUPS[$i]}"
+    done
+  else
+    echo "No old backups to delete."
+  fi
+else
+  echo "No backups found to manage."
 fi
 
 echo "Backup completed at $(date)"
