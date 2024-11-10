@@ -36,15 +36,6 @@ else
   echo "Backup successful: $BACKUP_FILE"
 fi
 
-# Optional: Send the backup to a backup server
-echo "Transferring backup to backup server..."
-scp "$BACKUP_FILE" backup_user@192.168.30.245:/path/to/backup/server/
-if [ $? -ne 0 ]; then
-  echo "Error transferring backup file to backup server."
-else
-  echo "Backup file successfully transferred to backup server."
-fi
-
 # Cleanup
 unset PGPASSWORD
 
