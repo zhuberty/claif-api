@@ -29,6 +29,7 @@ persistentVolumeClaim:
     app: claif-db
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 5432
   targetPort: 5432
+  nodePort: 30083
