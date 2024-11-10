@@ -28,20 +28,20 @@ This script connects to a PostgreSQL database exposed on a Kubernetes node and p
 ## Usage
 
 ```bash
-./backup_postgres.sh <node_ip> <node_port> <db_name> <db_user> <db_password> <backup_directory>
+./backup_postgres.sh <node_ip> <node_port> <db_name> <db_user> <db_password> <backup_directory> [<num_backups_to_keep>] [<log_file>]
 ```
 
 ### Example
 
-To back up a database `mydb` running on `192.168.30.10:30084`:
+To back up a database `mydb` running on `192.168.30.10:30084` and retain the last 10 backups:
 
 ```bash
-./backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups
+./backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups 10 /var/log/postgres-backup.log
 ```
 
 ### Logs
 
-Logs are stored in `/var/log/postgres-backup.log`. You can monitor this file for backup status:
+Logs are stored in `/var/log/postgres-backup.log` by default. You can monitor this file for backup status:
 
 ```bash
 tail -f /var/log/postgres-backup.log
@@ -58,7 +58,7 @@ Automate the script to run periodically using a cronjob:
 
 2. Add an entry to run the script daily at 2:00 AM:
    ```bash
-   0 2 * * * /path/to/backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups
+   0 2 * * * /path/to/backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups 10 /var/log/postgres-backup.log
    ```
 
 3. Save and exit.
@@ -66,10 +66,16 @@ Automate the script to run periodically using a cronjob:
 ### Notes
 
 - Ensure the backup directory has sufficient space.
-- The script will attempt to transfer the backup to the backup server (`192.168.30.245`). Update the path and user in the script if needed.
-- Ensure SSH keys or passwords are configured for `scp` to work without manual input.
+- The script will attempt to manage backup retention by keeping the specified number of backups and deleting older ones.
+- If using SCP for transferring backups, ensure SSH keys or passwords are configured for `scp` to work without manual input.
 
 ## Error Handling
 
 - If the `pg_dump` command fails, the script exits with an error.
-- If the file transfer fails, the backup remains stored locally.
+- If the backup retention management fails, the process will log an error but continue.
+
+## Script Features
+
+- Retains the last `N` backups (default is 10).
+- Logs all operations to a specified log file (default is `/tmp/postgres_backup.log`).
+- Ensures backup directory exists before starting.

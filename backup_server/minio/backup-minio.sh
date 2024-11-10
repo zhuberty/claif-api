@@ -6,7 +6,7 @@ MC_PATH="/usr/local/bin/mc"
 # Check if the required arguments are provided
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <minio_alias> <backup_directory>"
-  echo "Example: $0 myminio /mnt/minio_backups"
+  echo "Example: $0 claif-api-minio /mnt/minio_backups"
   exit 1
 fi
 

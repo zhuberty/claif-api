@@ -7,7 +7,7 @@ This script dynamically fetches the list of buckets from a MinIO server alias an
 
 - Dynamically retrieves all buckets from a MinIO alias using the `mc` (MinIO Client) command.
 - Mirrors bucket contents to a user-specified backup directory.
-- Logs all operations to `/var/log/mirror_backup.log`.
+- Logs all operations to `/tmp/minio_backup.log`.
 - Accepts both the MinIO alias and backup directory as arguments for flexibility.
 
 ## Prerequisites
@@ -29,7 +29,7 @@ This script dynamically fetches the list of buckets from a MinIO server alias an
 - **Set Up MinIO Alias**:
   Configure the MinIO client with an alias:
   ```bash
-  mc alias set myminio http://<minio-server> <access-key> <secret-key>
+  mc alias set claif-api-minio http://<minio-server> <access-key> <secret-key>
   ```
 
 - Sufficient disk space in the specified backup directory.
@@ -45,18 +45,18 @@ Run the script with the MinIO alias and desired backup directory as arguments:
 
 ### Example
 
-To back up MinIO buckets from the alias `myminio` to `/mnt/minio_backups`:
+To back up MinIO buckets from the alias `claif-api-minio` to `/mnt/minio_backups`:
 
 ```bash
-./backup_script.sh myminio /mnt/minio_backups
+./backup_script.sh claif-api-minio /mnt/minio_backups
 ```
 
 ### Logs
 
-All operations are logged to `/var/log/mirror_backup.log`. You can monitor this file to track the status of the backups:
+All operations are logged to `/tmp/minio_backup.log`. You can monitor this file to track the status of the backups:
 
 ```bash
-tail -f /var/log/mirror_backup.log
+tail -f /tmp/minio_backup.log
 ```
 
 ## Automating Backups with Cronjob
@@ -70,7 +70,7 @@ You can automate the script to run at regular intervals using a cronjob. Here's 
 
 2. Add a new cronjob entry to run the script. For example:
    ```bash
-   0 2 * * * /path/to/backup_script.sh myminio /mnt/minio_backups
+   0 2 * * * /path/to/backup_script.sh claif-api-minio /mnt/minio_backups
    ```
 
    This example runs the script daily at 2:00 AM.
@@ -91,6 +91,12 @@ You can automate the script to run at regular intervals using a cronjob. Here's 
 
 ## Notes
 
-- Ensure the `mc` alias (`myminio`) is configured and working before running the script.
+- Ensure the `mc` alias (`claif-api-minio`) is configured and working before running the script.
 - Verify that the backup directory has appropriate permissions and sufficient disk space.
 - The script creates the backup directory if it does not already exist.
+- Logs are stored in `/tmp/minio_backup.log`. You can customize this path in the script if needed.
+
+## Error Handling
+
+- If the bucket list retrieval fails, the script exits with an error.
+- If the mirror operation for a bucket fails, the script logs an error for that specific bucket and continues with the next bucket.
