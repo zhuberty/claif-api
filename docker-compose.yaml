@@ -119,6 +119,8 @@ services:
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     volumes:
       - ./src/keycloak/import-dev-settings.sh:/opt/bitnami/keycloak/import-dev-settings.sh
+      - ./src/keycloak/create-keycloak-user.sh:/tmp/create-keycloak-user.sh
+      - ./src/keycloak/delete-keycloak-user.sh:/tmp/delete-keycloak-user.sh
     depends_on:
       - keycloak-db
 

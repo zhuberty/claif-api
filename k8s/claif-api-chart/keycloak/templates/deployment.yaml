@@ -16,85 +16,93 @@ spec:
       securityContext:
         fsGroup: 1001
       initContainers:
-      - name: copy-keycloak-script
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        command:
-          - /bin/bash
-          - -c
-          - "cp /opt/bitnami/keycloak/import-dev-settings.sh /tmp/import-dev-settings.sh && chmod +x /tmp/import-dev-settings.sh"
-        volumeMounts:
-          - name: keycloak-settings
-            mountPath: /opt/bitnami/keycloak/import-dev-settings.sh
-            subPath: import-dev-settings.sh
-          - name: tmp-script
-            mountPath: /tmp
-
+        - name: copy-keycloak-scripts
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              cp /opt/bitnami/keycloak/import-dev-settings.sh /tmp/import-dev-settings.sh && chmod +x /tmp/import-dev-settings.sh;
+              cp /opt/bitnami/keycloak/create-keycloak-user.sh /tmp/create-keycloak-user.sh && chmod +x /tmp/create-keycloak-user.sh;
+              cp /opt/bitnami/keycloak/delete-keycloak-user.sh /tmp/delete-keycloak-user.sh && chmod +x /tmp/delete-keycloak-user.sh;
+          volumeMounts:
+            - name: keycloak-settings
+              mountPath: /opt/bitnami/keycloak/import-dev-settings.sh
+              subPath: import-dev-settings.sh
+            - name: keycloak-settings
+              mountPath: /opt/bitnami/keycloak/create-keycloak-user.sh
+              subPath: create-keycloak-user.sh
+            - name: keycloak-settings
+              mountPath: /opt/bitnami/keycloak/delete-keycloak-user.sh
+              subPath: delete-keycloak-user.sh
+            - name: tmp-script
+              mountPath: /tmp
       containers:
-      - name: keycloak
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        command:
-          - /bin/bash
-          - -c
-          - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
-        env:
-          - name: KEYCLOAK_CREATE_ADMIN_USER
-            value: {{ .Values.keycloak.createAdminUser | quote }}
-          - name: KEYCLOAK_ADMIN
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_ADMIN
-          - name: KEYCLOAK_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_ADMIN_PASSWORD
-          - name: KEYCLOAK_REALM
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_REALM
-          - name: KEYCLOAK_USER_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_USER_USERNAME
-          - name: KEYCLOAK_USER_FIRST_NAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_USER_FIRST_NAME
-          - name: KEYCLOAK_USER_LAST_NAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_USER_LAST_NAME
-          - name: KEYCLOAK_USER_EMAIL
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_USER_EMAIL
-          - name: KEYCLOAK_USER_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_USER_PASSWORD
-          - name: KEYCLOAK_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_CLIENT_ID
-          - name: KEYCLOAK_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secretName }}
-                key: KEYCLOAK_CLIENT_SECRET
-        volumeMounts:
-          - name: tmp-script
-            mountPath: /tmp
+        - name: keycloak
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          command:
+            - /bin/bash
+            - -c
+            - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
+          env:
+            - name: KEYCLOAK_CREATE_ADMIN_USER
+              value: {{ .Values.keycloak.createAdminUser | quote }}
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            - name: KEYCLOAK_REALM
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_REALM
+            - name: KEYCLOAK_USER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_USER_USERNAME
+            - name: KEYCLOAK_USER_FIRST_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_USER_FIRST_NAME
+            - name: KEYCLOAK_USER_LAST_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_USER_LAST_NAME
+            - name: KEYCLOAK_USER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_USER_EMAIL
+            - name: KEYCLOAK_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_USER_PASSWORD
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_CLIENT_ID
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: KEYCLOAK_CLIENT_SECRET
+          volumeMounts:
+            - name: tmp-script
+              mountPath: /tmp
       volumes:
-      - name: keycloak-settings
-        configMap:
-          name: keycloak-config
-      - name: tmp-script
-        emptyDir: {}
+        - name: keycloak-settings
+          configMap:
+            name: keycloak-config
+        - name: tmp-script
+          emptyDir: {}
