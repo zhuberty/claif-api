@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Full path to mc
+MC_PATH="/usr/local/bin/mc"
+
 # Check if the required arguments are provided
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <minio_alias> <backup_directory>"
@@ -21,7 +24,7 @@ echo "Backup started at $(date)"
 
 # Get the list of buckets dynamically
 echo "Fetching the list of buckets from $MINIO_ALIAS..."
-BUCKETS=$(mc ls $MINIO_ALIAS | awk '{print $NF}' | tr -d '/')
+BUCKETS=$($MC_PATH ls $MINIO_ALIAS | awk '{print $NF}' | tr -d '/')
 
 # Check if fetching buckets was successful
 if [ -z "$BUCKETS" ]; then
@@ -33,7 +36,7 @@ fi
 for BUCKET_NAME in $BUCKETS
 do
   echo "Backing up $BUCKET_NAME..."
-  mc mirror --md5 $MINIO_ALIAS/$BUCKET_NAME "$BACKUP_ROOT/$BUCKET_NAME"
+  $MC_PATH mirror --md5 $MINIO_ALIAS/$BUCKET_NAME "$BACKUP_ROOT/$BUCKET_NAME"
   if [ $? -ne 0 ]; then
     echo "Error backing up $BUCKET_NAME"
     # Optionally, send an email or alert here
