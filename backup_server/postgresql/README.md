@@ -36,15 +36,15 @@ This script connects to a PostgreSQL database exposed on a Kubernetes node and p
 To back up a database `mydb` running on `192.168.30.10:30084`:
 
 ```bash
-./backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres_backups
+./backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups
 ```
 
 ### Logs
 
-Logs are stored in `/var/log/postgres_backup.log`. You can monitor this file for backup status:
+Logs are stored in `/var/log/postgres-backup.log`. You can monitor this file for backup status:
 
 ```bash
-tail -f /var/log/postgres_backup.log
+tail -f /var/log/postgres-backup.log
 ```
 
 ### Automating with Cronjob
@@ -58,7 +58,7 @@ Automate the script to run periodically using a cronjob:
 
 2. Add an entry to run the script daily at 2:00 AM:
    ```bash
-   0 2 * * * /path/to/backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres_backups
+   0 2 * * * /path/to/backup_postgres.sh 192.168.30.10 30084 mydb myuser mypassword /mnt/postgres-backups
    ```
 
 3. Save and exit.

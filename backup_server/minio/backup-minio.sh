@@ -10,7 +10,7 @@ fi
 # Variables
 MINIO_ALIAS=$1                          # MinIO alias passed as the first argument
 BACKUP_ROOT=$2                          # Backup directory passed as the second argument
-LOG_FILE="/var/log/mirror_backup.log"   # Log file for backup operations
+LOG_FILE="/tmp/minio_backup.log"   # Log file for backup operations
 
 # Ensure the backup directory exists
 mkdir -p "$BACKUP_ROOT"

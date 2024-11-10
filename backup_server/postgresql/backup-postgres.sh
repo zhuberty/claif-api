@@ -15,7 +15,7 @@ DB_USER=$4
 DB_PASSWORD=$5
 BACKUP_DIR=$6
 BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
-LOG_FILE="/var/log/postgres_backup.log"
+LOG_FILE="/tmp/postgres_backup.log"
 
 # Ensure the backup directory exists
 mkdir -p "$BACKUP_DIR"
