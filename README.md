@@ -36,6 +36,7 @@ The services include:
 - Kubernetes (https://kubernetes.io/docs/setup/)
 - kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - Helm (https://helm.sh/docs/intro/install/)
+- jq (https://jqlang.github.io/jq/)
 
 
 ### Install development environment
