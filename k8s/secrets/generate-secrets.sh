@@ -2,8 +2,9 @@
 
 # Function to display usage
 usage() {
-  echo "Usage: $0 <namespace> [--cert <path_to_cert>] [--key <path_to_key>]"
+  echo "Usage: $0 <namespace> [--cert <path_to_cert>] [--key <path_to_key>] [--secret <secret_name>...]"
   echo "  If --cert and --key are supplied, the TLS secret will be created."
+  echo "  Use --secret to specify which secrets to create. If omitted, all secrets will be created."
   exit 1
 }
 
@@ -16,9 +17,11 @@ fi
 NAMESPACE="$1"
 shift
 
-# Initialize TLS cert and key variables
+# Initialize variables
 TLS_CERT=""
 TLS_KEY=""
+CREATE_TLS_SECRET=false
+declare -a SELECTED_SECRETS
 
 # Parse optional arguments
 while [[ $# -gt 0 ]]; do
@@ -29,6 +32,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --key)
       TLS_KEY="$2"
+      shift 2
+      ;;
+    --secret)
+      SELECTED_SECRETS+=("$2")
       shift 2
       ;;
     *)
@@ -57,8 +64,6 @@ if [[ -n "$TLS_CERT" ]] || [[ -n "$TLS_KEY" ]]; then
   fi
 
   CREATE_TLS_SECRET=true
-else
-  CREATE_TLS_SECRET=false
 fi
 
 # Define the secret names
@@ -122,6 +127,14 @@ generate_secrets() {
   local -n SECRET_KEYS=$1
   local SECRET_NAME=$2
 
+  # Check if the secret should be created
+  if [ ${#SELECTED_SECRETS[@]} -gt 0 ]; then
+    if [[ ! " ${SELECTED_SECRETS[@]} " =~ " ${SECRET_NAME} " ]]; then
+      echo "Skipping secret '$SECRET_NAME'."
+      return
+    fi
+  fi
+
   # Loop through each secret key
   for KEY in "${!SECRET_KEYS[@]}"; do
     # Use default value if set, otherwise generate a random value
@@ -168,15 +181,16 @@ EOF
   echo "Secret '$SECRET_NAME' has been generated and applied successfully."
 }
 
-# Generate secrets for each group
-generate_secrets CLAIF_API_SECRETS $CLAIF_API_SECRET_NAME
-generate_secrets CLAIF_DB_SECRETS $CLAIF_DB_SECRET_NAME
-generate_secrets KEYCLOAK_SECRETS $KEYCLOAK_SECRET_NAME
-generate_secrets KEYCLOAK_DB_SECRETS $KEYCLOAK_DB_SECRET_NAME
-generate_secrets MINIO_SECRETS $MINIO_SECRET_NAME
+# Function to create the TLS secret
+create_tls_secret() {
+  # Check if the TLS secret should be created
+  if [ ${#SELECTED_SECRETS[@]} -gt 0 ]; then
+    if [[ ! " ${SELECTED_SECRETS[@]} " =~ " ${KEYCLOAK_TLS_SECRET_NAME} " ]]; then
+      echo "Skipping TLS secret '$KEYCLOAK_TLS_SECRET_NAME'."
+      return
+    fi
+  fi
 
-# If CREATE_TLS_SECRET is true, create the TLS secret
-if [ "$CREATE_TLS_SECRET" = true ]; then
   # Read and base64-encode the cert and key files
   TLS_CRT_BASE64=$(base64 -w 0 "$TLS_CERT")
   TLS_KEY_BASE64=$(base64 -w 0 "$TLS_KEY")
@@ -204,4 +218,16 @@ EOF
   rm $TMP_TLS_SECRET_FILE
 
   echo "TLS Secret '$KEYCLOAK_TLS_SECRET_NAME' has been generated and applied successfully."
+}
+
+# Generate secrets for each group
+generate_secrets CLAIF_API_SECRETS $CLAIF_API_SECRET_NAME
+generate_secrets CLAIF_DB_SECRETS $CLAIF_DB_SECRET_NAME
+generate_secrets KEYCLOAK_SECRETS $KEYCLOAK_SECRET_NAME
+generate_secrets KEYCLOAK_DB_SECRETS $KEYCLOAK_DB_SECRET_NAME
+generate_secrets MINIO_SECRETS $MINIO_SECRET_NAME
+
+# If CREATE_TLS_SECRET is true, create the TLS secret
+if [ "$CREATE_TLS_SECRET" = true ]; then
+  create_tls_secret
 fi
