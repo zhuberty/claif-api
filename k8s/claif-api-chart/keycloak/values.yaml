@@ -1,10 +1,13 @@
 replicaCount: 1
 
+keycloakProduction: false
+
 image:
   repository: "docker.io/bitnami/keycloak"
   tag: "25.0.6"
 
 secretName: "keycloak-secrets"
+keycloakDbSecretName: "keycloak-db-secrets"
 
 keycloak:
   createAdminUser: "true"

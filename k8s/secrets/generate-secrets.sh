@@ -1,12 +1,65 @@
 #!/bin/bash
 
+# Function to display usage
+usage() {
+  echo "Usage: $0 <namespace> [--cert <path_to_cert>] [--key <path_to_key>]"
+  echo "  If --cert and --key are supplied, the TLS secret will be created."
+  exit 1
+}
+
 # Check if namespace parameter is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <namespace>"
-  exit 1
+  usage
 fi
 
+# Parse the namespace argument
 NAMESPACE="$1"
+shift
+
+# Initialize TLS cert and key variables
+TLS_CERT=""
+TLS_KEY=""
+
+# Parse optional arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --cert)
+      TLS_CERT="$2"
+      shift 2
+      ;;
+    --key)
+      TLS_KEY="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown parameter: $1"
+      usage
+      ;;
+  esac
+done
+
+# If either TLS_CERT or TLS_KEY is supplied, ensure both are supplied
+if [[ -n "$TLS_CERT" ]] || [[ -n "$TLS_KEY" ]]; then
+  if [[ -z "$TLS_CERT" ]] || [[ -z "$TLS_KEY" ]]; then
+    echo "Error: Both --cert and --key must be specified together."
+    usage
+  fi
+
+  # Check if cert and key files exist
+  if [[ ! -f "$TLS_CERT" ]]; then
+    echo "Error: Certificate file '$TLS_CERT' does not exist."
+    exit 1
+  fi
+
+  if [[ ! -f "$TLS_KEY" ]]; then
+    echo "Error: Key file '$TLS_KEY' does not exist."
+    exit 1
+  fi
+
+  CREATE_TLS_SECRET=true
+else
+  CREATE_TLS_SECRET=false
+fi
 
 # Define the secret names
 CLAIF_API_SECRET_NAME="claif-api-secrets"
@@ -14,6 +67,7 @@ CLAIF_DB_SECRET_NAME="claif-db-secrets"
 KEYCLOAK_SECRET_NAME="keycloak-secrets"
 KEYCLOAK_DB_SECRET_NAME="keycloak-db-secrets"
 MINIO_SECRET_NAME="minio-secrets"
+KEYCLOAK_TLS_SECRET_NAME="keycloak-tls-secret"
 
 # Define the secrets for each group
 declare -A CLAIF_API_SECRETS=(
@@ -120,3 +174,34 @@ generate_secrets CLAIF_DB_SECRETS $CLAIF_DB_SECRET_NAME
 generate_secrets KEYCLOAK_SECRETS $KEYCLOAK_SECRET_NAME
 generate_secrets KEYCLOAK_DB_SECRETS $KEYCLOAK_DB_SECRET_NAME
 generate_secrets MINIO_SECRETS $MINIO_SECRET_NAME
+
+# If CREATE_TLS_SECRET is true, create the TLS secret
+if [ "$CREATE_TLS_SECRET" = true ]; then
+  # Read and base64-encode the cert and key files
+  TLS_CRT_BASE64=$(base64 -w 0 "$TLS_CERT")
+  TLS_KEY_BASE64=$(base64 -w 0 "$TLS_KEY")
+
+  # Create a temporary file to hold the Kubernetes secret YAML
+  TMP_TLS_SECRET_FILE=$(mktemp)
+
+  # Generate the secret YAML
+  cat <<EOF > $TMP_TLS_SECRET_FILE
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $KEYCLOAK_TLS_SECRET_NAME
+  namespace: $NAMESPACE
+type: kubernetes.io/tls
+data:
+  tls.crt: $TLS_CRT_BASE64
+  tls.key: $TLS_KEY_BASE64
+EOF
+
+  # Apply the secret to Kubernetes
+  kubectl apply -f $TMP_TLS_SECRET_FILE
+
+  # Clean up
+  rm $TMP_TLS_SECRET_FILE
+
+  echo "TLS Secret '$KEYCLOAK_TLS_SECRET_NAME' has been generated and applied successfully."
+fi

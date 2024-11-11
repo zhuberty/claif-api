@@ -45,6 +45,39 @@ spec:
             - -c
             - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
           env:
+            - name: KEYCLOAK_PRODUCTION
+              value: {{ .Values.keycloakProduction | quote }}
+            {{- if .Values.keycloakProduction }}
+            - name: KEYCLOAK_HTTPS_USE_PEM
+              value: "true"
+            - name: KEYCLOAK_HTTPS_CERTIFICATE_FILE
+              value: "/opt/bitnami/keycloak/certs/tls.crt"
+            - name: KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE
+              value: "/opt/bitnami/keycloak/certs/tls.key"
+            {{- end }}
+            - name: KEYCLOAK_LOG_LEVEL
+              value: DEBUG
+            - name: KEYCLOAK_DATABASE_VENDOR
+              value: postgresql
+            - name: KEYCLOAK_DATABASE_HOST
+              value: keycloak-db
+            - name: KEYCLOAK_DATABASE_PORT
+              value: "5432"
+            - name: KEYCLOAK_DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDbSecretName }}
+                  key: KEYCLOAK_DB_DATABASE
+            - name: KEYCLOAK_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDbSecretName }}
+                  key: KEYCLOAK_DB_USERNAME
+            - name: KEYCLOAK_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloakDbSecretName }}
+                  key: KEYCLOAK_DB_PASSWORD
             - name: KEYCLOAK_CREATE_ADMIN_USER
               value: {{ .Values.keycloak.createAdminUser | quote }}
             - name: KEYCLOAK_ADMIN
@@ -100,9 +133,19 @@ spec:
           volumeMounts:
             - name: tmp-script
               mountPath: /tmp
+            {{- if .Values.keycloakProduction }}
+            - name: keycloak-tls
+              mountPath: /opt/bitnami/keycloak/certs
+              readOnly: true
+            {{- end }}
       volumes:
         - name: keycloak-settings
           configMap:
             name: keycloak-config
         - name: tmp-script
           emptyDir: {}
+        {{- if .Values.keycloakProduction }}
+        - name: keycloak-tls
+          secret:
+            secretName: keycloak-tls-secret
+        {{- end }}
