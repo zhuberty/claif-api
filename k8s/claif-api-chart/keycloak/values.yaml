@@ -4,7 +4,7 @@ keycloakProduction: false
 
 image:
   repository: "docker.io/bitnami/keycloak"
-  tag: "25.0.6"
+  tag: "26.0.5"
 
 secretName: "keycloak-secrets"
 keycloakDbSecretName: "keycloak-db-secrets"
