@@ -40,10 +40,12 @@ spec:
       containers:
         - name: keycloak
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          {{- if not .Values.keycloakProduction }}
           command:
             - /bin/bash
             - -c
             - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
+          {{- end }}
           env:
             - name: KEYCLOAK_PRODUCTION
               value: {{ .Values.keycloakProduction | quote }}
