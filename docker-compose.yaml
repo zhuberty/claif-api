@@ -102,8 +102,8 @@ services:
       - "8085:8080"
     environment:
       - KEYCLOAK_CREATE_ADMIN_USER=true
-      - KEYCLOAK_ADMIN=user
-      - KEYCLOAK_ADMIN_PASSWORD=bitnami
+      - KC_BOOTSTRAP_ADMIN_USERNAME=user
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=bitnami
       - KEYCLOAK_DATABASE_HOST=keycloak-db
       - KEYCLOAK_DATABASE_PORT=5432
       - KEYCLOAK_DATABASE_NAME=keycloak

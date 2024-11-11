@@ -40,29 +40,15 @@ spec:
       containers:
         - name: keycloak
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          {{- if not .Values.keycloakProduction }}
-          command:
-            - /bin/bash
-            - -c
-            - "/opt/bitnami/scripts/keycloak/run.sh & sleep 30 && /tmp/import-dev-settings.sh && wait"
-          {{- end }}
           env:
-            - name: KEYCLOAK_PRODUCTION
-              value: {{ .Values.keycloakProduction | quote }}
-            {{- if .Values.keycloakProduction }}
             - name: KEYCLOAK_ENABLE_HTTPS
-              value: "true"
+              value: "false"
             - name: KEYCLOAK_PROXY_HEADERS
-              value: "X-Forwarded-For,Host,X-Real-IP"
-            - name: KEYCLOAK_HTTPS_USE_PEM
-              value: "true"
-            - name: KEYCLOAK_HTTPS_CERTIFICATE_FILE
-              value: "/opt/bitnami/keycloak/certs/tls.crt"
-            - name: KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE
-              value: "/opt/bitnami/keycloak/certs/tls.key"
+              value: "xforwarded"
+            {{- if .Values.hostname }}
+            - name: KEYCLOAK_HOSTNAME
+              value: {{ .Values.hostname }}
             {{- end }}
-            - name: KEYCLOAK_LOG_LEVEL
-              value: DEBUG
             - name: KEYCLOAK_DATABASE_VENDOR
               value: postgresql
             - name: KEYCLOAK_DATABASE_HOST
@@ -86,16 +72,16 @@ spec:
                   key: KEYCLOAK_DB_PASSWORD
             - name: KEYCLOAK_CREATE_ADMIN_USER
               value: {{ .Values.keycloak.createAdminUser | quote }}
-            - name: KEYCLOAK_ADMIN
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
-                  key: KEYCLOAK_ADMIN
-            - name: KEYCLOAK_ADMIN_PASSWORD
+                  key: KC_BOOTSTRAP_ADMIN_USERNAME
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
-                  key: KEYCLOAK_ADMIN_PASSWORD
+                  key: KC_BOOTSTRAP_ADMIN_PASSWORD
             - name: KEYCLOAK_REALM
               valueFrom:
                 secretKeyRef:
@@ -139,11 +125,6 @@ spec:
           volumeMounts:
             - name: tmp-script
               mountPath: /tmp
-            {{- if .Values.keycloakProduction }}
-            - name: keycloak-tls
-              mountPath: /opt/bitnami/keycloak/certs
-              readOnly: true
-            {{- end }}
       volumes:
         - name: keycloak-settings
           configMap:

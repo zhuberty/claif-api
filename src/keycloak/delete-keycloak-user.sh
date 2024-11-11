@@ -9,8 +9,6 @@ fi
 USERNAME=$(echo "$1" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
 
 # Load environment variables already set in the Keycloak container
-KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-"admin"}
-KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-"admin-password"}
 KEYCLOAK_REALM=${KEYCLOAK_REALM:-"master"}
 CONFIG_FILE="/tmp/kcadm.config"
 
@@ -26,8 +24,8 @@ echo "Keycloak is up. Proceeding with user deletion."
 /opt/bitnami/keycloak/bin/kcadm.sh config credentials \
     --server http://127.0.0.1:8080 \
     --realm master \
-    --user "$KEYCLOAK_ADMIN" \
-    --password "$KEYCLOAK_ADMIN_PASSWORD" \
+    --user "$KC_BOOTSTRAP_ADMIN_USERNAME" \
+    --password "$KC_BOOTSTRAP_ADMIN_PASSWORD" \
     --config "$CONFIG_FILE"
 
 # Get the user ID

@@ -1,7 +1,5 @@
 replicaCount: 1
 
-keycloakProduction: false
-
 image:
   repository: "docker.io/bitnami/keycloak"
   tag: "26.0.5"
