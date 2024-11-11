@@ -6,3 +6,4 @@ global:
     tag: "latest"
     pullPolicy: "Never"
     usePersistentStorage: false
+  keycloakServerUrl: "http://localhost:30085"

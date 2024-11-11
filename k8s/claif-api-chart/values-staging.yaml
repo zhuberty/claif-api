@@ -6,6 +6,7 @@ global:
     tag: "latest"
     pullPolicy: "Never"
   usePersistentStorage: true
+  keycloakServerUrl: "https://keycloak-staging.claif.org"
 
 keycloak:
   hostname: "keycloak-staging.claif.org"

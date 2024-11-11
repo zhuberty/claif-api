@@ -34,10 +34,7 @@ spec:
                 name: {{ .Values.secretName }}
                 key: DATABASE_URL
           - name: KEYCLOAK_SERVER_URL
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.keycloakSecretName }}
-                key: KEYCLOAK_SERVER_URL
+            value: "http://keycloak:8080"
           - name: KEYCLOAK_REALM
             valueFrom:
               secretKeyRef:
@@ -102,5 +99,7 @@ spec:
                 key: MINIO_ROOT_PASSWORD
           - name: CLAIF_TRANSCRIBER_ENDPOINT
             value: {{ .Values.claifTranscriberEndpoint }}
+          - name: OPENAPI_KEYCLOAK_SERVER_URL
+            value: {{ .Values.global.keycloakServerUrl }}
         ports:
           - containerPort: {{ .Values.containerPort }}

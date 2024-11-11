@@ -1,7 +1,0 @@
-global:
-  namespace: claif-dev
-  useContainerd: false
-  image:
-    repository: "docker.io/library"
-    tag: "latest"
-    pullPolicy: "Never"
