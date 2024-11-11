@@ -48,6 +48,8 @@ spec:
             - name: KEYCLOAK_PRODUCTION
               value: {{ .Values.keycloakProduction | quote }}
             {{- if .Values.keycloakProduction }}
+            - name: KEYCLOAK_ENABLE_HTTPS
+              value: "true"
             - name: KEYCLOAK_HTTPS_USE_PEM
               value: "true"
             - name: KEYCLOAK_HTTPS_CERTIFICATE_FILE
