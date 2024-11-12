@@ -10,3 +10,7 @@ global:
 
 keycloak:
   hostname: "keycloak-staging.claif.org"
+
+claif-api:
+  command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak \
+  && ./scripts/wait_for_transcriber.sh claif-transcriber:8000 && ./scripts/wait_for_minio.sh minio:9000"

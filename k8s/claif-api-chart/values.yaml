@@ -1,9 +1,16 @@
 global:
-  namespace: claif-dev
-  useContainerd: false
+  namespace: claif-prod
+  useContainerd: true
   image:
     repository: "docker.io/library"
     tag: "latest"
     pullPolicy: "Never"
-    usePersistentStorage: false
-  keycloakServerUrl: "http://localhost:30085"
+  usePersistentStorage: true
+  keycloakServerUrl: "https://keycloak-prod.claif.org"
+
+keycloak:
+  hostname: "keycloak-prod.claif.org"
+
+claif-api:
+  command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak \
+  && ./scripts/wait_for_transcriber.sh claif-transcriber:8000 && ./scripts/wait_for_minio.sh minio:9000"
