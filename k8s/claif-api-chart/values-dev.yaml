@@ -11,4 +11,4 @@ global:
 claif-api:
   # in dev, this will basically wipe the claif-db and run tests automatically
   command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db \
-  && ./scripts/wait_for_transcriber.sh claif-transcriber:8000 && ./scripts/wait_for_minio.sh minio:9000"
+  && ./scripts/wait_for_minio.sh minio:9000"
