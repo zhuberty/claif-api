@@ -172,7 +172,7 @@ There is a Swagger UI available at http://localhost:8080/docs that provides a us
 Authenticate with:
 - username: `testuser`
 - password: `testpassword`
-- client_id: `claif-api-client`
+- client_id: `claif-api`
 - client_secret: `(leave this field empty)`
 
 <img src="./screenshots/claif-api-swagger-login.png" style="max-width: 400px;" />
@@ -222,7 +222,7 @@ curl -X POST 'http://localhost:8080/v1/auth/token' -H 'Content-Type: application
   "aud": "account",
   "sub": "3ad322d1-b212-42bd-adc0-f7c47252ad2e",
   "typ": "Bearer",
-  "azp": "claif-api-client",
+  "azp": "claif-api",
   "sid": "9065efa4-45ff-43a7-83e6-914611154493",
   "acr": "1",
   "allowed-origins": [
