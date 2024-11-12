@@ -172,7 +172,7 @@ There is a Swagger UI available at http://localhost:8080/docs that provides a us
 Authenticate with:
 - username: `testuser`
 - password: `testpassword`
-- client_id: `fastapi-client`
+- client_id: `claif-api-client`
 - client_secret: `(leave this field empty)`
 
 <img src="./screenshots/claif-api-swagger-login.png" style="max-width: 400px;" />
@@ -218,11 +218,11 @@ curl -X POST 'http://localhost:8080/v1/auth/token' -H 'Content-Type: application
   "exp": 1727390307,
   "iat": 1727390007,
   "jti": "86d3d62c-27f5-47f9-a60c-184e8bc98c4f",
-  "iss": "http://keycloak:8080/realms/fastapi",
+  "iss": "http://keycloak:8080/realms/claif-api",
   "aud": "account",
   "sub": "3ad322d1-b212-42bd-adc0-f7c47252ad2e",
   "typ": "Bearer",
-  "azp": "fastapi-client",
+  "azp": "claif-api-client",
   "sid": "9065efa4-45ff-43a7-83e6-914611154493",
   "acr": "1",
   "allowed-origins": [
@@ -231,7 +231,7 @@ curl -X POST 'http://localhost:8080/v1/auth/token' -H 'Content-Type: application
   "realm_access": {
     "roles": [
       "offline_access",
-      "default-roles-fastapi",
+      "default-roles-claif-api",
       "uma_authorization"
     ]
   },

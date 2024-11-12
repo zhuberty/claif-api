@@ -29,8 +29,8 @@ services:
       - UVICORN_WORKERS=2
       - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db
       - KEYCLOAK_SERVER_URL=http://keycloak:8080
-      - KEYCLOAK_REALM=fastapi
-      - KEYCLOAK_CLIENT_ID=fastapi-client
+      - KEYCLOAK_REALM=claif-api
+      - KEYCLOAK_CLIENT_ID=claif-api
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
       - OPENAPI_KEYCLOAK_SERVER_URL=http://localhost:8085
       - CLAIF_API_HOST=api-gateway
@@ -82,9 +82,9 @@ services:
     container_name: keycloak-db
     image: docker.io/bitnami/postgresql:12.20.0
     environment:
-      - KEYCLOAK_DB_USERNAME=keycloak
-      - KEYCLOAK_DB_PASSWORD=keycloak
-      - KEYCLOAK_DB_DATABASE=keycloak
+      - POSTGRESQL_DATABASE=keycloak
+      - POSTGRESQL_USERNAME=keycloak
+      - POSTGRESQL_PASSWORD=keycloak
     volumes:
       - keycloak-db-data:/bitnami/postgresql
     ports:
@@ -109,13 +109,13 @@ services:
       - KEYCLOAK_DATABASE_NAME=keycloak
       - KEYCLOAK_DATABASE_USER=keycloak
       - KEYCLOAK_DATABASE_PASSWORD=keycloak
-      - KEYCLOAK_REALM=fastapi
+      - KEYCLOAK_REALM=claif-api
       - KEYCLOAK_USER_USERNAME=testuser
       - KEYCLOAK_USER_PASSWORD=testpassword
       - KEYCLOAK_USER_FIRST_NAME=Test
       - KEYCLOAK_USER_LAST_NAME=User
       - KEYCLOAK_USER_EMAIL=testuser@claif.org
-      - KEYCLOAK_CLIENT_ID=fastapi-client
+      - KEYCLOAK_CLIENT_ID=claif-api-client
       - KEYCLOAK_CLIENT_SECRET=g07L@Qg#mL&u8ukA2XE@L1wi&hioNRAoRGpYy
     volumes:
       - ./src/keycloak/import-dev-settings.sh:/opt/bitnami/keycloak/import-dev-settings.sh

@@ -4,7 +4,7 @@ set -e
 
 host=$1
 port="8080"
-realm="fastapi"
+realm="claif-api"
 timeout=300  # 5 minutes timeout
 elapsed=0
 
