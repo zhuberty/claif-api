@@ -40,6 +40,9 @@ spec:
       containers:
         - name: keycloak
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          {{- if .Values.command }}
+          command: ["/bin/bash", "-c", "{{ .Values.command }}"]
+          {{- end }}
           env:
             - name: KEYCLOAK_ENABLE_HTTPS
               value: "false"

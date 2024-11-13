@@ -5,10 +5,14 @@ global:
     repository: "docker.io/library"
     tag: "latest"
     pullPolicy: "Never"
-    usePersistentStorage: false
+  usePersistentStorage: false
   keycloakServerUrl: "http://localhost:30085"
 
 claif-api:
   # in dev, this will basically wipe the claif-db and run tests automatically
-  command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/seed_db.sh claif-db \
+  command: "./scripts/wait_for_db.sh claif-db:5432 && ./scripts/wait_for_keycloak.sh keycloak && ./scripts/reset_db_test_and_run.sh claif-db \
   && ./scripts/wait_for_minio.sh minio:9000"
+
+# keycloak:
+#   command: "/opt/bitnami/scripts/keycloak/run.sh && sleep 30 && /opt/bitnami/keycloak/import-dev-settings.sh && wait"
+

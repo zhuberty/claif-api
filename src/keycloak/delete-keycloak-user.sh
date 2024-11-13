@@ -9,7 +9,6 @@ fi
 USERNAME=$(echo "$1" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
 
 # Load environment variables already set in the Keycloak container
-KEYCLOAK_REALM=${KEYCLOAK_REALM:-"master"}
 CONFIG_FILE="/tmp/kcadm.config"
 
 # Wait for Keycloak to be up

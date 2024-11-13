@@ -87,7 +87,6 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     keycloak_id = extract_keycloak_id_from_token(token, public_key)
     return get_user_from_keycloak_id(db, keycloak_id)
 
-
 limiter = Limiter(
     key_func=lambda request: extract_user_id_or_raise(request)
 )

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 log() {
-    echo -e "seed_db.sh:$1:\t$2"
+    echo -e "reset_db_test_and_run.sh:$1:\t$2"
 }
 
 # Start the seed scripts in the background as a single process
@@ -16,10 +16,6 @@ log() {
     # Run the truncate and reset all tables for the api database
     log INFO "Running truncate and reset script..."
     PYTHONPATH=./ poetry run python scripts/truncate_and_reset.py
-
-    # Populate the database with seed (dummy) data
-    log INFO "Seeding users..."
-    PYTHONPATH=./ poetry run python scripts/seed_users.py
 
     log INFO "Running integration tests..."
     PYTHONPATH=./ poetry run pytest -s -v ./tests

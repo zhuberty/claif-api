@@ -24,7 +24,7 @@ services:
       bash -c "./scripts/wait_for_db.sh claif-db:5432
       && ./scripts/wait_for_keycloak.sh keycloak
       && ./scripts/wait_for_minio.sh minio:9000
-      && ./scripts/seed_db.sh claif-db"
+      && ./scripts/reset_db_test_and_run.sh claif-db"
     environment:
       - UVICORN_WORKERS=2
       - DATABASE_URL=postgresql://claif_db_user:claif_db_password@claif-db:5432/claif_db

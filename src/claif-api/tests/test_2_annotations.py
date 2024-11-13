@@ -72,7 +72,7 @@ def test_get_terminal_recording_with_reviews(base_url, access_token):
     assert "annotation_reviews" in response_data
     for review in response_data["annotation_reviews"]:
         assert review["annotation_id"] > 0
-        assert review["creator_id"] == 2
+        assert review["creator_id"] == 1
         assert review["q_does_anno_match_content"] in [True, False]
         assert review["q_can_anno_be_halved"] in [True, False]
         assert review["q_how_well_anno_matches_content"] in [i for i in range(1, 11)]
