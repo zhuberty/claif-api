@@ -1,6 +1,7 @@
 import argparse
 from auth_utils import login
 from recordings import (
+    get_terminal_recording,
     review_recording,
     create_recording,
     update_recording,
@@ -21,6 +22,10 @@ def main():
     login_parser = subparsers.add_parser("login", help="Login to the FastAPI app")
     login_parser.add_argument("--password", help="Password for testing purposes")
 
+    get_terminal_recording_parser = subparsers.add_parser("get-terminal-recording", help="Get a terminal recording")
+    get_terminal_recording_parser.add_argument("recording_id", type=int, help="ID of the recording to get")
+    get_terminal_recording_parser.add_argument("--revision-number", type=int, help="Revision number of the recording")
+
     review_recording_parser = subparsers.add_parser("review-recording", help="Review a recording")
     review_recording_parser.add_argument("recording_id", type=int, help="ID of the recording to review")
     review_recording_parser.add_argument("--revision-number", type=int, help="Revision number of the recording")
@@ -38,7 +43,7 @@ def main():
 
     list_recordings_parser = subparsers.add_parser("list-recordings", help="List all recordings")
 
-    create_audio_file_parser = subparsers.add_parser("create-audio-file", help="Create a new audio file")
+    create_audio_file_parser = subparsers.add_parser("create-audio-recording", help="Create a new audio file")
     create_audio_file_parser.add_argument("audio_filepath", help="Path to the audio file")
     
     args = parser.parse_args()
@@ -47,6 +52,8 @@ def main():
 
     if args.command == "login":
         login(base_url, password=args.password)
+    elif args.command == "get-terminal-recording":
+        get_terminal_recording(base_url, args.recording_id, args.revision_number)
     elif args.command == "review-recording":
         review_recording(base_url, args.recording_id, args.revision_number)
     elif args.command == "create-recording":
@@ -66,7 +73,7 @@ def main():
         )
     elif args.command == "list-recordings":
         list_recordings(base_url)
-    elif args.command == "create-audio-file":
+    elif args.command == "create-audio-recording":
         create_audio_file(base_url, args.audio_filepath)
 
 

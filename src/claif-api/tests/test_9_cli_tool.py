@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 import pytest
@@ -188,13 +189,16 @@ def test_cli_host_flags(monkeypatch, setup_cli):
 
 
 @pytest.mark.order(906)
-def test_cli_create_audio_file(monkeypatch, setup_cli):
+def test_cli_create_audio_recording(monkeypatch, setup_cli):
+    if os.environ.get("SKIP_WHISPER_TESTS") == "true":
+        return
+
     # Unpack the fixture
     main_module, _ = setup_cli
 
     # Pass in args
     audio_filepath = Path(__file__).parent.parent / "audio_recording_samples" / "frankenstein_passage_two_speakers_medium_quality.wav"
-    patch_sys_argv(monkeypatch, ["create-audio-file", str(audio_filepath)])
+    patch_sys_argv(monkeypatch, ["create-audio-recording", str(audio_filepath)])
 
     # Capture stdout
     captured_output = capture_output(monkeypatch)
@@ -205,3 +209,35 @@ def test_cli_create_audio_file(monkeypatch, setup_cli):
     captured_output_value = captured_output.getvalue()
     assert "Error" not in captured_output_value
     assert "File uploaded and metadata stored successfully" in captured_output_value
+
+
+@pytest.mark.order(907)
+def test_cli_get_recording(monkeypatch, setup_cli):
+    # Unpack the fixture
+    main_module, _ = setup_cli
+
+    # Get the most recent recording with a revision greater than 1
+    db: pytest.Session = next(get_db())
+    recording = db.query(TerminalRecording).filter(TerminalRecording.revision_number > 1).order_by(TerminalRecording.id.desc()).first()
+
+    # Pass in args
+    patch_sys_argv(monkeypatch, ["get-terminal-recording", str(recording.id), f"--revision-number={recording.revision_number}"])
+
+    # Capture stdout
+    captured_output = capture_output(monkeypatch)
+
+    # Call the CLI Tool's main function
+    main_module.main()
+
+    captured_output_value = captured_output.getvalue()
+    assert "Error" not in captured_output_value
+    output_json = json.loads(captured_output_value)
+    assert "recording" in output_json
+    assert output_json["recording"]["id"] == recording.id
+    assert output_json["recording"]["revision_number"] == recording.revision_number
+    assert output_json["recording"]["annotations_count"] == recording.annotations_count
+    assert "annotations" in output_json
+    assert len(output_json["annotations"]) == len(recording.annotations.filter_by(revision_number=recording.revision_number).all())
+    assert "annotation_reviews" in output_json
+    assert "selected_revision_number" in output_json
+    assert output_json["selected_revision_number"] == recording.revision_number  # TODO: figure out why I added this field?

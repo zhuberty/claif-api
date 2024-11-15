@@ -1,6 +1,14 @@
+import json
 from display_utils import display_annotations, display_recordings_list
 from annotation_reviews import create_review
 from api_requests import api_request
+
+def get_terminal_recording(base_url, recording_id, revision_number=None):
+    if revision_number is None:
+        response = api_request(base_url, f"/recordings/terminal/read/{recording_id}")
+    else:
+        response = api_request(base_url, f"/recordings/terminal/read/{recording_id}?revision_number={revision_number}")
+    print(json.dumps(response))
 
 
 def list_recordings(base_url):

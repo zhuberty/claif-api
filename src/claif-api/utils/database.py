@@ -1,17 +1,18 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from utils._logging import logging
-from models.users import User, UserRead
-from models.recordings import TerminalRecording, AudioFile, AudioTranscription
-from models.annotations import TerminalRecordingAnnotation, AudioTranscriptionAnnotation
-from models.annotation_reviews import TerminalAnnotationReview, AudioAnnotationReview
 
-from utils.env import CLAIF_DB_USER, CLAIF_DB_PASSWORD, CLAIF_DB_DATABASE
+from utils.env import (
+    CLAIF_DB_USER, 
+    CLAIF_DB_PASSWORD, 
+    CLAIF_DB_DATABASE, 
+    CLAIF_DB_HOST,
+    CLAIF_DB_PORT
+)
 
 
-DATABASE_URL = f"postgresql://{CLAIF_DB_USER}:{CLAIF_DB_PASSWORD }@claif-db:5432/{CLAIF_DB_DATABASE}"
+DATABASE_URL = f"postgresql://{CLAIF_DB_USER}:{CLAIF_DB_PASSWORD }@{CLAIF_DB_HOST}:{CLAIF_DB_PORT}/{CLAIF_DB_DATABASE}"
 
 # Create a SQLAlchemy engine
 engine = create_engine(DATABASE_URL)

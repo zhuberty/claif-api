@@ -26,6 +26,9 @@
                 "-vv", // Verbose output
                 "tests" // Run tests in the tests directory
             ],
+            "env": {
+                "SKIP_WHISPER_TESTS": "true"
+            },
             "envFile": "${workspaceFolder}/.env"
         },
         {

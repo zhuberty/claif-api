@@ -85,6 +85,10 @@ spec:
               secretKeyRef:
                 name: {{ .Values.claifDbSecretName }}
                 key: NEW_DB_NAME
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_HOST
+            value: claif-db
           - name: MINIO_ENDPOINT
             value: {{ .Values.minioServerEndpoint }}
           - name: MINIO_ROOT_USER

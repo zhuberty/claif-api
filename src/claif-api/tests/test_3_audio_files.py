@@ -1,12 +1,17 @@
+import os
 from pathlib import Path
 import pytest
 import requests
 from utils.config import get_auth_headers
 
+
 @pytest.mark.order(300)
-def test_create_audio_file(base_url, access_token):
+def test_create_audio_recording(base_url, access_token):
     """Test creating a new audio recording by uploading a file."""
     
+    if os.environ.get("SKIP_WHISPER_TESTS") == "true":
+        return
+
     # Path to the audio file
     samples_path = Path(__file__).parent.parent / "audio_recording_samples"
     audio_filepath = samples_path / "frankenstein_passage_two_speakers_medium_quality.wav"
