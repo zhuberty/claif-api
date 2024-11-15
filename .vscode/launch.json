@@ -27,7 +27,7 @@
                 "tests" // Run tests in the tests directory
             ],
             "env": {
-                "SKIP_WHISPER_TESTS": "true"
+                "SKIP_WHISPER_TESTS": "false"
             },
             "envFile": "${workspaceFolder}/.env"
         },

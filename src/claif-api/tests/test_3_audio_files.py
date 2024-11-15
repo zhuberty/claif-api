@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 import requests
 from utils.config import get_auth_headers
+from utils.database import get_db
+from models.recordings import AudioFile
 
 
 @pytest.mark.order(300)
@@ -26,7 +28,7 @@ def test_create_audio_recording(base_url, access_token):
     headers = get_auth_headers(access_token)
 
     # URL for the audio file creation endpoint
-    url = f"{base_url}/recordings/audio_files/create"
+    url = f"{base_url}/recordings/audio/files/create"
 
     # Make the request to upload the file
     response = requests.post(url, files=files, headers=headers)
@@ -46,3 +48,18 @@ def test_create_audio_recording(base_url, access_token):
 
     # Close the file after upload
     files["file"].close()
+
+
+@pytest.mark.order(301)
+def test_get_audio_recording(base_url, access_token):
+    """Test getting an audio recording by ID."""
+    db = next(get_db())
+    audio_file = db.query(AudioFile).order_by(AudioFile.id.desc()).first()
+    assert audio_file is not None, "No audio file found"
+
+    headers = get_auth_headers(access_token)
+    url = f"{base_url}/recordings/audio/files/read/{audio_file.id}"
+    response = requests.get(url, headers=headers)
+    response_data = response.json()
+    assert response.status_code == 200
+

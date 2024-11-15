@@ -125,3 +125,23 @@ class TerminalRecordingUpdate(BaseModel):
                 "content_metadata": "Header_content_of_the_asciinema_recording_here",
             }
         }
+
+
+class AudioFileRead(BaseModel):
+    """Pydantic model for reading audio files."""
+    id: int
+    title: str
+    description: Optional[str]
+    size_bytes: int
+    duration_milliseconds: Optional[int]
+    storage_path: str
+    content_type: str
+    revision_number: int
+    creator: UserRead
+    creator_id: int
+    created_at: datetime
+    deleted_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True

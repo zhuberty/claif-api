@@ -2,7 +2,7 @@ import mimetypes
 from fastapi import APIRouter, Depends, Request, UploadFile, File, HTTPException
 import requests
 from sqlalchemy.orm import Session
-from models.recordings import AudioFile
+from models.recordings import AudioFile, AudioFileRead
 from models.users import User
 from utils.database import get_db
 from utils.auth import get_current_user, limiter
@@ -14,7 +14,7 @@ import logging
 
 router = APIRouter()
 
-@router.post("/create")
+@router.post("/files/create")
 @limiter.limit("5/minute")
 @value_error_handler
 async def create_file(
@@ -83,3 +83,20 @@ async def create_file(
         "file_metadata": new_audio_file,
         "transcription": transcription_response
     }
+
+
+@router.get("/files/read/{file_id}", response_model=AudioFileRead)
+@limiter.limit("1/minute")
+@value_error_handler
+async def read_file(
+    request: Request,
+    file_id: int,
+    db: Session = Depends(get_db),
+):
+    """Get an audio file by ID."""
+    
+    audio_file = db.query(AudioFile).filter_by(id=file_id).first()
+    if audio_file is None:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    return AudioFileRead.from_orm(audio_file)
